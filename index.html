@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Careem Clawback Tracker</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root {
     --primary: #4CAF50;
@@ -225,6 +227,164 @@
     font-weight: bold;
     color: var(--primary);
   }
+  .report-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+  }
+  .report-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  body.dark-mode .report-content {
+    background-color: #444;
+    color: #fff;
+  }
+  .close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover {
+    color: #e74c3c;
+  }
+  .report-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+  }
+  body.dark-mode .report-header {
+    border-bottom: 2px solid #555;
+  }
+  .report-section {
+    margin-bottom: 25px;
+  }
+  .report-section h3 {
+    margin-bottom: 15px;
+    color: var(--primary);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+  }
+  body.dark-mode .report-section h3 {
+    border-bottom: 1px solid #555;
+  }
+  .report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .report-table th, .report-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  body.dark-mode .report-table th, body.dark-mode .report-table td {
+    border-bottom: 1px solid #555;
+  }
+  .report-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  body.dark-mode .report-table th {
+    background-color: #555;
+  }
+  .report-chart {
+    margin: 20px 0;
+    text-align: center;
+  }
+  .report-footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 2px solid #ddd;
+    font-size: 0.9em;
+    color: #666;
+  }
+  body.dark-mode .report-footer {
+    border-top: 2px solid #555;
+    color: #ccc;
+  }
+  .error-table {
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  body.dark-mode .error-table {
+    background: #444;
+  }
+  .error-table th, .error-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  body.dark-mode .error-table th, body.dark-mode .error-table td {
+    border-color: #555;
+  }
+  .error-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  body.dark-mode .error-table th {
+    background-color: #555;
+  }
+  .error-reason {
+    color: #e74c3c;
+    font-weight: bold;
+  }
+  .error-details {
+    font-size: 0.9em;
+    color: #666;
+  }
+  body.dark-mode .error-details {
+    color: #ccc;
+  }
+  .error-stats {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .error-stat {
+    background: #ffebee;
+    border-radius: 4px;
+    padding: 10px;
+    flex: 1;
+    text-align: center;
+  }
+  body.dark-mode .error-stat {
+    background: #555;
+  }
+  .error-stat-label {
+    font-size: 0.9em;
+    color: #666;
+  }
+  body.dark-mode .error-stat-label {
+    color: #ccc;
+  }
+  .error-stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #e74c3c;
+  }
   @media (max-width: 600px) {
     table { 
       display: block; 
@@ -239,9 +399,14 @@
     .stats-container {
       flex-direction: column;
     }
+    .report-content {
+      width: 95%;
+      margin: 10% auto;
+    }
   }
 </style>
 </head>
+
 <body>
 
 <div class="container">
@@ -254,6 +419,8 @@
     <div class="controls">
       <button onclick="importData()">Import Data</button>
       <button onclick="exportToCSV()">Export to CSV</button>
+      <button onclick="exportInvalidRecords()">Export Invalid Records</button>
+      <button onclick="generateReport()">Generate Management Report</button>
       <button onclick="clearFilters()">Clear Filters</button>
       <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
       <button onclick="toggleReasonConsolidation()">Toggle Consolidated Reasons</button>
@@ -284,6 +451,22 @@
         <div class="stat-value" id="compensatedAmount">0</div>
       </div>
     </div>
+    
+    <div id="errorStats" class="error-stats" style="display: none;">
+      <div class="error-stat">
+        <div class="error-stat-label">Invalid Records</div>
+        <div class="error-stat-value" id="invalidCount">0</div>
+      </div>
+      <div class="error-stat">
+        <div class="error-stat-label">Duplicate Records</div>
+        <div class="error-stat-value" id="duplicateCount">0</div>
+      </div>
+      <div class="error-stat">
+        <div class="error-stat-label">Valid Records</div>
+        <div class="error-stat-value" id="validCount">0</div>
+      </div>
+    </div>
+    
     <div class="dashboard" id="reasonsBreakdown">
       <div class="dashboard-card reasons-card">
         <h4>Reasons Breakdown</h4>
@@ -292,6 +475,21 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <div class="section" id="invalidRecordsSection" style="display: none;">
+    <h3>Invalid Records</h3>
+    <table class="error-table">
+      <thead>
+        <tr>
+          <th>Line #</th>
+          <th>Original Data</th>
+          <th>Error Reason</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody id="invalidRecordsTable"></tbody>
+    </table>
   </div>
 
   <div class="section">
@@ -358,15 +556,100 @@
 
 <div class="notification" id="notification"></div>
 
+<!-- Report Modal -->
+<div id="reportModal" class="report-modal">
+  <div class="report-content" id="reportContent">
+    <span class="close" onclick="closeReport()">&times;</span>
+    <div class="report-header">
+      <h2>Careem Clawback Management Report</h2>
+      <p id="reportDate"></p>
+    </div>
+    <div class="report-section">
+      <h3>Executive Summary</h3>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-label">Total Transactions</div>
+          <div class="stat-value" id="reportTotalRecords">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Deductions</div>
+          <div class="stat-value" id="reportTotalDeductions">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Average per Transaction</div>
+          <div class="stat-value" id="reportAverageRecord">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Refunded Amount</div>
+          <div class="stat-value" id="reportRefundedAmount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Compensated Amount</div>
+          <div class="stat-value" id="reportCompensatedAmount">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="report-section">
+      <h3>Top Reasons for Clawbacks</h3>
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Reason</th>
+            <th>Count</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody id="topReasonsTable"></tbody>
+      </table>
+    </div>
+    <div class="report-section">
+      <h3>Top Branches by Deduction Amount</h3>
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Branch</th>
+            <th>Total Deductions</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody id="topBranchesTable"></tbody>
+      </table>
+    </div>
+    <div class="report-section">
+      <h3>Deductions by Branch</h3>
+      <div class="report-chart">
+        <canvas id="reportDeductionsChart"></canvas>
+      </div>
+    </div>
+    <div class="report-section">
+      <h3>Reasons Distribution</h3>
+      <div class="report-chart">
+        <canvas id="reportReasonsChart"></canvas>
+      </div>
+    </div>
+    <div class="report-footer">
+      <p>Generated by Careem Clawback Tracker on <span id="reportFooterDate"></span></p>
+    </div>
+    <div class="controls">
+      <button onclick="printReport()">Print Report</button>
+      <button onclick="exportToPDF()">Export as PDF</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let transactions = [];
+let invalidRecords = [];
+let duplicateRecords = [];
 let sortColumn = null;
 let sortAscending = true;
 let deductionsChart = null;
 let reasonsChart = null;
+let reportDeductionsChart = null;
+let reportReasonsChart = null;
 let consolidateReasons = false;
 
-// Predefined reasons mapping
+// Predefined reasons mapping in order
 const predefinedReasons = [
   "Food is overcooked/burnt",
   "Missing or unavailable items (Main item)",
@@ -379,7 +662,8 @@ const predefinedReasons = [
   "Penalty for clawback complaint reason",
   "Penalties for Order",
   "Clawback Reversals",
-  "Partner Did not Prepare"
+  "Partner Did not Prepare",
+  "غرامة إضافية"
 ];
 
 // Keywords for each predefined reason
@@ -395,10 +679,23 @@ const reasonKeywords = {
   "Penalty for clawback complaint reason": ["penalty", "clawback", "complaint", "reason"],
   "Penalties for Order": ["penalties", "order"],
   "Clawback Reversals": ["clawback", "reversals"],
-  "Partner Did not Prepare": ["partner", "prepare"]
+  "Partner Did not Prepare": ["partner", "prepare"],
+  "غرامة إضافية": ["غرامة", "إضافية", "penalty", "additional"]
+};
+
+// Special reason mapping for specific consolidations
+const specialReasonMapping = {
+  "Penalty for clawback complaint reason": "Penalty for clawback complaint reason",
+  "Missing or unavailable items (Main item)": "Missing or unavailable items (Main item)",
+  "غرامة إضافية": "Additional Penalty"
 };
 
 function mapReason(rawReason) {
+  // First check if it's a special mapping
+  if (specialReasonMapping[rawReason]) {
+    return specialReasonMapping[rawReason];
+  }
+  
   // Normalize the raw reason
   const normalized = rawReason.toLowerCase().replace(/[^a-z0-9\s]/g, '');
   
@@ -406,7 +703,7 @@ function mapReason(rawReason) {
   for (const reason of predefinedReasons) {
     const keywords = reasonKeywords[reason];
     for (const keyword of keywords) {
-      if (normalized.includes(keyword)) {
+      if (normalized.includes(keyword) || rawReason.includes(keyword)) {
         return reason;
       }
     }
@@ -414,6 +711,11 @@ function mapReason(rawReason) {
   
   // If no match, return the original reason
   return rawReason;
+}
+
+function getReasonOrderIndex(reason) {
+  // Return the index of the reason in the predefined list
+  return predefinedReasons.indexOf(reason);
 }
 
 function formatDate(dateStr) {
@@ -461,19 +763,25 @@ function importFromCSV() {
 
 function parseData(lines) {
   transactions = [];
+  invalidRecords = [];
+  duplicateRecords = [];
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  let validCount = 0;
-  let invalidCount = 0;
-  let duplicateCount = 0;
   const seenKeys = new Set();
   
   console.log(`Processing ${lines.length} lines of data`);
 
   for (let i = 0; i < lines.length; i++) {
+    const lineNum = i + 1;
     let cols = lines[i].trim().split(/\t/);
+    
+    // Check for invalid data format
     if (cols.length < 7) {
-      invalidCount++;
-      console.log(`Row ${i+1} invalid: Not enough columns. Expected 7, got ${cols.length}: ${lines[i]}`);
+      invalidRecords.push({
+        line: lineNum,
+        data: lines[i],
+        reason: "Invalid Format",
+        details: `Expected 7 columns, got ${cols.length}`
+      });
       continue;
     }
 
@@ -481,20 +789,17 @@ function parseData(lines) {
     let billableId = cols[1];
     let date = formatDate(cols[2]);
     let amount = parseFloat(cols[3]);
+    
+    // Check for invalid amount
     if (isNaN(amount)) {
-      invalidCount++;
-      console.log(`Row ${i+1} invalid: Invalid amount - ${cols[3]}`);
+      invalidRecords.push({
+        line: lineNum,
+        data: lines[i],
+        reason: "Invalid Amount",
+        details: `Amount '${cols[3]}' is not a valid number`
+      });
       continue;
     }
-
-    // Check for duplicates
-    const key = `${referenceId}-${billableId}`;
-    if (seenKeys.has(key)) {
-      duplicateCount++;
-      console.log(`Row ${i+1} duplicate: ${referenceId}-${billableId}`);
-      continue;
-    }
-    seenKeys.add(key);
 
     // Extract the full description
     let fullDescription = cols[4].replace(/__/g, " ");
@@ -505,6 +810,27 @@ function parseData(lines) {
     let category = cols[5];
     let merchantArea = cols[6];
 
+    // Create a unique key that includes the reason for penalty records
+    const isPenalty = rawReason.includes("غرامة إضافية") || 
+                     rawReason.includes("Penalty") || 
+                     rawReason.includes("penalty");
+    
+    const key = isPenalty 
+      ? `${referenceId}-${billableId}-${rawReason}` 
+      : `${referenceId}-${billableId}`;
+
+    // Check for duplicates
+    if (seenKeys.has(key)) {
+      duplicateRecords.push({
+        line: lineNum,
+        data: lines[i],
+        reason: "Duplicate Record",
+        details: `Duplicate of line ${Array.from(seenKeys).indexOf(key) + 1}`
+      });
+      continue;
+    }
+    seenKeys.add(key);
+
     transactions.push({
       referenceId: referenceId,
       id: billableId,
@@ -513,15 +839,53 @@ function parseData(lines) {
       description: description,
       rawDescription: fullDescription,
       area: merchantArea,
-      status: "Refunded"
+      status: "Refunded",
+      isPenalty: isPenalty
     });
-    validCount++;
   }
 
-  console.log(`Processed ${lines.length} lines: ${validCount} valid, ${invalidCount} invalid, ${duplicateCount} duplicates`);
+  // Display invalid records section if there are any
+  if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
+    document.getElementById("invalidRecordsSection").style.display = "block";
+    document.getElementById("errorStats").style.display = "flex";
+    document.getElementById("invalidCount").textContent = invalidRecords.length;
+    document.getElementById("duplicateCount").textContent = duplicateRecords.length;
+    document.getElementById("validCount").textContent = transactions.length;
+    
+    // Populate invalid records table
+    const invalidTable = document.getElementById("invalidRecordsTable");
+    invalidTable.innerHTML = "";
+    
+    // Add invalid records
+    invalidRecords.forEach(record => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${record.line}</td>
+        <td class="error-details">${record.data}</td>
+        <td class="error-reason">${record.reason}</td>
+        <td class="error-details">${record.details}</td>
+      `;
+      invalidTable.appendChild(row);
+    });
+    
+    // Add duplicate records
+    duplicateRecords.forEach(record => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${record.line}</td>
+        <td class="error-details">${record.data}</td>
+        <td class="error-reason">${record.reason}</td>
+        <td class="error-details">${record.details}</td>
+      `;
+      invalidTable.appendChild(row);
+    });
+  } else {
+    document.getElementById("invalidRecordsSection").style.display = "none";
+    document.getElementById("errorStats").style.display = "none";
+  }
 
   if (transactions.length === 0) {
-    showNotification(`No valid transactions found. Total rows: ${lines.length}, Invalid: ${invalidCount}, Duplicates: ${duplicateCount}`, true);
+    showNotification(`No valid transactions found. Total rows: ${lines.length}, Invalid: ${invalidRecords.length}, Duplicates: ${duplicateRecords.length}`, true);
   } else {
     saveData();
     renderTable(transactions);
@@ -529,7 +893,7 @@ function parseData(lines) {
     renderDeductionsChart(transactions);
     renderReasonsChart(transactions);
     updateDashboard(transactions);
-    showNotification(`Data imported successfully. Total rows: ${lines.length}, Valid: ${validCount}, Invalid: ${invalidCount}, Duplicates: ${duplicateCount}`);
+    showNotification(`Data imported successfully. Total rows: ${lines.length}, Valid: ${transactions.length}, Invalid: ${invalidRecords.length}, Duplicates: ${duplicateRecords.length}`);
   }
 }
 
@@ -551,13 +915,25 @@ function updateDashboard(data) {
   document.getElementById("refundedAmount").textContent = `(${Math.abs(statusSummary['Refunded'] || 0).toFixed(2)})`;
   document.getElementById("compensatedAmount").textContent = `(${Math.abs(statusSummary['Compensated'] || 0).toFixed(2)})`;
 
-  // Update reasons breakdown
+  // Update reasons breakdown - sort by predefined order
   const reasonsList = document.getElementById("reasonsList");
   reasonsList.innerHTML = "";
   
   const consolidatedReasons = consolidateReasons ? consolidateReasonSummary(reasonSummary) : reasonSummary;
   
-  Object.entries(consolidatedReasons).forEach(([reason, count]) => {
+  // Sort reasons by predefined order
+  const sortedReasons = Object.entries(consolidatedReasons)
+    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]))
+    .filter(([reason]) => getReasonOrderIndex(reason) !== -1); // Only include predefined reasons
+  
+  // Add any remaining reasons (not in predefined list)
+  const remainingReasons = Object.entries(consolidatedReasons)
+    .filter(([reason]) => getReasonOrderIndex(reason) === -1);
+  
+  // Combine and sort
+  const allReasons = [...sortedReasons, ...remainingReasons];
+  
+  allReasons.forEach(([reason, count]) => {
     const li = document.createElement("li");
     li.innerHTML = `<span class="reason">${reason}</span>: ${count}`;
     reasonsList.appendChild(li);
@@ -568,9 +944,12 @@ function consolidateReasonSummary(rawSummary) {
   const consolidated = {};
   Object.entries(rawSummary).forEach(([reason, count]) => {
     let normalized = reason.toLowerCase();
-    if (normalized.includes("claw")) {
+    // Special mapping for specific reasons
+    if (specialReasonMapping[reason]) {
+      consolidated[reason] = (consolidated[reason] || 0) + count;
+    } else if (normalized.includes("claw")) {
       consolidated["Clawback"] = (consolidated["Clawback"] || 0) + count;
-    } else if (normalized.includes("penalt")) {
+    } else if (normalized.includes("penalt") || reason.includes("غرامة")) {
       consolidated["Penalty"] = (consolidated["Penalty"] || 0) + count;
     } else {
       consolidated[reason] = (consolidated[reason] || 0) + count;
@@ -611,10 +990,11 @@ function renderBranchSummary(data) {
   data.forEach(tx => {
     const area = tx.area || "Unknown";
     if (!branchGroups[area]) {
-      branchGroups[area] = { count: 0, reasons: new Set() };
+      branchGroups[area] = { count: 0, reasons: new Set(), total: 0 };
     }
     branchGroups[area].count++;
     branchGroups[area].reasons.add(tx.description);
+    branchGroups[area].total += Math.abs(tx.amount);
   });
 
   Object.keys(branchGroups).sort().forEach(area => {
@@ -671,8 +1051,18 @@ function renderReasonsChart(data) {
     reasonSummary = consolidateReasonSummary(reasonSummary);
   }
 
-  const labels = Object.keys(reasonSummary);
-  const counts = Object.values(reasonSummary);
+  // Sort reasons by predefined order for chart
+  const sortedReasons = Object.entries(reasonSummary)
+    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]))
+    .filter(([reason]) => getReasonOrderIndex(reason) !== -1);
+  
+  const remainingReasons = Object.entries(reasonSummary)
+    .filter(([reason]) => getReasonOrderIndex(reason) === -1);
+  
+  const allReasons = [...sortedReasons, ...remainingReasons];
+  
+  const labels = allReasons.map(([reason]) => reason);
+  const counts = allReasons.map(([, count]) => count);
 
   if (reasonsChart) reasonsChart.destroy();
   reasonsChart = new Chart(ctx, {
@@ -803,6 +1193,30 @@ function exportToCSV() {
   URL.revokeObjectURL(url);
 }
 
+function exportInvalidRecords() {
+  let csv = "Line,Original Data,Error Reason,Details\n";
+  
+  // Add invalid records
+  invalidRecords.forEach(record => {
+    csv += `${record.line},"${record.data}",${record.reason},"${record.details}"\n`;
+  });
+  
+  // Add duplicate records
+  duplicateRecords.forEach(record => {
+    csv += `${record.line},"${record.data}",${record.reason},"${record.details}"\n`;
+  });
+  
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "invalid_records.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showNotification(`Exported ${invalidRecords.length + duplicateRecords.length} invalid/duplicate records`);
+}
+
 function saveData() {
   localStorage.setItem("transactions", JSON.stringify(transactions));
 }
@@ -830,6 +1244,331 @@ function toggleDarkMode() {
   });
   if (deductionsChart) deductionsChart.update();
   if (reasonsChart) reasonsChart.update();
+}
+
+// Report functions
+function generateReport() {
+  // Calculate report data
+  let total = 0;
+  let statusSummary = { Refunded: 0, Compensated: 0 };
+  let reasonSummary = {};
+  let branchSummary = {};
+
+  transactions.forEach(tx => {
+    total += tx.amount;
+    statusSummary[tx.status] = (statusSummary[tx.status] || 0) + tx.amount;
+    reasonSummary[tx.description] = (reasonSummary[tx.description] || 0) + 1;
+    
+    if (!branchSummary[tx.area]) {
+      branchSummary[tx.area] = { total: 0, count: 0 };
+    }
+    branchSummary[tx.area].total += Math.abs(tx.amount);
+    branchSummary[tx.area].count += 1;
+  });
+
+  // Update report header date
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  document.getElementById("reportDate").textContent = `Report Date: ${formattedDate}`;
+  document.getElementById("reportFooterDate").textContent = formattedDate;
+
+  // Update executive summary
+  document.getElementById("reportTotalRecords").textContent = transactions.length;
+  document.getElementById("reportTotalDeductions").textContent = `(${Math.abs(total).toFixed(2)})`;
+  document.getElementById("reportAverageRecord").textContent = `(${transactions.length ? Math.abs(total / transactions.length).toFixed(2) : 0})`;
+  document.getElementById("reportRefundedAmount").textContent = `(${Math.abs(statusSummary['Refunded'] || 0).toFixed(2)})`;
+  document.getElementById("reportCompensatedAmount").textContent = `(${Math.abs(statusSummary['Compensated'] || 0).toFixed(2)})`;
+
+  // Generate top reasons table with special consolidation
+  const reasonsList = document.getElementById("topReasonsTable");
+  reasonsList.innerHTML = "";
+  
+  // Apply special consolidation for report
+  let reportReasonSummary = {};
+  Object.entries(reasonSummary).forEach(([reason, count]) => {
+    // Special mapping for specific reasons
+    if (specialReasonMapping[reason]) {
+      reportReasonSummary[reason] = (reportReasonSummary[reason] || 0) + count;
+    } else if (reason.includes("غرامة") || reason.includes("Penalty")) {
+      reportReasonSummary["Additional Penalty"] = (reportReasonSummary["Additional Penalty"] || 0) + count;
+    } else {
+      reportReasonSummary[reason] = (reportReasonSummary[reason] || 0) + count;
+    }
+  });
+  
+  // Sort reasons by predefined order for report
+  const sortedReasons = Object.entries(reportReasonSummary)
+    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]))
+    .filter(([reason]) => getReasonOrderIndex(reason) !== -1);
+  
+  const remainingReasons = Object.entries(reportReasonSummary)
+    .filter(([reason]) => getReasonOrderIndex(reason) === -1);
+  
+  const allReasons = [...sortedReasons, ...remainingReasons];
+  
+  allReasons.forEach(([reason, count]) => {
+    const percentage = ((count / transactions.length) * 100).toFixed(1);
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${reason}</td>
+      <td>${count}</td>
+      <td>${percentage}%</td>
+    `;
+    reasonsList.appendChild(row);
+  });
+
+  // Generate top branches table
+  const branchesList = document.getElementById("topBranchesTable");
+  branchesList.innerHTML = "";
+  
+  const sortedBranches = Object.entries(branchSummary)
+    .sort((a, b) => b[1].total - a[1].total)
+    .slice(0, 5);
+  
+  const totalBranchDeductions = Object.values(branchSummary).reduce((sum, branch) => sum + branch.total, 0);
+  
+  sortedBranches.forEach(([branch, data]) => {
+    const percentage = ((data.total / totalBranchDeductions) * 100).toFixed(1);
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${branch}</td>
+      <td>(${data.total.toFixed(2)})</td>
+      <td>${percentage}%</td>
+    `;
+    branchesList.appendChild(row);
+  });
+
+  // Generate report charts
+  renderReportCharts();
+
+  // Show the report modal
+  document.getElementById("reportModal").style.display = "block";
+}
+
+function renderReportCharts() {
+  // Deductions chart
+  const deductionsCtx = document.getElementById("reportDeductionsChart").getContext("2d");
+  let branchTotals = {};
+  transactions.forEach(tx => {
+    const area = tx.area || "Unknown";
+    branchTotals[area] = (branchTotals[area] || 0) + Math.abs(tx.amount);
+  });
+
+  const labels = Object.keys(branchTotals);
+  const amounts = Object.values(branchTotals);
+
+  if (reportDeductionsChart) reportDeductionsChart.destroy();
+  reportDeductionsChart = new Chart(deductionsCtx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Total Deductions by Branch",
+        data: amounts,
+        backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: "Amount (AED)" } },
+        x: { title: { display: true, text: "Branch" } }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  // Reasons chart with special consolidation
+  const reasonsCtx = document.getElementById("reportReasonsChart").getContext("2d");
+  let reportReasonSummary = {};
+  transactions.forEach(tx => {
+    // Special mapping for specific reasons
+    if (specialReasonMapping[tx.description]) {
+      reportReasonSummary[tx.description] = (reportReasonSummary[tx.description] || 0) + 1;
+    } else if (tx.description.includes("غرامة") || tx.description.includes("Penalty")) {
+      reportReasonSummary["Additional Penalty"] = (reportReasonSummary["Additional Penalty"] || 0) + 1;
+    } else {
+      reportReasonSummary[tx.description] = (reportReasonSummary[tx.description] || 0) + 1;
+    }
+  });
+
+  // Sort reasons by predefined order for report chart
+  const sortedReasons = Object.entries(reportReasonSummary)
+    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]))
+    .filter(([reason]) => getReasonOrderIndex(reason) !== -1);
+  
+  const remainingReasons = Object.entries(reportReasonSummary)
+    .filter(([reason]) => getReasonOrderIndex(reason) === -1);
+  
+  const allReasons = [...sortedReasons, ...remainingReasons];
+  
+  const reasonLabels = allReasons.map(([reason]) => reason);
+  const reasonCounts = allReasons.map(([, count]) => count);
+
+  if (reportReasonsChart) reportReasonsChart.destroy();
+  reportReasonsChart = new Chart(reasonsCtx, {
+    type: "pie",
+    data: {
+      labels: reasonLabels,
+      datasets: [{
+        label: "Reasons Distribution",
+        data: reasonCounts,
+        backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderColor: ["#fff"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: "right" }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+}
+
+function closeReport() {
+  document.getElementById("reportModal").style.display = "none";
+}
+
+function printReport() {
+  window.print();
+}
+
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+  
+  // Add title
+  pdf.setFontSize(20);
+  pdf.text('Careem Clawback Management Report', 105, 20, { align: 'center' });
+  
+  // Add date
+  pdf.setFontSize(12);
+  const today = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  pdf.text(`Report Date: ${today}`, 105, 30, { align: 'center' });
+  
+  // Add executive summary
+  pdf.setFontSize(16);
+  pdf.text('Executive Summary', 20, 50);
+  
+  pdf.setFontSize(12);
+  const executiveSummary = [
+    `Total Transactions: ${transactions.length}`,
+    `Total Deductions: (${Math.abs(transactions.reduce((sum, tx) => sum + tx.amount, 0)).toFixed(2)})`,
+    `Average per Transaction: (${transactions.length ? Math.abs(transactions.reduce((sum, tx) => sum + tx.amount, 0) / transactions.length).toFixed(2) : 0})`,
+    `Refunded Amount: (${Math.abs(transactions.filter(tx => tx.status === 'Refunded').reduce((sum, tx) => sum + tx.amount, 0)).toFixed(2)})`,
+    `Compensated Amount: (${Math.abs(transactions.filter(tx => tx.status === 'Compensated').reduce((sum, tx) => sum + tx.amount, 0)).toFixed(2)})`
+  ];
+  
+  let yPosition = 60;
+  executiveSummary.forEach(line => {
+    pdf.text(line, 20, yPosition);
+    yPosition += 10;
+  });
+  
+  // Add error summary if there are invalid records
+  if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
+    pdf.setFontSize(16);
+    pdf.text('Data Quality Issues', 20, yPosition + 10);
+    pdf.setFontSize(12);
+    yPosition += 20;
+    
+    const errorSummary = [
+      `Invalid Records: ${invalidRecords.length}`,
+      `Duplicate Records: ${duplicateRecords.length}`,
+      `Total Issues: ${invalidRecords.length + duplicateRecords.length}`
+    ];
+    
+    errorSummary.forEach(line => {
+      pdf.text(line, 30, yPosition);
+      yPosition += 10;
+    });
+    
+    yPosition += 10;
+  }
+  
+  // Add top reasons with special consolidation
+  pdf.setFontSize(16);
+  pdf.text('Top Reasons for Clawbacks', 20, yPosition + 10);
+  
+  pdf.setFontSize(12);
+  yPosition += 20;
+  
+  let reasonSummary = {};
+  transactions.forEach(tx => {
+    reasonSummary[tx.description] = (reasonSummary[tx.description] || 0) + 1;
+  });
+  
+  // Apply special consolidation
+  let reportReasonSummary = {};
+  Object.entries(reasonSummary).forEach(([reason, count]) => {
+    if (specialReasonMapping[reason]) {
+      reportReasonSummary[reason] = (reportReasonSummary[reason] || 0) + count;
+    } else if (reason.includes("غرامة") || reason.includes("Penalty")) {
+      reportReasonSummary["Additional Penalty"] = (reportReasonSummary["Additional Penalty"] || 0) + count;
+    } else {
+      reportReasonSummary[reason] = (reportReasonSummary[reason] || 0) + count;
+    }
+  });
+  
+  // Sort reasons by predefined order for PDF
+  const sortedReasons = Object.entries(reportReasonSummary)
+    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]))
+    .filter(([reason]) => getReasonOrderIndex(reason) !== -1);
+  
+  const remainingReasons = Object.entries(reportReasonSummary)
+    .filter(([reason]) => getReasonOrderIndex(reason) === -1);
+  
+  const allReasons = [...sortedReasons, ...remainingReasons];
+  
+  allReasons.forEach(([reason, count]) => {
+    const percentage = ((count / transactions.length) * 100).toFixed(1);
+    pdf.text(`${reason}: ${count} (${percentage}%)`, 30, yPosition);
+    yPosition += 10;
+  });
+  
+  // Add top branches
+  pdf.setFontSize(16);
+  pdf.text('Top Branches by Deduction Amount', 20, yPosition + 10);
+  
+  pdf.setFontSize(12);
+  yPosition += 20;
+  
+  let branchSummary = {};
+  transactions.forEach(tx => {
+    if (!branchSummary[tx.area]) {
+      branchSummary[tx.area] = { total: 0, count: 0 };
+    }
+    branchSummary[tx.area].total += Math.abs(tx.amount);
+    branchSummary[tx.area].count += 1;
+  });
+  
+  const sortedBranches = Object.entries(branchSummary)
+    .sort((a, b) => b[1].total - a[1].total)
+    .slice(0, 5);
+  
+  const totalBranchDeductions = Object.values(branchSummary).reduce((sum, branch) => sum + branch.total, 0);
+  
+  sortedBranches.forEach(([branch, data]) => {
+    const percentage = ((data.total / totalBranchDeductions) * 100).toFixed(1);
+    pdf.text(`${branch}: (${data.total.toFixed(2)}) (${percentage}%)`, 30, yPosition);
+    yPosition += 10;
+  });
+  
+  // Save the PDF
+  pdf.save('clawback_management_report.pdf');
 }
 
 window.onload = loadData;
