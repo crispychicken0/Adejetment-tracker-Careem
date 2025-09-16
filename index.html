@@ -385,6 +385,41 @@
     font-weight: bold;
     color: #e74c3c;
   }
+  .reason-filter {
+    position: relative;
+  }
+  .reason-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+  body.dark-mode .reason-dropdown {
+    background: #444;
+    border-color: #555;
+  }
+  .reason-option {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .reason-option:hover {
+    background: #f0f0f0;
+  }
+  body.dark-mode .reason-option:hover {
+    background: #555;
+  }
+  .reason-option.selected {
+    background: var(--primary);
+    color: white;
+  }
   @media (max-width: 600px) {
     table { 
       display: block; 
@@ -504,6 +539,12 @@
           <option value="Refunded">Refunded</option>
           <option value="Compensated">Compensated</option>
         </select>
+      </label>
+      <label>Reason: 
+        <div class="reason-filter">
+          <input type="text" id="filterReason" placeholder="Select or type reason" readonly onclick="toggleReasonDropdown()">
+          <div class="reason-dropdown" id="reasonDropdown"></div>
+        </div>
       </label>
       <label>From Date: <input type="date" id="filterDateFrom" onchange="applyFilters()"></label>
       <label>To Date: <input type="date" id="filterDateTo" onchange="applyFilters()"></label>
@@ -648,6 +689,8 @@ let reasonsChart = null;
 let reportDeductionsChart = null;
 let reportReasonsChart = null;
 let consolidateReasons = false;
+let reasonsList = [];
+let selectedReason = "";
 
 // Predefined reasons mapping in order
 const predefinedReasons = [
@@ -844,6 +887,13 @@ function parseData(lines) {
     });
   }
 
+  // Generate unique reasons list
+  reasonsList = [...new Set(transactions.map(tx => tx.description))];
+  reasonsList.sort((a, b) => getReasonOrderIndex(a) - getReasonOrderIndex(b));
+  
+  // Populate reason dropdown
+  populateReasonDropdown();
+
   // Display invalid records section if there are any
   if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
     document.getElementById("invalidRecordsSection").style.display = "block";
@@ -897,6 +947,39 @@ function parseData(lines) {
   }
 }
 
+function populateReasonDropdown() {
+  const dropdown = document.getElementById("reasonDropdown");
+  dropdown.innerHTML = "";
+  
+  // Add "All" option
+  const allOption = document.createElement("div");
+  allOption.className = "reason-option" + (selectedReason === "" ? " selected" : "");
+  allOption.textContent = "All Reasons";
+  allOption.onclick = () => selectReason("");
+  dropdown.appendChild(allOption);
+  
+  // Add individual reasons
+  reasonsList.forEach(reason => {
+    const option = document.createElement("div");
+    option.className = "reason-option" + (selectedReason === reason ? " selected" : "");
+    option.textContent = reason;
+    option.onclick = () => selectReason(reason);
+    dropdown.appendChild(option);
+  });
+}
+
+function toggleReasonDropdown() {
+  const dropdown = document.getElementById("reasonDropdown");
+  dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+function selectReason(reason) {
+  selectedReason = reason;
+  document.getElementById("filterReason").value = reason || "All Reasons";
+  document.getElementById("reasonDropdown").style.display = "none";
+  applyFilters();
+}
+
 function updateDashboard(data) {
   let total = 0;
   let statusSummary = { Refunded: 0, Compensated: 0 };
@@ -916,8 +999,8 @@ function updateDashboard(data) {
   document.getElementById("compensatedAmount").textContent = `(${Math.abs(statusSummary['Compensated'] || 0).toFixed(2)})`;
 
   // Update reasons breakdown - sort by predefined order
-  const reasonsList = document.getElementById("reasonsList");
-  reasonsList.innerHTML = "";
+  const reasonsListEl = document.getElementById("reasonsList");
+  reasonsListEl.innerHTML = "";
   
   const consolidatedReasons = consolidateReasons ? consolidateReasonSummary(reasonSummary) : reasonSummary;
   
@@ -936,7 +1019,7 @@ function updateDashboard(data) {
   allReasons.forEach(([reason, count]) => {
     const li = document.createElement("li");
     li.innerHTML = `<span class="reason">${reason}</span>: ${count}`;
-    reasonsList.appendChild(li);
+    reasonsListEl.appendChild(li);
   });
 }
 
@@ -1090,6 +1173,7 @@ function applyFilters() {
   const idFilter = document.getElementById("filterId").value.trim().toLowerCase();
   const areaFilter = document.getElementById("filterArea").value.trim().toLowerCase();
   const statusFilter = document.getElementById("filterStatus").value;
+  const reasonFilter = selectedReason;
   const dateFrom = document.getElementById("filterDateFrom").value;
   const dateTo = document.getElementById("filterDateTo").value;
 
@@ -1097,11 +1181,15 @@ function applyFilters() {
     const txDate = new Date(tx.date);
     const fromDate = dateFrom ? new Date(dateFrom) : null;
     const toDate = dateTo ? new Date(dateTo) : null;
+    
+    const matchesReason = reasonFilter === "" || tx.description === reasonFilter;
+    
     return (
       (refIdFilter === "" || tx.referenceId.toLowerCase().includes(refIdFilter)) &&
       (idFilter === "" || tx.id.toLowerCase().includes(idFilter)) &&
       (areaFilter === "" || tx.area.toLowerCase().includes(areaFilter)) &&
       (statusFilter === "" || tx.status === statusFilter) &&
+      matchesReason &&
       (!fromDate || txDate >= fromDate) &&
       (!toDate || txDate <= toDate)
     );
@@ -1119,8 +1207,16 @@ function clearFilters() {
   document.getElementById("filterId").value = "";
   document.getElementById("filterArea").value = "";
   document.getElementById("filterStatus").value = "";
+  document.getElementById("filterReason").value = "All Reasons";
+  selectedReason = "";
   document.getElementById("filterDateFrom").value = "";
   document.getElementById("filterDateTo").value = "";
+  
+  // Clear reason dropdown selection
+  const dropdown = document.getElementById("reasonDropdown");
+  dropdown.innerHTML = "";
+  populateReasonDropdown();
+  
   renderTable(transactions);
   renderBranchSummary(transactions);
   renderDeductionsChart(transactions);
@@ -1226,6 +1322,13 @@ function loadData() {
   if (saved) {
     try {
       transactions = JSON.parse(saved);
+      // Generate unique reasons list
+      reasonsList = [...new Set(transactions.map(tx => tx.description))];
+      reasonsList.sort((a, b) => getReasonOrderIndex(a) - getReasonOrderIndex(b));
+      
+      // Populate reason dropdown
+      populateReasonDropdown();
+      
       renderTable(transactions);
       renderBranchSummary(transactions);
       renderDeductionsChart(transactions);
