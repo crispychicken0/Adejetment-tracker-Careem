@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Careem Clawback Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --primary: #4CAF50;
+    --secondary: #2196F3;
+    --bg-light: #f9f9f9;
+    --bg-dark: #333;
+    --text-light: #333;
+    --text-dark: #fff;
+  }
+  body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    margin: 20px; 
+    background: var(--bg-light); 
+    color: var(--text-light); 
+    transition: background 0.3s, color 0.3s;
+  }
+  body.dark-mode {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
+  h2, h3 { margin-bottom: 15px; font-weight: 500; }
+  .container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    display: grid; 
+    gap: 20px; 
+  }
+  .dashboard { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 15px; 
+    margin-bottom: 20px; 
+  }
+  .dashboard-card { 
+    background: #fff; 
+    border-radius: 8px; 
+    padding: 15px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    text-align: center; 
+  }
+  body.dark-mode .dashboard-card {
+    background: #444;
+  }
+  .dashboard-card h4 { 
+    margin: 0 0 10px; 
+    font-size: 1.1em; 
+    color: var(--primary); 
+  }
+  .dashboard-card p { 
+    margin: 0; 
+    font-size: 1.5em; 
+    font-weight: bold; 
+  }
+  .reasons-card { 
+    text-align: left; 
+    max-height: 200px; 
+    overflow-y: auto; 
+  }
+  .reasons-card ul { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+  }
+  .reasons-card li { 
+    padding: 5px 0; 
+    border-bottom: 1px solid #eee; 
+  }
+  body.dark-mode .reasons-card li {
+    border-bottom: 1px solid #555;
+  }
+  .reasons-card li:last-child { 
+    border-bottom: none; 
+  }
+  .reasons-card .reason { 
+    font-weight: bold; 
+  }
+  table { 
+    border-collapse: collapse; 
+    width: 100%; 
+    margin-top: 20px; 
+    background: #fff; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+  }
+  body.dark-mode table {
+    background: #444;
+    color: #fff;
+  }
+  th, td { 
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    text-align: center; 
+  }
+  body.dark-mode th, body.dark-mode td {
+    border-color: #555;
+  }
+  th { 
+    background: #f4f4f4; 
+    cursor: pointer; 
+    font-weight: bold; 
+  }
+  body.dark-mode th {
+    background: #555;
+  }
+  th:hover { 
+    background: #e0e0e0; 
+  }
+  body.dark-mode th:hover {
+    background: #666;
+  }
+  .negative { 
+    color: #e74c3c; 
+    font-weight: bold; 
+  }
+  .controls { 
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+  }
+  input, textarea, select { 
+    padding: 8px; 
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    width: 100%; 
+    box-sizing: border-box; 
+  }
+  body.dark-mode input, 
+  body.dark-mode textarea, 
+  body.dark-mode select {
+    background: #555;
+    color: #fff;
+    border-color: #666;
+  }
+  textarea { 
+    resize: vertical; 
+  }
+  button { 
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    padding: 8px 16px; 
+    cursor: pointer; 
+    border-radius: 4px; 
+    transition: background 0.2s; 
+  }
+  button:disabled { 
+    background: #ccc; 
+    cursor: not-allowed; 
+  }
+  button:hover:not(:disabled) { 
+    background: #45a049; 
+  }
+  .section { 
+    margin-top: 40px; 
+    padding-top: 20px; 
+    border-top: 2px solid #ddd; 
+  }
+  body.dark-mode .section {
+    border-top: 2px solid #555;
+  }
+  .notification { 
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    padding: 10px 20px; 
+    background: #4CAF50; 
+    color: white; 
+    border-radius: 4px; 
+    display: none; 
+    z-index: 1000; 
+    opacity: 0; 
+    transition: opacity 0.5s;
+  }
+  .notification.show { 
+    opacity: 1; 
+    display: block; 
+  }
+  .notification.error { 
+    background: #e74c3c; 
+  }
+  canvas { 
+    max-width: 100%; 
+    margin-top: 20px; 
+    background: #fff; 
+    border-radius: 8px; 
+    padding: 10px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+  }
+  body.dark-mode canvas {
+    background: #444;
+  }
+  .stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: #f0f0f0;
+    border-radius: 4px;
+    padding: 10px;
+    flex: 1;
+    min-width: 150px;
+  }
+  body.dark-mode .stat-card {
+    background: #555;
+  }
+  .stat-label {
+    font-size: 0.9em;
+    color: #666;
+  }
+  body.dark-mode .stat-label {
+    color: #ccc;
+  }
+  .stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--primary);
+  }
+  @media (max-width: 600px) {
+    table { 
+      display: block; 
+      overflow-x: auto; 
+    }
+    .controls { 
+      flex-direction: column; 
+    }
+    .dashboard { 
+      grid-template-columns: 1fr; 
+    }
+    .stats-container {
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Careem Clawback Tracker</h2>
+
+  <div class="section">
+    <h3>Import Data</h3>
+    <textarea id="rawData" rows="6" placeholder="Paste clawback data here (e.g., REF123&#9;BILL456&#9;9/16/2025&#9;-50.00&#9;Food__Customer__Quality Issues__Food is overcooked/burnt&#9;CLAWBACK&#9;Downtown Dubai)"></textarea>
+    <input type="file" id="csvFile" accept=".csv" onchange="importFromCSV()">
+    <div class="controls">
+      <button onclick="importData()">Import Data</button>
+      <button onclick="exportToCSV()">Export to CSV</button>
+      <button onclick="clearFilters()">Clear Filters</button>
+      <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+      <button onclick="toggleReasonConsolidation()">Toggle Consolidated Reasons</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Dashboard</h3>
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-label">Total Records</div>
+        <div class="stat-value" id="totalRecords">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Deductions</div>
+        <div class="stat-value" id="totalDeductions">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average per Record</div>
+        <div class="stat-value" id="averageRecord">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Refunded Amount</div>
+        <div class="stat-value" id="refundedAmount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Compensated Amount</div>
+        <div class="stat-value" id="compensatedAmount">0</div>
+      </div>
+    </div>
+    <div class="dashboard" id="reasonsBreakdown">
+      <div class="dashboard-card reasons-card">
+        <h4>Reasons Breakdown</h4>
+        <ul id="reasonsList">
+          <li>No data available</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Filters</h3>
+    <div class="controls">
+      <label>Reference ID: <input type="text" id="filterRefId" onkeyup="applyFilters()"></label>
+      <label>Billable ID: <input type="text" id="filterId" onkeyup="applyFilters()"></label>
+      <label>Merchant Area: <input type="text" id="filterArea" onkeyup="applyFilters()"></label>
+      <label>Status: 
+        <select id="filterStatus" onchange="applyFilters()">
+          <option value="">All</option>
+          <option value="Refunded">Refunded</option>
+          <option value="Compensated">Compensated</option>
+        </select>
+      </label>
+      <label>From Date: <input type="date" id="filterDateFrom" onchange="applyFilters()"></label>
+      <label>To Date: <input type="date" id="filterDateTo" onchange="applyFilters()"></label>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Transactions</h3>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable('referenceId')">Reference ID</th>
+          <th onclick="sortTable('id')">Billable ID</th>
+          <th onclick="sortTable('date')">Date</th>
+          <th onclick="sortTable('amount')">Amount</th>
+          <th onclick="sortTable('description')">Description</th>
+          <th onclick="sortTable('area')">Merchant Area</th>
+          <th onclick="sortTable('status')">Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>Branch Summary (Orders and Reasons per Branch)</h3>
+    <table id="branchTable">
+      <thead>
+        <tr>
+          <th>Branch</th>
+          <th>Order Count</th>
+          <th>Reasons</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>Total Deductions by Branch</h3>
+    <canvas id="deductionsChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h3>Reasons Distribution</h3>
+    <canvas id="reasonsChart"></canvas>
+  </div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<script>
+let transactions = [];
+let sortColumn = null;
+let sortAscending = true;
+let deductionsChart = null;
+let reasonsChart = null;
+let consolidateReasons = false;
+
+// Predefined reasons mapping
+const predefinedReasons = [
+  "Food is overcooked/burnt",
+  "Missing or unavailable items (Main item)",
+  "Wrong item sent",
+  "Spilled / damaged",
+  "Hair in the food",
+  "Foul Smell",
+  "My Food is not edible (SelfServe)",
+  "Instructions not followed",
+  "Penalty for clawback complaint reason",
+  "Penalties for Order",
+  "Clawback Reversals",
+  "Partner Did not Prepare"
+];
+
+// Keywords for each predefined reason
+const reasonKeywords = {
+  "Food is overcooked/burnt": ["overcooked", "burnt", "burnt", "overcooked"],
+  "Missing or unavailable items (Main item)": ["missing", "unavailable", "items", "main"],
+  "Wrong item sent": ["wrong", "item", "sent"],
+  "Spilled / damaged": ["spilled", "damaged"],
+  "Hair in the food": ["hair", "food"],
+  "Foul Smell": ["foul", "smell"],
+  "My Food is not edible (SelfServe)": ["edible", "selfserve"],
+  "Instructions not followed": ["instructions", "followed"],
+  "Penalty for clawback complaint reason": ["penalty", "clawback", "complaint", "reason"],
+  "Penalties for Order": ["penalties", "order"],
+  "Clawback Reversals": ["clawback", "reversals"],
+  "Partner Did not Prepare": ["partner", "prepare"]
+};
+
+function mapReason(rawReason) {
+  // Normalize the raw reason
+  const normalized = rawReason.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+  
+  // Check against predefined reasons
+  for (const reason of predefinedReasons) {
+    const keywords = reasonKeywords[reason];
+    for (const keyword of keywords) {
+      if (normalized.includes(keyword)) {
+        return reason;
+      }
+    }
+  }
+  
+  // If no match, return the original reason
+  return rawReason;
+}
+
+function formatDate(dateStr) {
+  // Convert date format from "9/16/2025" to "2025-09-16"
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    const month = parts[0].padStart(2, '0');
+    const day = parts[1].padStart(2, '0');
+    const year = parts[2];
+    return `${year}-${month}-${day}`;
+  }
+  return dateStr; // Return original if format doesn't match
+}
+
+function showNotification(message, isError = false) {
+  const notification = document.getElementById("notification");
+  notification.textContent = message;
+  notification.className = `notification ${isError ? 'error' : ''} show`;
+  setTimeout(() => notification.classList.remove('show'), 3000);
+}
+
+function importData() {
+  const raw = document.getElementById("rawData").value.trim();
+  if (!raw) {
+    showNotification("Please enter clawback data.", true);
+    return;
+  }
+  parseData(raw.split("\n"));
+}
+
+function importFromCSV() {
+  const fileInput = document.getElementById("csvFile");
+  const file = fileInput.files[0];
+  if (!file) {
+    showNotification("Please select a CSV file.", true);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split("\n").map(line => line.trim()).filter(line => line);
+    parseData(lines);
+  };
+  reader.readAsText(file);
+}
+
+function parseData(lines) {
+  transactions = [];
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  let validCount = 0;
+  let invalidCount = 0;
+  let duplicateCount = 0;
+  const seenKeys = new Set();
+  
+  console.log(`Processing ${lines.length} lines of data`);
+
+  for (let i = 0; i < lines.length; i++) {
+    let cols = lines[i].trim().split(/\t/);
+    if (cols.length < 7) {
+      invalidCount++;
+      console.log(`Row ${i+1} invalid: Not enough columns. Expected 7, got ${cols.length}: ${lines[i]}`);
+      continue;
+    }
+
+    let referenceId = cols[0];
+    let billableId = cols[1];
+    let date = formatDate(cols[2]);
+    let amount = parseFloat(cols[3]);
+    if (isNaN(amount)) {
+      invalidCount++;
+      console.log(`Row ${i+1} invalid: Invalid amount - ${cols[3]}`);
+      continue;
+    }
+
+    // Check for duplicates
+    const key = `${referenceId}-${billableId}`;
+    if (seenKeys.has(key)) {
+      duplicateCount++;
+      console.log(`Row ${i+1} duplicate: ${referenceId}-${billableId}`);
+      continue;
+    }
+    seenKeys.add(key);
+
+    // Extract the full description
+    let fullDescription = cols[4].replace(/__/g, " ");
+    let descriptionParts = cols[4].split('__');
+    let rawReason = descriptionParts[descriptionParts.length - 1];
+    let description = mapReason(rawReason);
+
+    let category = cols[5];
+    let merchantArea = cols[6];
+
+    transactions.push({
+      referenceId: referenceId,
+      id: billableId,
+      date: date,
+      amount: amount,
+      description: description,
+      rawDescription: fullDescription,
+      area: merchantArea,
+      status: "Refunded"
+    });
+    validCount++;
+  }
+
+  console.log(`Processed ${lines.length} lines: ${validCount} valid, ${invalidCount} invalid, ${duplicateCount} duplicates`);
+
+  if (transactions.length === 0) {
+    showNotification(`No valid transactions found. Total rows: ${lines.length}, Invalid: ${invalidCount}, Duplicates: ${duplicateCount}`, true);
+  } else {
+    saveData();
+    renderTable(transactions);
+    renderBranchSummary(transactions);
+    renderDeductionsChart(transactions);
+    renderReasonsChart(transactions);
+    updateDashboard(transactions);
+    showNotification(`Data imported successfully. Total rows: ${lines.length}, Valid: ${validCount}, Invalid: ${invalidCount}, Duplicates: ${duplicateCount}`);
+  }
+}
+
+function updateDashboard(data) {
+  let total = 0;
+  let statusSummary = { Refunded: 0, Compensated: 0 };
+  let reasonSummary = {};
+
+  data.forEach(tx => {
+    total += tx.amount;
+    statusSummary[tx.status] = (statusSummary[tx.status] || 0) + tx.amount;
+    reasonSummary[tx.description] = (reasonSummary[tx.description] || 0) + 1;
+  });
+
+  // Update dashboard stats
+  document.getElementById("totalRecords").textContent = data.length;
+  document.getElementById("totalDeductions").textContent = `(${Math.abs(total).toFixed(2)})`;
+  document.getElementById("averageRecord").textContent = `(${data.length ? Math.abs(total / data.length).toFixed(2) : 0})`;
+  document.getElementById("refundedAmount").textContent = `(${Math.abs(statusSummary['Refunded'] || 0).toFixed(2)})`;
+  document.getElementById("compensatedAmount").textContent = `(${Math.abs(statusSummary['Compensated'] || 0).toFixed(2)})`;
+
+  // Update reasons breakdown
+  const reasonsList = document.getElementById("reasonsList");
+  reasonsList.innerHTML = "";
+  
+  const consolidatedReasons = consolidateReasons ? consolidateReasonSummary(reasonSummary) : reasonSummary;
+  
+  Object.entries(consolidatedReasons).forEach(([reason, count]) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="reason">${reason}</span>: ${count}`;
+    reasonsList.appendChild(li);
+  });
+}
+
+function consolidateReasonSummary(rawSummary) {
+  const consolidated = {};
+  Object.entries(rawSummary).forEach(([reason, count]) => {
+    let normalized = reason.toLowerCase();
+    if (normalized.includes("claw")) {
+      consolidated["Clawback"] = (consolidated["Clawback"] || 0) + count;
+    } else if (normalized.includes("penalt")) {
+      consolidated["Penalty"] = (consolidated["Penalty"] || 0) + count;
+    } else {
+      consolidated[reason] = (consolidated[reason] || 0) + count;
+    }
+  });
+  return consolidated;
+}
+
+function renderTable(data) {
+  const tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(tx => {
+    let row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${tx.referenceId}</td>
+      <td>${tx.id}</td>
+      <td>${tx.date}</td>
+      <td class="${tx.amount < 0 ? 'negative' : ''}">
+        ${tx.amount < 0 ? "(" + Math.abs(tx.amount).toFixed(2) + ")" : tx.amount.toFixed(2)}
+      </td>
+      <td title="Full Description: ${tx.rawDescription}">${tx.description}</td>
+      <td>${tx.area}</td>
+      <td>${tx.status}</td>
+      <td>
+        <button onclick="updateStatus('${tx.id}')" ${tx.status === "Compensated" ? 'disabled' : ''}>Mark as Compensated</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderBranchSummary(data) {
+  const tbody = document.querySelector("#branchTable tbody");
+  tbody.innerHTML = "";
+
+  let branchGroups = {};
+  data.forEach(tx => {
+    const area = tx.area || "Unknown";
+    if (!branchGroups[area]) {
+      branchGroups[area] = { count: 0, reasons: new Set() };
+    }
+    branchGroups[area].count++;
+    branchGroups[area].reasons.add(tx.description);
+  });
+
+  Object.keys(branchGroups).sort().forEach(area => {
+    let row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${area}</td>
+      <td>${branchGroups[area].count}</td>
+      <td>${Array.from(branchGroups[area].reasons).join(", ")}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderDeductionsChart(data) {
+  const ctx = document.getElementById("deductionsChart").getContext("2d");
+  let branchTotals = {};
+  data.forEach(tx => {
+    const area = tx.area || "Unknown";
+    branchTotals[area] = (branchTotals[area] || 0) + Math.abs(tx.amount);
+  });
+
+  const labels = Object.keys(branchTotals);
+  const amounts = Object.values(branchTotals);
+
+  if (deductionsChart) deductionsChart.destroy();
+  deductionsChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Total Deductions by Branch",
+        data: amounts,
+        backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: "Amount (AED)" } },
+        x: { title: { display: true, text: "Branch" } }
+      }
+    }
+  });
+}
+
+function renderReasonsChart(data) {
+  const ctx = document.getElementById("reasonsChart").getContext("2d");
+  let reasonSummary = {};
+  data.forEach(tx => {
+    reasonSummary[tx.description] = (reasonSummary[tx.description] || 0) + 1;
+  });
+  if (consolidateReasons) {
+    reasonSummary = consolidateReasonSummary(reasonSummary);
+  }
+
+  const labels = Object.keys(reasonSummary);
+  const counts = Object.values(reasonSummary);
+
+  if (reasonsChart) reasonsChart.destroy();
+  reasonsChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Reasons Distribution",
+        data: counts,
+        backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderColor: ["#fff"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: "right" }
+      }
+    }
+  });
+}
+
+function applyFilters() {
+  const refIdFilter = document.getElementById("filterRefId").value.trim().toLowerCase();
+  const idFilter = document.getElementById("filterId").value.trim().toLowerCase();
+  const areaFilter = document.getElementById("filterArea").value.trim().toLowerCase();
+  const statusFilter = document.getElementById("filterStatus").value;
+  const dateFrom = document.getElementById("filterDateFrom").value;
+  const dateTo = document.getElementById("filterDateTo").value;
+
+  const filtered = transactions.filter(tx => {
+    const txDate = new Date(tx.date);
+    const fromDate = dateFrom ? new Date(dateFrom) : null;
+    const toDate = dateTo ? new Date(dateTo) : null;
+    return (
+      (refIdFilter === "" || tx.referenceId.toLowerCase().includes(refIdFilter)) &&
+      (idFilter === "" || tx.id.toLowerCase().includes(idFilter)) &&
+      (areaFilter === "" || tx.area.toLowerCase().includes(areaFilter)) &&
+      (statusFilter === "" || tx.status === statusFilter) &&
+      (!fromDate || txDate >= fromDate) &&
+      (!toDate || txDate <= toDate)
+    );
+  });
+
+  renderTable(filtered);
+  renderBranchSummary(filtered);
+  renderDeductionsChart(filtered);
+  renderReasonsChart(filtered);
+  updateDashboard(filtered);
+}
+
+function clearFilters() {
+  document.getElementById("filterRefId").value = "";
+  document.getElementById("filterId").value = "";
+  document.getElementById("filterArea").value = "";
+  document.getElementById("filterStatus").value = "";
+  document.getElementById("filterDateFrom").value = "";
+  document.getElementById("filterDateTo").value = "";
+  renderTable(transactions);
+  renderBranchSummary(transactions);
+  renderDeductionsChart(transactions);
+  renderReasonsChart(transactions);
+  updateDashboard(transactions);
+}
+
+function sortTable(column) {
+  if (sortColumn === column) {
+    sortAscending = !sortAscending;
+  } else {
+    sortColumn = column;
+    sortAscending = true;
+  }
+
+  transactions.sort((a, b) => {
+    let valA = a[column];
+    let valB = b[column];
+    if (column === "amount") {
+      return sortAscending ? valA - valB : valB - valA;
+    }
+    if (column === "date") {
+      return sortAscending ? new Date(valA) - new Date(valB) : new Date(valB) - new Date(valA);
+    }
+    valA = valA.toString().toLowerCase();
+    valB = valB.toString().toLowerCase();
+    return sortAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+  });
+
+  renderTable(transactions);
+  renderBranchSummary(transactions);
+  renderDeductionsChart(transactions);
+  renderReasonsChart(transactions);
+  updateDashboard(transactions);
+}
+
+function updateStatus(id) {
+  const tx = transactions.find(t => t.id === id);
+  if (tx && tx.status !== "Compensated") {
+    tx.status = "Compensated";
+    saveData();
+    renderTable(transactions);
+    renderBranchSummary(transactions);
+    renderDeductionsChart(transactions);
+    renderReasonsChart(transactions);
+    updateDashboard(transactions);
+    showNotification(`Status updated to Compensated for ID ${id}`);
+  }
+}
+
+function toggleReasonConsolidation() {
+  consolidateReasons = !consolidateReasons;
+  renderTable(transactions);
+  renderReasonsChart(transactions);
+  updateDashboard(transactions);
+  showNotification(`Reasons display set to ${consolidateReasons ? 'consolidated' : 'raw'}.`);
+}
+
+function exportToCSV() {
+  let csv = "Reference ID,Billable ID,Date,Amount,Description,Merchant Area,Status\n";
+  transactions.forEach(tx => {
+    csv += `${tx.referenceId},${tx.id},${tx.date},${tx.amount},"${tx.description}",${tx.area},${tx.status}\n`;
+  });
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "clawback_data.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function saveData() {
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+}
+
+function loadData() {
+  const saved = localStorage.getItem("transactions");
+  if (saved) {
+    try {
+      transactions = JSON.parse(saved);
+      renderTable(transactions);
+      renderBranchSummary(transactions);
+      renderDeductionsChart(transactions);
+      renderReasonsChart(transactions);
+      updateDashboard(transactions);
+    } catch (e) {
+      showNotification("Error loading saved data.", true);
+    }
+  }
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+  document.querySelectorAll(".dashboard-card, table, canvas").forEach(el => {
+    el.style.background = document.body.classList.contains("dark-mode") ? "#444" : "#fff";
+  });
+  if (deductionsChart) deductionsChart.update();
+  if (reasonsChart) reasonsChart.update();
+}
+
+window.onload = loadData;
+</script>
+
+</body>
+</html>
