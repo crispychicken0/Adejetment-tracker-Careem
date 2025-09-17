@@ -7,69 +7,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
-    /* Primary Colors - Modern Palette */
-    --primary: #00695C;      /* Modern Teal */
-    --primary-light: #26A69A; /* Light Teal */
-    --primary-dark: #004D40;  /* Dark Teal */
-    
-    /* Secondary Colors */
-    --secondary: #3949AB;    /* Modern Indigo */
-    --secondary-light: #5C6BC0;
-    --secondary-dark: #283593;
-    
-    /* Status Colors */
-    --clawback: #E53935;     /* Modern Red */
-    --penalty: #FB8C00;      /* Modern Orange */
-    --compensated: #43A047;  /* Modern Green */
-    --dispute: #8E24AA;      /* Modern Purple */
-    
-    /* Background Colors */
-    --bg-light: #FAFAFA;     /* Very Light Gray */
-    --bg-dark: #212121;      /* Dark Gray */
-    --card-bg: #FFFFFF;      /* White */
-    --card-bg-dark: #424242; /* Dark Card */
-    
-    /* Text Colors */
-    --text-light: #212121;   /* Dark Gray */
-    --text-dark: #F5F5F5;    /* Light Gray */
-    --text-secondary: #757575; /* Medium Gray */
-    
-    /* Border and UI Elements */
-    --border-color: #E0E0E0;
-    --hover-bg: #E8F5E9;     /* Light Green Hover */
-    --negative-color: #E53935;
-    
-    /* Shadows */
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
-    --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
-    
-    /* Spacing */
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
-    --spacing-2xl: 48px;
-    
-    /* Border Radius */
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    
-    /* Transitions */
-    --transition-fast: 0.2s;
-    --transition-medium: 0.3s;
-    --transition-slow: 0.5s;
+    --primary: #4CAF50;
+    --secondary: #2196F3;
+    --clawback: #e74c3c;
+    --penalty: #f39c12;
+    --compensated: #27ae60;
+    --dispute: #9b59b6;
+    --bg-light: #f9f9f9;
+    --bg-dark: #333;
+    --text-light: #333;
+    --text-dark: #fff;
+    --card-bg: #fff;
+    --border-color: #ddd;
+    --hover-bg: #f0f0f0;
+    --negative-color: #e74c3c;
+    --shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
 
   body.dark-mode {
-    --bg-light: #212121;
-    --text-light: #F5F5F5;
-    --card-bg: #424242;
-    --border-color: #616161;
-    --hover-bg: #424242;
-    --text-secondary: #BDBDBD;
+    --bg-light: #333;
+    --text-light: #fff;
+    --card-bg: #444;
+    --border-color: #555;
+    --hover-bg: #555;
   }
 
   * {
@@ -79,98 +39,60 @@
   }
 
   body { 
-    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; 
-    margin: 0;
-    padding: var(--spacing-md);
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    margin: 20px; 
     background: var(--bg-light); 
     color: var(--text-light); 
-    transition: background var(--transition-medium), color var(--transition-medium);
+    transition: background 0.3s, color 0.3s;
     line-height: 1.6;
   }
 
   .container { 
-    max-width: 1400px; 
+    max-width: 1200px; 
     margin: 0 auto; 
-    padding: var(--spacing-md);
   }
 
   h2, h3 { 
-    margin-bottom: var(--spacing-lg); 
-    font-weight: 700;
+    margin-bottom: 15px; 
+    font-weight: 500;
     color: var(--primary);
-    position: relative;
-    padding-bottom: var(--spacing-sm);
   }
 
-  h2::after, h3::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-light), var(--primary));
-    border-radius: var(--radius-sm);
-  }
-
-  /* Modern Dashboard Cards */
   .dashboard { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-    gap: var(--spacing-lg); 
-    margin-bottom: var(--spacing-2xl);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 15px; 
+    margin-bottom: 20px; 
   }
 
   .dashboard-card { 
     background: var(--card-bg); 
-    border-radius: var(--radius-lg); 
-    padding: var(--spacing-xl); 
-    box-shadow: var(--shadow-md); 
+    border-radius: 8px; 
+    padding: 15px; 
+    box-shadow: var(--shadow); 
     text-align: center; 
-    transition: all var(--transition-medium);
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    min-height: 180px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .dashboard-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-light), var(--primary));
+    transition: transform 0.2s, box-shadow 0.2s;
   }
 
   .dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   }
 
   .dashboard-card h4 { 
-    margin: 0 0 var(--spacing-md); 
-    font-size: 1em; 
-    color: var(--primary-dark); 
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    margin: 0 0 10px; 
+    font-size: 1.1em; 
+    color: var(--primary); 
   }
 
   .dashboard-card p { 
     margin: 0; 
-    font-size: 2.2em; 
-    font-weight: 800;
-    color: var(--text-light);
+    font-size: 1.5em; 
+    font-weight: bold; 
   }
 
-  /* Category Cards */
   .category-card {
-    border-left: 5px solid;
+    border-left: 4px solid;
   }
 
   .category-card.clawback {
@@ -209,26 +131,10 @@
     color: var(--dispute);
   }
 
-  /* Reasons Card */
   .reasons-card { 
     text-align: left; 
-    max-height: 300px; 
+    max-height: 200px; 
     overflow-y: auto; 
-    padding-right: var(--spacing-sm);
-  }
-
-  .reasons-card::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .reasons-card::-webkit-scrollbar-track {
-    background: var(--border-color);
-    border-radius: var(--radius-sm);
-  }
-
-  .reasons-card::-webkit-scrollbar-thumb {
-    background: var(--primary-light);
-    border-radius: var(--radius-sm);
   }
 
   .reasons-card ul { 
@@ -238,19 +144,14 @@
   }
 
   .reasons-card li { 
-    padding: var(--spacing-md) var(--spacing-lg); 
+    padding: 5px 0; 
     border-bottom: 1px solid var(--border-color); 
-    transition: all var(--transition-fast);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: var(--radius-sm);
-    margin-bottom: var(--spacing-xs);
+    transition: background 0.2s;
   }
 
   .reasons-card li:hover {
     background: var(--hover-bg);
-    transform: translateX(5px);
+    padding-left: 5px;
   }
 
   .reasons-card li:last-child { 
@@ -258,62 +159,47 @@
   }
 
   .reasons-card .reason { 
-    font-weight: 700;
-    color: var(--text-light);
-  }
-
-  .reasons-card .count {
-    background: linear-gradient(135deg, var(--primary-light), var(--primary));
-    color: white;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-md);
-    font-size: 0.85em;
-    font-weight: 700;
+    font-weight: bold; 
   }
 
   .main-dispute {
     color: var(--dispute);
-    font-weight: 800;
+    font-weight: bold;
   }
 
-  /* Tables */
   table { 
     border-collapse: collapse; 
     width: 100%; 
-    margin-top: var(--spacing-xl); 
+    margin-top: 20px; 
     background: var(--card-bg); 
-    border-radius: var(--radius-lg); 
+    border-radius: 8px; 
     overflow: hidden; 
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow); 
   }
 
   th, td { 
     border: 1px solid var(--border-color); 
-    padding: var(--spacing-md); 
+    padding: 12px; 
     text-align: center; 
   }
 
   th { 
-    background: linear-gradient(135deg, var(--hover-bg), var(--primary-light)); 
+    background: var(--hover-bg); 
     cursor: pointer; 
-    font-weight: 700;
+    font-weight: bold;
     position: relative;
     user-select: none;
-    color: white;
-    text-transform: uppercase;
-    font-size: 0.85em;
-    letter-spacing: 1px;
   }
 
   th:hover { 
-    background: linear-gradient(135deg, var(--primary-light), var(--primary)); 
+    background: var(--hover-bg); 
   }
 
   th::after {
     content: '⇅';
     position: absolute;
-    right: var(--spacing-md);
-    opacity: 0.7;
+    right: 8px;
+    opacity: 0.5;
   }
 
   th.sorted-asc::after {
@@ -328,159 +214,130 @@
 
   .negative { 
     color: var(--negative-color); 
-    font-weight: 800; 
+    font-weight: bold; 
   }
 
-  /* Category Badges */
   .category-badge {
     display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-md);
+    padding: 3px 8px;
+    border-radius: 12px;
     font-size: 0.8em;
-    font-weight: 700;
+    font-weight: bold;
     color: white;
-    text-transform: uppercase;
-    letter-spacing: 1px;
   }
 
   .category-badge.clawback {
-    background: linear-gradient(135deg, var(--clawback), #D32F2F);
+    background-color: var(--clawback);
   }
 
   .category-badge.penalty {
-    background: linear-gradient(135deg, var(--penalty), #F57C00);
+    background-color: var(--penalty);
   }
 
   .category-badge.compensated {
-    background: linear-gradient(135deg, var(--compensated), #388E3C);
+    background-color: var(--compensated);
   }
 
   .category-badge.dispute {
-    background: linear-gradient(135deg, var(--dispute), #7B1FA2);
+    background-color: var(--dispute);
   }
 
   .dispute-reason {
     color: var(--dispute);
-    font-weight: 800;
+    font-weight: bold;
   }
 
-  /* Controls */
   .controls { 
     display: flex; 
-    gap: var(--spacing-md); 
+    gap: 10px; 
     flex-wrap: wrap; 
-    margin-bottom: var(--spacing-xl);
-    padding: var(--spacing-xl);
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
   }
 
   .control-group {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
-    flex: 1;
-    min-width: 200px;
+    gap: 5px;
   }
 
   .control-group label {
-    font-weight: 700;
+    font-weight: 500;
     font-size: 0.9em;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
   }
 
   input, textarea, select { 
-    padding: var(--spacing-md); 
-    border: 2px solid var(--border-color); 
-    border-radius: var(--radius-md); 
+    padding: 10px; 
+    border: 1px solid var(--border-color); 
+    border-radius: 4px; 
     width: 100%; 
     box-sizing: border-box;
-    transition: all var(--transition-fast);
-    font-family: inherit;
-    font-size: 1em;
+    transition: border-color 0.2s;
   }
 
   input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 4px rgba(38, 166, 154, 0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
   }
 
   textarea { 
     resize: vertical; 
-    min-height: 120px;
+    min-height: 100px;
   }
 
-  /* Buttons */
   button { 
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+    background: var(--primary); 
     color: white; 
     border: none; 
-    padding: var(--spacing-md) var(--spacing-lg); 
+    padding: 10px 16px; 
     cursor: pointer; 
-    border-radius: var(--radius-md); 
-    transition: all var(--transition-fast);
-    font-weight: 700;
-    font-size: 0.95em;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: var(--shadow-sm);
+    border-radius: 4px; 
+    transition: background 0.2s, transform 0.1s;
+    font-weight: 500;
   }
 
   button:active {
-    transform: scale(0.96);
+    transform: scale(0.98);
   }
 
   button:disabled { 
-    background: #9E9E9E; 
+    background: #ccc; 
     cursor: not-allowed; 
     opacity: 0.7;
   }
 
   button:hover:not(:disabled) { 
-    background: linear-gradient(135deg, var(--primary-light), var(--primary));
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+    background: #45a049; 
   }
 
-  .toggle-status-btn {
-    background: linear-gradient(135deg, var(--secondary), var(--secondary-dark)) !important;
-    font-size: 0.8em !important;
-    padding: 8px 16px !important;
-    margin-right: var(--spacing-sm) !important;
+  button.danger {
+    background: var(--negative-color);
   }
 
-  .toggle-status-btn:hover:not(:disabled) { 
-    background: linear-gradient(135deg, var(--secondary-light), var(--secondary)) !important;
+  button.danger:hover:not(:disabled) {
+    background: #c0392b;
   }
 
-  /* Sections */
   .section { 
-    margin-top: var(--spacing-2xl); 
-    padding-top: var(--spacing-2xl); 
-    border-top: 1px solid var(--border-color);
+    margin-top: 40px; 
+    padding-top: 20px; 
+    border-top: 2px solid var(--border-color); 
   }
 
-  /* Notifications */
   .notification { 
     position: fixed; 
-    top: var(--spacing-xl); 
-    right: var(--spacing-xl); 
-    padding: var(--spacing-md) var(--spacing-xl); 
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+    top: 20px; 
+    right: 20px; 
+    padding: 15px 20px; 
+    background: var(--primary); 
     color: white; 
-    border-radius: var(--radius-lg); 
+    border-radius: 4px; 
     display: none; 
     z-index: 1000; 
     opacity: 0; 
-    transition: opacity var(--transition-slow);
-    box-shadow: var(--shadow-lg);
-    max-width: 400px;
-    font-weight: 600;
+    transition: opacity 0.5s;
+    box-shadow: var(--shadow);
+    max-width: 300px;
   }
 
   .notification.show { 
@@ -489,68 +346,44 @@
   }
 
   .notification.error { 
-    background: linear-gradient(135deg, var(--negative-color), #C62828); 
+    background: var(--negative-color); 
   }
 
-  /* Stats Container */
   .stats-container {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-2xl);
+    gap: 10px;
+    margin-bottom: 20px;
   }
 
   .stat-card {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
+    background: var(--hover-bg);
+    border-radius: 4px;
+    padding: 15px;
     flex: 1;
-    min-width: 200px;
-    transition: all var(--transition-medium);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
-    position: relative;
-    overflow: hidden;
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(180deg, var(--primary-light), var(--primary));
+    min-width: 150px;
+    transition: transform 0.2s;
   }
 
   .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
   }
 
   .stat-label {
     font-size: 0.9em;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-sm);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: #666;
   }
 
   body.dark-mode .stat-label {
-    color: #BDBDBD;
+    color: #ccc;
   }
 
   .stat-value {
-    font-size: 2em;
-    font-weight: 800;
+    font-size: 1.2em;
+    font-weight: bold;
     color: var(--primary);
   }
 
-  /* Report Modal */
   .report-modal {
     display: none;
     position: fixed;
@@ -559,33 +392,31 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.5);
     overflow-y: auto;
-    backdrop-filter: blur(8px);
   }
 
   .report-content {
     background-color: var(--card-bg);
-    margin: 2% auto;
-    padding: var(--spacing-2xl);
-    border-radius: var(--radius-lg);
-    width: 90%;
-    max-width: 1200px;
-    max-height: 90vh;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 80vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow);
   }
 
   .close {
     position: absolute;
-    right: var(--spacing-xl);
-    top: var(--spacing-xl);
-    font-size: 36px;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--transition-fast);
-    color: var(--text-secondary);
+    transition: color 0.2s;
   }
 
   .close:hover {
@@ -594,148 +425,120 @@
 
   .report-header {
     text-align: center;
-    margin-bottom: var(--spacing-2xl);
-    padding-bottom: var(--spacing-xl);
+    margin-bottom: 30px;
+    padding-bottom: 15px;
     border-bottom: 2px solid var(--border-color);
   }
 
-  .report-header h2 {
-    color: var(--primary-dark);
-    font-size: 2.2em;
-    margin-bottom: var(--spacing-sm);
-  }
-
   .report-section {
-    margin-bottom: var(--spacing-2xl);
+    margin-bottom: 25px;
   }
 
   .report-section h3 {
-    margin-bottom: var(--spacing-xl);
-    color: var(--primary-dark);
+    margin-bottom: 15px;
+    color: var(--primary);
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--spacing-sm);
-    font-size: 1.5em;
+    padding-bottom: 5px;
   }
 
   .report-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: var(--spacing-xl);
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    margin-top: 10px;
   }
 
   .report-table th, .report-table td {
-    padding: var(--spacing-md);
+    padding: 10px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
   }
 
   .report-table th {
-    background: linear-gradient(135deg, var(--hover-bg), var(--primary-light));
-    font-weight: 700;
-    color: white;
-    text-transform: uppercase;
-    font-size: 0.85em;
-    letter-spacing: 1px;
-  }
-
-  .report-table tr:last-child td {
-    border-bottom: none;
-  }
-
-  .report-table tr:hover {
     background-color: var(--hover-bg);
+    font-weight: bold;
   }
 
   .report-footer {
     text-align: center;
-    margin-top: var(--spacing-2xl);
-    padding-top: var(--spacing-xl);
+    margin-top: 30px;
+    padding-top: 15px;
     border-top: 2px solid var(--border-color);
     font-size: 0.9em;
-    color: var(--text-secondary);
+    color: #666;
   }
 
   body.dark-mode .report-footer {
-    color: #BDBDBD;
+    color: #ccc;
   }
 
-  /* Error Table */
   .error-table {
-    margin-top: var(--spacing-xl);
+    margin-top: 20px;
     width: 100%;
     border-collapse: collapse;
     background: var(--card-bg);
-    border-radius: var(--radius-lg);
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow);
   }
 
   .error-table th, .error-table td {
-    padding: var(--spacing-md);
+    padding: 10px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
   }
 
   .error-table th {
-    background: linear-gradient(135deg, var(--hover-bg), var(--primary-light));
-    font-weight: 700;
-    color: white;
+    background-color: var(--hover-bg);
+    font-weight: bold;
   }
 
   .error-reason {
     color: var(--negative-color);
-    font-weight: 800;
+    font-weight: bold;
   }
 
   .error-details {
     font-size: 0.9em;
-    color: var(--text-secondary);
+    color: #666;
   }
 
   body.dark-mode .error-details {
-    color: #BDBDBD;
+    color: #ccc;
   }
 
   .error-stats {
     display: flex;
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
+    gap: 10px;
+    margin-bottom: 20px;
   }
 
   .error-stat {
-    background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
+    background: #ffebee;
+    border-radius: 4px;
+    padding: 10px;
     flex: 1;
     text-align: center;
-    box-shadow: var(--shadow-sm);
   }
 
   body.dark-mode .error-stat {
-    background: linear-gradient(135deg, #424242, #616161);
+    background: #555;
   }
 
   .error-stat-label {
     font-size: 0.9em;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-sm);
+    color: #666;
   }
 
   body.dark-mode .error-stat-label {
-    color: #BDBDBD;
+    color: #ccc;
   }
 
   .error-stat-value {
-    font-size: 1.8em;
-    font-weight: 800;
+    font-size: 1.2em;
+    font-weight: bold;
     color: var(--negative-color);
   }
 
-  /* Reason Filter */
   .reason-filter {
     position: relative;
   }
@@ -746,20 +549,20 @@
     left: 0;
     right: 0;
     background: var(--card-bg);
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
     border-top: none;
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
-    max-height: 250px;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
     overflow-y: auto;
     z-index: 100;
     display: none;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow);
   }
 
   .reason-option {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: 8px 12px;
     cursor: pointer;
-    transition: background var(--transition-fast);
+    transition: background 0.2s;
   }
 
   .reason-option:hover {
@@ -767,11 +570,10 @@
   }
 
   .reason-option.selected {
-    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    background: var(--primary);
     color: white;
   }
 
-  /* Loading */
   .loading {
     display: inline-block;
     width: 20px;
@@ -786,7 +588,6 @@
     to { transform: rotate(360deg); }
   }
 
-  /* File Upload */
   .file-upload {
     position: relative;
     display: inline-block;
@@ -806,229 +607,197 @@
 
   .file-upload-label {
     display: block;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+    padding: 10px 16px;
+    background: var(--secondary);
     color: white;
-    border-radius: var(--radius-md);
-    font-weight: 700;
-    transition: all var(--transition-fast);
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background 0.2s;
   }
 
   .file-upload:hover .file-upload-label {
-    background: linear-gradient(135deg, var(--secondary-light), var(--secondary));
-    transform: translateY(-2px);
+    background: #0d8bf2;
   }
 
-  /* Summary Section */
   .summary-section {
-    background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-2xl);
-    margin-bottom: var(--spacing-2xl);
-    box-shadow: var(--shadow-lg);
-    color: white;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
   }
 
   .summary-title {
-    font-size: 1.6em;
-    font-weight: 800;
-    margin-bottom: var(--spacing-xl);
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--primary);
     text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 2px;
   }
 
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-xl);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
   }
 
   .summary-item {
     text-align: center;
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    transition: all var(--transition-medium);
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .summary-item:hover {
-    transform: translateY(-8px);
-    background: rgba(255, 255, 255, 0.25);
+    padding: 10px;
+    border-radius: 4px;
+    background: var(--hover-bg);
   }
 
   .summary-label {
     font-size: 0.9em;
-    margin-bottom: var(--spacing-sm);
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 5px;
   }
 
   .summary-value {
-    font-size: 2.2em;
-    font-weight: 800;
+    font-size: 1.3em;
+    font-weight: bold;
   }
 
   .summary-item.clawback .summary-value {
-    color: #FFCDD2;
+    color: var(--clawback);
   }
 
   .summary-item.penalty .summary-value {
-    color: #FFE0B2;
+    color: var(--penalty);
   }
 
   .summary-item.compensated .summary-value {
-    color: #C8E6C9;
+    color: var(--compensated);
   }
 
   .summary-item.dispute .summary-value {
-    color: #E1BEE7;
+    color: var(--dispute);
   }
 
   .dispute-highlight {
-    background-color: rgba(142, 36, 170, 0.1);
+    background-color: rgba(155, 89, 182, 0.1);
     border-left: 4px solid var(--dispute);
-    padding-left: var(--spacing-md);
+    padding-left: 10px;
   }
 
-  /* Analysis Cards */
   .analysis-card {
     background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-2xl);
-    margin-bottom: var(--spacing-xl);
-    box-shadow: var(--shadow-md);
-    border-left: 5px solid var(--primary-light);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
   }
 
   .analysis-title {
-    font-size: 1.3em;
-    font-weight: 800;
-    margin-bottom: var(--spacing-xl);
-    color: var(--primary-dark);
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--primary);
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--spacing-sm);
+    padding-bottom: 5px;
   }
 
   .analysis-content {
-    font-size: 1em;
-    line-height: 1.8;
-  }
-
-  .analysis-content p {
-    margin-bottom: var(--spacing-md);
-  }
-
-  .analysis-content ol, .analysis-content ul {
-    margin-left: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-  }
-
-  .analysis-content li {
-    margin-bottom: var(--spacing-sm);
+    font-size: 0.95em;
+    line-height: 1.6;
   }
 
   .highlight {
     background-color: rgba(76, 175, 80, 0.1);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
   }
 
   .negative-highlight {
-    background-color: rgba(229, 57, 53, 0.1);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-weight: 700;
+    background-color: rgba(231, 76, 60, 0.1);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
     color: var(--negative-color);
   }
 
-  /* Import Options */
   .import-options {
     background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: var(--shadow);
   }
 
   .import-options h4 {
     margin-top: 0;
-    margin-bottom: var(--spacing-lg);
-    color: var(--primary-dark);
-    font-size: 1.2em;
-  }
-
-  .radio-group {
-    display: flex;
-    gap: var(--spacing-xl);
-    margin-bottom: var(--spacing-lg);
-  }
-
-  .radio-option {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-  }
-
-  .radio-option input[type="radio"] {
-    width: auto;
-    margin: 0;
+    margin-bottom: 10px;
+    color: var(--primary);
   }
 
   .date-range {
     display: flex;
-    gap: var(--spacing-lg);
+    gap: 10px;
     align-items: center;
+    margin-bottom: 10px;
   }
 
   .date-range input {
     flex: 1;
   }
 
-  /* Print Styles */
-  @media print {
-    body {
-      background: white !important;
-      color: black !important;
-    }
-    
-    .container {
-      max-width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    
-    .section {
-      page-break-inside: avoid;
-    }
-    
-    .dashboard-card, .stat-card, .analysis-card {
-      box-shadow: none !important;
-      border: 1px solid #ddd !important;
-    }
-    
-    button, .controls, .file-upload {
-      display: none !important;
-    }
+  .action-select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-light);
+    cursor: pointer;
   }
 
-  /* Responsive Design */
-  @media (max-width: 768px) {
+  .action-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+
+  .confirm-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+
+  .confirm-content {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .confirm-content h3 {
+    margin-bottom: 15px;
+    color: var(--primary);
+  }
+
+  .confirm-content p {
+    margin-bottom: 20px;
+  }
+
+  .confirm-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  @media (max-width: 600px) {
     body { 
-      margin: var(--spacing-sm); 
-      padding: var(--spacing-sm);
-    }
-    
-    .container {
-      padding: var(--spacing-sm);
+      margin: 10px; 
     }
     
     table { 
@@ -1050,8 +819,7 @@
     
     .report-content {
       width: 95%;
-      margin: 5% auto;
-      padding: var(--spacing-lg);
+      margin: 10% auto;
     }
     
     .stat-card {
@@ -1062,18 +830,13 @@
       grid-template-columns: 1fr;
     }
     
-    .radio-group {
-      flex-direction: column;
-      gap: var(--spacing-sm);
-    }
-    
     .date-range {
       flex-direction: column;
-      gap: var(--spacing-sm);
+      gap: 5px;
     }
     
-    .reasons-card {
-      max-height: 200px;
+    .confirm-content {
+      width: 90%;
     }
   }
 </style>
@@ -1088,18 +851,7 @@
     <h3>Import Data</h3>
     
     <div class="import-options">
-      <h4>Import Options</h4>
-      <div class="radio-group">
-        <div class="radio-option">
-          <input type="radio" id="replaceData" name="importOption" value="replace" checked>
-          <label for="replaceData">Replace all data</label>
-        </div>
-        <div class="radio-option">
-          <input type="radio" id="appendData" name="importOption" value="append">
-          <label for="appendData">Append to existing data</label>
-        </div>
-      </div>
-      
+      <h4>Date Range Filter (Optional)</h4>
       <div class="date-range">
         <label for="dateFrom">From Date:</label>
         <input type="date" id="importDateFrom">
@@ -1124,9 +876,8 @@
       <button onclick="exportToCSV()">Export to CSV</button>
       <button onclick="exportInvalidRecords()">Export Invalid Records</button>
       <button onclick="generateReport()">Generate Report</button>
-      <button onclick="clearFilters()">Clear Filters</button>
+      <button onclick="clearAllData()" class="danger">Clear All Data</button>
       <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-      <button onclick="toggleReasonConsolidation()">Toggle Consolidated Reasons</button>
     </div>
   </div>
 
@@ -1247,7 +998,10 @@
         <select id="filterStatus" onchange="applyFilters()">
           <option value="">All</option>
           <option value="Refunded">Refunded</option>
-          <option value="COMPENSATED">COMPENSATED</option>
+          <option value="Compensated">Compensated</option>
+          <option value="Charged">Charged</option>
+          <option value="Pending">Pending</option>
+          <option value="Resolved">Resolved</option>
         </select>
       </div>
       
@@ -1294,7 +1048,7 @@
           <th onclick="sortTable('area')">Merchant Area</th>
           <th onclick="sortTable('category')">Category</th>
           <th onclick="sortTable('status')">Status</th>
-          <th>Actions</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -1317,7 +1071,7 @@
   </div>
 
   <div class="section">
-    <h3>Comprehensive Analysis Report</h3>
+    <h3>Analysis Report</h3>
     <div class="analysis-card">
       <div class="analysis-title">Executive Summary</div>
       <div class="analysis-content" id="executiveSummary">
@@ -1347,7 +1101,7 @@
     </div>
     
     <div class="analysis-card">
-      <div class="analysis-title">Strategic Recommendations</div>
+      <div class="analysis-title">Recommendations</div>
       <div class="analysis-content" id="recommendations">
         No data available. Please import data to generate analysis.
       </div>
@@ -1427,7 +1181,7 @@
         </thead>
         <tbody id="mainDisputesTable"></tbody>
       </table>
-      <p style="margin-top: var(--spacing-md); font-style: italic;">
+      <p style="margin-top: 10px; font-style: italic;">
         Total main disputes: <span id="totalMainDisputesCount">0</span> (<span id="totalMainDisputesPercent">0</span>% of all transactions)
       </p>
     </div>
@@ -1471,6 +1225,18 @@
   </div>
 </div>
 
+<!-- Confirmation Dialog -->
+<div id="confirmDialog" class="confirm-dialog" style="display: none;">
+  <div class="confirm-content">
+    <h3>Confirm Action</h3>
+    <p id="confirmMessage">Are you sure you want to proceed?</p>
+    <div class="confirm-buttons">
+      <button id="confirmYes" class="danger">Yes</button>
+      <button id="confirmNo">No</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // Global variables
 let transactions = [];
@@ -1478,7 +1244,6 @@ let invalidRecords = [];
 let duplicateRecords = [];
 let sortColumn = null;
 let sortAscending = true;
-let consolidateReasons = false;
 let reasonsList = [];
 let selectedReason = "";
 let isProcessing = false;
@@ -1511,98 +1276,309 @@ const predefinedReasons = [
 
 // Keywords for each predefined reason
 const reasonKeywords = {
-  "Spilled / damaged": ["spilled", "damaged", "spill", "damage", "broken", "leak", "leaked", "split", "cracked"],
-  "Missing or unavailable items": ["missing", "unavailable", "out of stock", "not available", "item missing", "items missing"],
-  "Wrong item sent": ["wrong item", "incorrect item", "wrong order", "incorrect order", "sent wrong", "delivered wrong"],
-  "Partner Did not Prepare": ["did not prepare", "not prepared", "partner did not", "not ready", "preparation issue"],
-  "Food is overcooked/burnt": ["overcooked", "burnt", "burned", "too cooked", "over done"],
-  "Food is undercooked": ["undercooked", "raw", "not cooked", "under done", "too raw"],
-  "Hair in the food": ["hair", "hair in", "found hair"],
-  "Foul Smell": ["foul smell", "bad smell", "smell bad", "stinks", "odor"],
-  "My Food is not edible (SelfServe)": ["not edible", "inedible", "can't eat", "not eatable"],
-  "Instructions not followed": ["instructions not followed", "didn't follow", "not followed", "ignored instructions"],
-  "Penalty for clawback complaint reason": ["penalty for clawback", "clawback penalty", "penalty complaint"],
-  "Penalties for Order": ["penalties for order", "order penalty", "penalty order"],
-  "Clawback Reversals": ["clawback reversal", "reversal", "reversed clawback"],
-  "Additional Penalty": ["additional penalty", "extra penalty", "added penalty"]
+  "Spilled / damaged": ["spilled", "damaged", "spill", "damage", "broken", "leak", "mess", "ruined"],
+  "Missing or unavailable items": ["missing", "unavailable", "not available", "out of stock", "no", "didn't get"],
+  "Wrong item sent": ["wrong", "incorrect", "mistake", "different", "not what I ordered", "substituted"],
+  "Partner Did not Prepare": ["not prepared", "didn't prepare", "not ready", "not made", "not cooked"],
+  "Food is overcooked/burnt": ["overcooked", "burnt", "burned", "too done", "charred"],
+  "Food is undercooked": ["undercooked", "raw", "not cooked", "uncooked", "pink", "bloody"],
+  "Hair in the food": ["hair", "hair in food", "hair in my food"],
+  "Foul Smell": ["smell", "smells", "stinks", "bad smell", "weird smell"],
+  "My Food is not edible (SelfServe)": ["not edible", "inedible", "couldn't eat", "can't eat", "uneatable"],
+  "Instructions not followed": ["instructions", "notes", "request", "special instructions", "not followed"],
+  "Penalty for clawback complaint reason": ["penalty", "fine", "charge", "fee", "deduction"],
+  "Penalties for Order": ["penalties", "order penalty", "order fine"],
+  "Clawback Reversals": ["reversal", "reversed", "refund", "credited back"],
+  "Additional Penalty": ["additional", "extra", "more penalty"]
 };
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-  // Set default dates to last 30 days
-  const today = new Date();
-  const thirtyDaysAgo = new Date(today);
-  thirtyDaysAgo.setDate(today.getDate() - 30);
-  
-  document.getElementById('importDateFrom').value = formatDateForInput(thirtyDaysAgo);
-  document.getElementById('importDateTo').value = formatDateForInput(today);
-  
   // Load data from localStorage if available
-  const savedTransactions = localStorage.getItem('careemTransactions');
-  if (savedTransactions) {
+  const savedData = localStorage.getItem('careemClawbackData');
+  if (savedData) {
     try {
-      transactions = JSON.parse(savedTransactions);
-      updateDashboard();
-      updateBranchTable();
-      updateAnalysis();
-      applyFilters();
+      const parsedData = JSON.parse(savedData);
+      transactions = parsedData.transactions || [];
+      invalidRecords = parsedData.invalidRecords || [];
+      duplicateRecords = parsedData.duplicateRecords || [];
+      updateUI();
+      console.log('Loaded data from localStorage:', transactions.length, 'transactions');
     } catch (e) {
       console.error('Error loading saved data:', e);
-      showNotification('Error loading saved data', true);
+      showNotification('Error loading saved data', 'error');
     }
   }
   
-  // Initialize reason dropdown
-  updateReasonsList();
+  // Initialize date inputs with current month
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   
-  // Load dark mode preference
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
-  }
+  document.getElementById('importDateFrom').valueAsDate = firstDay;
+  document.getElementById('importDateTo').valueAsDate = lastDay;
+  document.getElementById('filterDateFrom').valueAsDate = firstDay;
+  document.getElementById('filterDateTo').valueAsDate = lastDay;
+  
+  // Initialize reasons dropdown
+  updateReasonsDropdown();
 });
 
-// Format date for input field
-function formatDateForInput(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+// Import data from textarea
+function importData() {
+  const rawData = document.getElementById('rawData').value.trim();
+  if (!rawData) {
+    showNotification('Please enter data to import', 'error');
+    return;
+  }
+  
+  const dateFrom = document.getElementById('importDateFrom').value;
+  const dateTo = document.getElementById('importDateTo').value;
+  
+  // Process the data
+  processData(rawData, dateFrom, dateTo);
 }
 
-// Parse date from string
-function parseDate(dateString) {
-  if (!dateString) return null;
+// Process data from textarea or CSV
+function processData(data, dateFrom, dateTo) {
+  isProcessing = true;
+  showNotification('Processing data...', 'info');
   
-  // Try different date formats
-  const formats = [
-    /(\d{1,2})\/(\d{1,2})\/(\d{4})/,  // MM/DD/YYYY
-    /(\d{4})-(\d{1,2})-(\d{1,2})/,  // YYYY-MM-DD
-    /(\d{1,2})-(\d{1,2})-(\d{4})/   // DD-MM-YYYY
-  ];
+  // Split data into lines
+  const lines = data.split('\n');
+  const newTransactions = [];
+  const newInvalidRecords = [];
+  const seenIds = new Set();
   
-  for (const format of formats) {
-    const match = dateString.match(format);
-    if (match) {
-      let year, month, day;
-      
-      if (format === formats[0]) { // MM/DD/YYYY
-        month = parseInt(match[1], 10);
-        day = parseInt(match[2], 10);
-        year = parseInt(match[3], 10);
-      } else if (format === formats[1]) { // YYYY-MM-DD
-        year = parseInt(match[1], 10);
-        month = parseInt(match[2], 10);
-        day = parseInt(match[3], 10);
-      } else { // DD-MM-YYYY
-        day = parseInt(match[1], 10);
-        month = parseInt(match[2], 10);
-        year = parseInt(match[3], 10);
+  // Add existing IDs to the set to check for duplicates
+  transactions.forEach(t => seenIds.add(t.referenceId));
+  
+  // Process each line
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    
+    // Split by tab or comma
+    const parts = line.split(/\t|,/);
+    if (parts.length < 6) {
+      newInvalidRecords.push({
+        line: i + 1,
+        originalData: line,
+        error: 'Invalid format',
+        details: 'Expected at least 6 columns (Reference ID, Billable ID, Date, Amount, Description, Area)'
+      });
+      continue;
+    }
+    
+    const referenceId = parts[0].trim();
+    const id = parts[1].trim();
+    const dateStr = parts[2].trim();
+    const amountStr = parts[3].trim();
+    const description = parts[4].trim();
+    const area = parts[5].trim();
+    
+    // Check for duplicate reference ID
+    if (seenIds.has(referenceId)) {
+      newInvalidRecords.push({
+        line: i + 1,
+        originalData: line,
+        error: 'Duplicate Reference ID',
+        details: `Reference ID "${referenceId}" already exists`
+      });
+      continue;
+    }
+    
+    // Parse date
+    const date = parseDate(dateStr);
+    if (!date) {
+      newInvalidRecords.push({
+        line: i + 1,
+        originalData: line,
+        error: 'Invalid date',
+        details: `Could not parse date: "${dateStr}"`
+      });
+      continue;
+    }
+    
+    // Check if date is within range
+    if (dateFrom && date < new Date(dateFrom)) {
+      newInvalidRecords.push({
+        line: i + 1,
+        originalData: line,
+        error: 'Date out of range',
+        details: `Date is before the specified "From Date"`
+      });
+      continue;
+    }
+    
+    if (dateTo && date > new Date(dateTo)) {
+      newInvalidRecords.push({
+        line: i + 1,
+        originalData: line,
+        error: 'Date out of range',
+        details: `Date is after the specified "To Date"`
+      });
+      continue;
+    }
+    
+    // Parse amount
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount)) {
+      newInvalidRecords.push({
+        line: i + 1,
+        originalData: line,
+        error: 'Invalid amount',
+        details: `Could not parse amount: "${amountStr}"`
+      });
+      continue;
+    }
+    
+    // Determine category and status
+    const { category, status, reason } = categorizeTransaction(description, amount);
+    
+    // Add to transactions
+    const transaction = {
+      referenceId,
+      id,
+      date,
+      amount,
+      description,
+      area,
+      category,
+      status,
+      reason
+    };
+    
+    newTransactions.push(transaction);
+    seenIds.add(referenceId);
+  }
+  
+  // Add new transactions to the list (append instead of replace)
+  transactions.push(...newTransactions);
+  invalidRecords.push(...newInvalidRecords);
+  
+  // Update UI
+  updateUI();
+  
+  // Save to localStorage
+  saveToLocalStorage();
+  
+  // Show notification
+  const validCount = newTransactions.length;
+  const invalidCount = newInvalidRecords.length;
+  
+  if (validCount > 0) {
+    showNotification(`Successfully imported ${validCount} records`, 'success');
+    console.log(`Imported ${validCount} valid records`);
+  }
+  
+  if (invalidCount > 0) {
+    showNotification(`Found ${invalidCount} invalid records`, 'warning');
+    console.log(`Found ${invalidCount} invalid records`);
+  }
+  
+  isProcessing = false;
+}
+
+// Parse date in various formats
+function parseDate(dateStr) {
+  // Try MM/DD/YYYY format
+  const parts1 = dateStr.split('/');
+  if (parts1.length === 3) {
+    const month = parseInt(parts1[0]);
+    const day = parseInt(parts1[1]);
+    const year = parseInt(parts1[2]);
+    
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 2000) {
+      return new Date(year, month - 1, day);
+    }
+  }
+  
+  // Try YYYY-MM-DD format
+  const parts2 = dateStr.split('-');
+  if (parts2.length === 3) {
+    const year = parseInt(parts2[0]);
+    const month = parseInt(parts2[1]);
+    const day = parseInt(parts2[2]);
+    
+    if (year >= 2000 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return new Date(year, month - 1, day);
+    }
+  }
+  
+  // Try DD-MM-YYYY format
+  if (parts2.length === 3) {
+    const day = parseInt(parts2[0]);
+    const month = parseInt(parts2[1]);
+    const year = parseInt(parts2[2]);
+    
+    if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 2000) {
+      return new Date(year, month - 1, day);
+    }
+  }
+  
+  // Try parsing as Date object
+  const date = new Date(dateStr);
+  if (!isNaN(date.getTime())) {
+    return date;
+  }
+  
+  return null;
+}
+
+// Categorize transaction based on description and amount
+function categorizeTransaction(description, amount) {
+  let category = 'CLAWBACK';
+  let status = 'Refunded';
+  let reason = description;
+  
+  // Check if it's a penalty
+  if (description.toLowerCase().includes('penalty') || 
+      description.toLowerCase().includes('fine') ||
+      description.toLowerCase().includes('charge')) {
+    category = 'PENALTY';
+    status = 'Charged';
+  }
+  
+  // Check if it's compensated
+  if (description.toLowerCase().includes('compensat') || 
+      description.toLowerCase().includes('reversal') ||
+      description.toLowerCase().includes('credit')) {
+    category = 'COMPENSATED';
+    status = 'Compensated';
+  }
+  
+  // Try to match with predefined reasons
+  const matchedReason = matchReason(description);
+  if (matchedReason) {
+    reason = matchedReason;
+  }
+  
+  return { category, status, reason };
+}
+
+// Match description to a predefined reason
+function matchReason(description) {
+  const descLower = description.toLowerCase();
+  
+  // Check for main dispute reasons first
+  for (const reason of mainDisputeReasons) {
+    if (reasonKeywords[reason]) {
+      for (const keyword of reasonKeywords[reason]) {
+        if (descLower.includes(keyword)) {
+          return reason;
+        }
       }
-      
-      // Create date object and check if valid
-      const date = new Date(year, month - 1, day);
-      if (!isNaN(date.getTime())) {
-        return date;
+    }
+  }
+  
+  // Check for other reasons
+  for (const reason of predefinedReasons) {
+    if (reasonKeywords[reason]) {
+      for (const keyword of reasonKeywords[reason]) {
+        if (descLower.includes(keyword)) {
+          return reason;
+        }
       }
     }
   }
@@ -1610,273 +1586,21 @@ function parseDate(dateString) {
   return null;
 }
 
-// Format date for display
-function formatDate(date) {
-  if (!date) return '';
-  
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return date.toLocaleDateString(undefined, options);
-}
-
-// Parse transaction data from a line
-function parseTransactionData(line, lineNumber) {
-  const parts = line.split(/\t|,/);
-  
-  if (parts.length < 6) {
-    return {
-      error: `Invalid format: Expected at least 6 columns, got ${parts.length}`,
-      details: `Line ${lineNumber}: ${line}`
-    };
-  }
-  
-  const referenceId = parts[0].trim();
-  const id = parts[1].trim();
-  const dateStr = parts[2].trim();
-  const amountStr = parts[3].trim();
-  const description = parts[4].trim();
-  const area = parts[5].trim();
-  
-  // Validate required fields
-  if (!referenceId || !id || !dateStr || !amountStr || !description) {
-    return {
-      error: 'Missing required fields',
-      details: `Line ${lineNumber}: ${line}`
-    };
-  }
-  
-  // Parse date
-  const date = parseDate(dateStr);
-  if (!date) {
-    return {
-      error: 'Invalid date format',
-      details: `Line ${lineNumber}: ${line}`
-    };
-  }
-  
-  // Parse amount
-  let amount;
-  try {
-    amount = parseFloat(amountStr);
-    if (isNaN(amount)) {
-      return {
-        error: 'Invalid amount format',
-        details: `Line ${lineNumber}: ${line}`
-      };
-    }
-  } catch (e) {
-    return {
-      error: 'Invalid amount format',
-      details: `Line ${lineNumber}: ${line}`
-    };
-  }
-  
-  // Categorize transaction
-  const categoryInfo = categorizeTransaction(description);
-  
-  return {
-    referenceId,
-    id,
-    date: formatDateForInput(date),
-    amount,
-    description,
-    area,
-    category: categoryInfo.category,
-    status: categoryInfo.status,
-    isMainDispute: categoryInfo.isMainDispute,
-    reason: categoryInfo.reason,
-    lineNumber
-  };
-}
-
-// Categorize transaction based on description
-function categorizeTransaction(description) {
-  const lowerDesc = description.toLowerCase();
-  
-  // Check if it's a main dispute reason
-  for (const reason of mainDisputeReasons) {
-    if (lowerDesc.includes(reason.toLowerCase())) {
-      return {
-        category: 'CLAWBACK',
-        status: 'Refunded',
-        isMainDispute: true,
-        reason: reason
-      };
-    }
-  }
-  
-  // Check for other predefined reasons
-  for (const reason of predefinedReasons) {
-    if (lowerDesc.includes(reason.toLowerCase())) {
-      return {
-        category: reason.includes('Penalty') ? 'PENALTY' : 'CLAWBACK',
-        status: '',
-        isMainDispute: false,
-        reason: reason
-      };
-    }
-  }
-  
-  // Check for keywords
-  for (const [reason, keywords] of Object.entries(reasonKeywords)) {
-    for (const keyword of keywords) {
-      if (lowerDesc.includes(keyword)) {
-        return {
-          category: reason.includes('Penalty') ? 'PENALTY' : 'CLAWBACK',
-          status: '',
-          isMainDispute: false,
-          reason: reason
-        };
-      }
-    }
-  }
-  
-  // Default categorization
-  if (lowerDesc.includes('compensat') || lowerDesc.includes('reversal')) {
-    return {
-      category: 'COMPENSATED',
-      status: 'Compensated',
-      isMainDispute: false,
-      reason: 'Compensation/Reversal'
-    };
-  }
-  
-  if (lowerDesc.includes('penalty')) {
-    return {
-      category: 'PENALTY',
-      status: '',
-      isMainDispute: false,
-      reason: 'Penalty'
-    };
-  }
-  
-  // Default to clawback
-  return {
-    category: 'CLAWBACK',
-    status: '',
-    isMainDispute: false,
-    reason: 'Other'
-  };
-}
-
-// Import data from textarea
-function importData() {
-  if (isProcessing) return;
-  
-  const rawData = document.getElementById('rawData').value.trim();
-  if (!rawData) {
-    showNotification('Please enter data to import', true);
-    return;
-  }
-  
-  isProcessing = true;
-  document.querySelector('button[onclick="importData()"]').innerHTML = '<span class="loading"></span> Processing...';
-  
-  // Get import options
-  const importOption = document.querySelector('input[name="importOption"]:checked').value;
-  const dateFrom = document.getElementById('importDateFrom').value;
-  const dateTo = document.getElementById('importDateTo').value;
-  
-  // Process data
-  const lines = rawData.split('\n');
-  const newTransactions = [];
-  const newInvalidRecords = [];
-  const newDuplicateRecords = [];
-  
-  // Check for duplicates if appending
-  const existingIds = importOption === 'append' ? 
-    new Set(transactions.map(t => `${t.referenceId}-${t.id}`)) : new Set();
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    
-    const result = parseTransactionData(line, i + 1);
-    
-    if (result.error) {
-      newInvalidRecords.push({
-        lineNumber: i + 1,
-        originalData: line,
-        errorReason: result.error,
-        details: result.details
-      });
-      continue;
-    }
-    
-    // Check date range if specified
-    if (dateFrom && result.date < dateFrom) continue;
-    if (dateTo && result.date > dateTo) continue;
-    
-    // Check for duplicates
-    const idKey = `${result.referenceId}-${result.id}`;
-    if (existingIds.has(idKey)) {
-      newDuplicateRecords.push({
-        lineNumber: i + 1,
-        originalData: line,
-        errorReason: 'Duplicate record',
-        details: `Reference ID: ${result.referenceId}, Billable ID: ${result.id}`
-      });
-      continue;
-    }
-    
-    existingIds.add(idKey);
-    newTransactions.push(result);
-  }
-  
-  // Update data based on import option
-  if (importOption === 'replace') {
-    transactions = newTransactions;
-    invalidRecords = newInvalidRecords;
-    duplicateRecords = newDuplicateRecords;
-  } else {
-    transactions = [...transactions, ...newTransactions];
-    invalidRecords = [...invalidRecords, ...newInvalidRecords];
-    duplicateRecords = [...duplicateRecords, ...newDuplicateRecords];
-  }
-  
-  // Save to localStorage
-  localStorage.setItem('careemTransactions', JSON.stringify(transactions));
-  
-  // Update UI
-  updateDashboard();
-  updateBranchTable();
-  updateAnalysis();
-  applyFilters();
-  
-  // Show notification
-  const validCount = newTransactions.length;
-  const invalidCount = newInvalidRecords.length;
-  const duplicateCount = newDuplicateRecords.length;
-  
-  let message = `Successfully imported ${validCount} valid records`;
-  if (invalidCount > 0) message += `, ${invalidCount} invalid records`;
-  if (duplicateCount > 0) message += `, ${duplicateCount} duplicate records`;
-  
-  showNotification(message);
-  
-  // Reset processing state
-  isProcessing = false;
-  document.querySelector('button[onclick="importData()"]').innerHTML = 'Import Data';
-  
-  // Clear textarea
-  document.getElementById('rawData').value = '';
-}
-
 // Import data from CSV file
 function importFromCSV() {
   const fileInput = document.getElementById('csvFile');
-  if (!fileInput.files.length) {
-    showNotification('Please select a CSV file', true);
+  const file = fileInput.files[0];
+  
+  if (!file) {
+    showNotification('Please select a CSV file', 'error');
     return;
   }
   
-  const file = fileInput.files[0];
   const reader = new FileReader();
-  
   reader.onload = function(e) {
-    const csvData = e.target.result;
-    document.getElementById('rawData').value = csvData;
+    const content = e.target.result;
+    document.getElementById('rawData').value = content;
     importData();
-    fileInput.value = ''; // Reset file input
   };
   
   reader.readAsText(file);
@@ -1885,78 +1609,76 @@ function importFromCSV() {
 // Export data to CSV
 function exportToCSV() {
   if (transactions.length === 0) {
-    showNotification('No data to export', true);
+    showNotification('No data to export', 'error');
     return;
   }
   
-  // Create CSV content
-  let csvContent = "Reference ID,Billable ID,Date,Amount,Description,Merchant Area,Category,Status,Reason\n";
+  let csv = 'Reference ID,Billable ID,Date,Amount,Description,Area,Category,Status,Reason\n';
   
-  transactions.forEach(transaction => {
-    csvContent += `"${transaction.referenceId}","${transaction.id}","${transaction.date}",${transaction.amount},"${transaction.description}","${transaction.area}","${transaction.category}","${transaction.status}","${transaction.reason}"\n`;
+  transactions.forEach(t => {
+    const dateStr = t.date.toLocaleDateString();
+    csv += `${t.referenceId},${t.id},${dateStr},${t.amount},"${t.description}","${t.area}",${t.category},${t.status},"${t.reason}"\n`;
   });
   
-  // Create download link
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', `careem_clawbacks_${new Date().toISOString().slice(0, 10)}.csv`);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  showNotification('Data exported to CSV successfully');
+  downloadCSV(csv, 'careem_clawback_data.csv');
 }
 
 // Export invalid records to CSV
 function exportInvalidRecords() {
   if (invalidRecords.length === 0) {
-    showNotification('No invalid records to export', true);
+    showNotification('No invalid records to export', 'error');
     return;
   }
   
-  // Create CSV content
-  let csvContent = "Line #,Original Data,Error Reason,Details\n";
+  let csv = 'Line #,Original Data,Error Reason,Details\n';
   
-  invalidRecords.forEach(record => {
-    csvContent += `${record.lineNumber},"${record.originalData}","${record.errorReason}","${record.details}"\n`;
+  invalidRecords.forEach(r => {
+    csv += `${r.line},"${r.originalData}","${r.error}","${r.details}"\n`;
   });
   
-  // Create download link
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', `careem_invalid_records_${new Date().toISOString().slice(0, 10)}.csv`);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  showNotification('Invalid records exported to CSV successfully');
+  downloadCSV(csv, 'careem_invalid_records.csv');
 }
 
-// Generate report
+// Download CSV file
+function downloadCSV(csv, filename) {
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('hidden', '');
+  a.setAttribute('href', url);
+  a.setAttribute('download', filename);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  
+  showNotification(`Exported to ${filename}`, 'success');
+}
+
+// Generate and display report
 function generateReport() {
   if (transactions.length === 0) {
-    showNotification('No data to generate report', true);
+    showNotification('No data available for report', 'error');
     return;
   }
   
-  // Calculate statistics
-  const stats = calculateStatistics();
+  // Update report date
+  const now = new Date();
+  const dateStr = now.toLocaleDateString();
+  document.getElementById('reportDate').textContent = dateStr;
+  document.getElementById('reportFooterDate').textContent = dateStr;
   
-  // Update report modal
-  document.getElementById('reportDate').textContent = new Date().toLocaleString();
+  // Calculate summary statistics
+  const stats = calculateStats();
+  
+  // Update financial summary
   document.getElementById('reportTotalClawbacks').textContent = formatCurrency(stats.totalClawbacks);
   document.getElementById('reportTotalPenalties').textContent = formatCurrency(stats.totalPenalties);
   document.getElementById('reportTotalCompensated').textContent = formatCurrency(stats.totalCompensated);
-  document.getElementById('reportTotalDisputes').textContent = stats.mainDisputeCount;
+  document.getElementById('reportTotalDisputes').textContent = stats.totalDisputes;
   document.getElementById('reportNetAmount').textContent = formatCurrency(stats.netAmount);
   
-  document.getElementById('reportTotalRecords').textContent = transactions.length;
+  // Update executive summary
+  document.getElementById('reportTotalRecords').textContent = stats.totalRecords;
   document.getElementById('reportTotalDeductions').textContent = formatCurrency(stats.totalDeductions);
   document.getElementById('reportAverageRecord').textContent = formatCurrency(stats.averageRecord);
   document.getElementById('reportRefundedAmount').textContent = formatCurrency(stats.refundedAmount);
@@ -1966,93 +1688,100 @@ function generateReport() {
   const mainDisputesTable = document.getElementById('mainDisputesTable');
   mainDisputesTable.innerHTML = '';
   
-  const mainDisputeReasonsCount = {};
-  transactions
-    .filter(t => t.isMainDispute)
-    .forEach(t => {
-      mainDisputeReasonsCount[t.reason] = (mainDisputeReasonsCount[t.reason] || 0) + 1;
-    });
+  let totalMainDisputes = 0;
   
-  Object.entries(mainDisputeReasonsCount)
-    .sort((a, b) => b[1] - a[1])
-    .forEach(([reason, count]) => {
+  mainDisputeReasons.forEach(reason => {
+    const count = transactions.filter(t => t.reason === reason).length;
+    if (count > 0) {
+      totalMainDisputes += count;
+      const percent = ((count / stats.totalRecords) * 100).toFixed(1);
+      
       const row = mainDisputesTable.insertRow();
       row.insertCell(0).textContent = reason;
       row.insertCell(1).textContent = count;
-      row.insertCell(2).textContent = `${((count / transactions.length) * 100).toFixed(1)}%`;
-    });
+      row.insertCell(2).textContent = `${percent}%`;
+    }
+  });
   
-  document.getElementById('totalMainDisputesCount').textContent = stats.mainDisputeCount;
-  document.getElementById('totalMainDisputesPercent').textContent = ((stats.mainDisputeCount / transactions.length) * 100).toFixed(1);
+  document.getElementById('totalMainDisputesCount').textContent = totalMainDisputes;
+  document.getElementById('totalMainDisputesPercent').textContent = ((totalMainDisputes / stats.totalRecords) * 100).toFixed(1);
   
-  // Update data quality section
+  // Update data quality summary
   const reportDataQuality = document.getElementById('reportDataQuality');
-  reportDataQuality.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-label">Valid Records</div>
-      <div class="stat-value">${transactions.length}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Invalid Records</div>
-      <div class="stat-value">${invalidRecords.length}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Duplicate Records</div>
-      <div class="stat-value">${duplicateRecords.length}</div>
-    </div>
+  reportDataQuality.innerHTML = '';
+  
+  const invalidStat = document.createElement('div');
+  invalidStat.className = 'stat-card';
+  invalidStat.innerHTML = `
+    <div class="stat-label">Invalid Records</div>
+    <div class="stat-value">${invalidRecords.length}</div>
   `;
+  reportDataQuality.appendChild(invalidStat);
+  
+  const duplicateStat = document.createElement('div');
+  duplicateStat.className = 'stat-card';
+  duplicateStat.innerHTML = `
+    <div class="stat-label">Duplicate Records</div>
+    <div class="stat-value">${duplicateRecords.length}</div>
+  `;
+  reportDataQuality.appendChild(duplicateStat);
+  
+  const validStat = document.createElement('div');
+  validStat.className = 'stat-card';
+  validStat.innerHTML = `
+    <div class="stat-label">Valid Records</div>
+    <div class="stat-value">${stats.totalRecords}</div>
+  `;
+  reportDataQuality.appendChild(validStat);
   
   // Update top reasons table
   const topReasonsTable = document.getElementById('topReasonsTable');
   topReasonsTable.innerHTML = '';
   
-  const reasonsCount = {};
-  transactions
-    .filter(t => t.category === 'CLAWBACK')
-    .forEach(t => {
-      reasonsCount[t.reason] = (reasonsCount[t.reason] || 0) + 1;
-    });
+  const reasonCounts = {};
+  transactions.forEach(t => {
+    reasonCounts[t.reason] = (reasonCounts[t.reason] || 0) + 1;
+  });
   
-  Object.entries(reasonsCount)
+  const sortedReasons = Object.entries(reasonCounts)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 10) // Top 10
-    .forEach(([reason, count]) => {
-      const row = topReasonsTable.insertRow();
-      row.insertCell(0).textContent = reason;
-      row.insertCell(1).textContent = count;
-      row.insertCell(2).textContent = `${((count / transactions.length) * 100).toFixed(1)}%`;
-    });
+    .slice(0, 5);
+  
+  sortedReasons.forEach(([reason, count]) => {
+    const percent = ((count / stats.totalRecords) * 100).toFixed(1);
+    
+    const row = topReasonsTable.insertRow();
+    row.insertCell(0).textContent = reason;
+    row.insertCell(1).textContent = count;
+    row.insertCell(2).textContent = `${percent}%`;
+  });
   
   // Update top branches table
   const topBranchesTable = document.getElementById('topBranchesTable');
   topBranchesTable.innerHTML = '';
   
-  const branchesData = {};
+  const branchDeductions = {};
   transactions.forEach(t => {
-    if (!branchesData[t.area]) {
-      branchesData[t.area] = {
-        count: 0,
-        totalDeductions: 0
-      };
+    if (!branchDeductions[t.area]) {
+      branchDeductions[t.area] = 0;
     }
-    branchesData[t.area].count++;
-    branchesData[t.area].totalDeductions += Math.abs(t.amount);
+    branchDeductions[t.area] += Math.abs(t.amount);
   });
   
-  Object.entries(branchesData)
-    .sort((a, b) => b[1].totalDeductions - a[1].totalDeductions)
-    .slice(0, 10) // Top 10
-    .forEach(([branch, data]) => {
-      const row = topBranchesTable.insertRow();
-      row.insertCell(0).textContent = branch;
-      row.insertCell(1).textContent = formatCurrency(data.totalDeductions);
-      row.insertCell(2).textContent = `${((data.totalDeductions / stats.totalDeductions) * 100).toFixed(1)}%`;
-    });
+  const sortedBranches = Object.entries(branchDeductions)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
   
-  // Set footer date
-  document.getElementById('reportFooterDate').textContent = new Date().toLocaleDateString();
+  sortedBranches.forEach(([branch, amount]) => {
+    const percent = ((amount / stats.totalDeductions) * 100).toFixed(1);
+    
+    const row = topBranchesTable.insertRow();
+    row.insertCell(0).textContent = branch;
+    row.insertCell(1).textContent = formatCurrency(amount);
+    row.insertCell(2).textContent = `${percent}%`;
+  });
   
-  // Show modal
+  // Show report modal
   document.getElementById('reportModal').style.display = 'block';
 }
 
@@ -2077,154 +1806,63 @@ function exportToPDF() {
   
   // Add date
   doc.setFontSize(12);
-  doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 25, { align: 'center' });
+  const dateStr = new Date().toLocaleDateString();
+  doc.text(`Generated on: ${dateStr}`, 105, 25, { align: 'center' });
   
-  // Add summary
+  // Add financial summary
   doc.setFontSize(16);
   doc.text('Financial Summary', 20, 40);
   
+  const stats = calculateStats();
+  
   doc.setFontSize(12);
-  const stats = calculateStatistics();
   doc.text(`Total Clawbacks: ${formatCurrency(stats.totalClawbacks)}`, 20, 50);
-  doc.text(`Total Penalties: ${formatCurrency(stats.totalPenalties)}`, 20, 60);
-  doc.text(`Total Compensated: ${formatCurrency(stats.totalCompensated)}`, 20, 70);
-  doc.text(`Main Disputes: ${stats.mainDisputeCount}`, 20, 80);
-  doc.text(`Net Amount: ${formatCurrency(stats.netAmount)}`, 20, 90);
+  doc.text(`Total Penalties: ${formatCurrency(stats.totalPenalties)}`, 20, 58);
+  doc.text(`Total Compensated: ${formatCurrency(stats.totalCompensated)}`, 20, 66);
+  doc.text(`Main Disputes: ${stats.totalDisputes}`, 20, 74);
+  doc.text(`Net Amount: ${formatCurrency(stats.netAmount)}`, 20, 82);
+  
+  // Add executive summary
+  doc.setFontSize(16);
+  doc.text('Executive Summary', 20, 100);
+  
+  doc.setFontSize(12);
+  doc.text(`Total Transactions: ${stats.totalRecords}`, 20, 110);
+  doc.text(`Total Deductions: ${formatCurrency(stats.totalDeductions)}`, 20, 118);
+  doc.text(`Average per Transaction: ${formatCurrency(stats.averageRecord)}`, 20, 126);
+  doc.text(`Refunded Amount: ${formatCurrency(stats.refundedAmount)}`, 20, 134);
+  doc.text(`Compensated Amount: ${formatCurrency(stats.compensatedAmount)}`, 20, 142);
   
   // Save the PDF
-  doc.save(`careem_report_${new Date().toISOString().slice(0, 10)}.pdf`);
-  
-  showNotification('Report exported to PDF successfully');
+  doc.save('careem_clawback_report.pdf');
+  showNotification('Report exported to PDF', 'success');
+}
+
+// Clear all data with confirmation
+function clearAllData() {
+  showConfirmDialog(
+    'Are you sure you want to clear all data? This action cannot be undone.',
+    function() {
+      transactions = [];
+      invalidRecords = [];
+      duplicateRecords = [];
+      updateUI();
+      saveToLocalStorage();
+      showNotification('All data cleared', 'success');
+      console.log('All data cleared');
+    }
+  );
 }
 
 // Toggle dark mode
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  const isDarkMode = document.body.classList.contains('dark-mode');
+  localStorage.setItem('darkMode', isDarkMode);
+  showNotification(`Dark mode ${isDarkMode ? 'enabled' : 'disabled'}`, 'success');
 }
 
-// Toggle reason consolidation
-function toggleReasonConsolidation() {
-  consolidateReasons = !consolidateReasons;
-  updateReasonsList();
-  applyFilters();
-  showNotification(`Reason consolidation ${consolidateReasons ? 'enabled' : 'disabled'}`);
-}
-
-// Clear all filters
-function clearFilters() {
-  document.getElementById('filterRefId').value = '';
-  document.getElementById('filterId').value = '';
-  document.getElementById('filterArea').value = '';
-  document.getElementById('filterStatus').value = '';
-  document.getElementById('filterCategory').value = '';
-  document.getElementById('filterReason').value = '';
-  selectedReason = '';
-  document.getElementById('filterDateFrom').value = '';
-  document.getElementById('filterDateTo').value = '';
-  
-  applyFilters();
-  showNotification('Filters cleared successfully');
-}
-
-// Show notification
-function showNotification(message, isError = false) {
-  const notification = document.getElementById('notification');
-  notification.textContent = message;
-  notification.className = 'notification show';
-  if (isError) {
-    notification.classList.add('error');
-  }
-  
-  setTimeout(() => {
-    notification.classList.remove('show');
-  }, 3000);
-}
-
-// Toggle reason dropdown
-function toggleReasonDropdown() {
-  const dropdown = document.getElementById('reasonDropdown');
-  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-}
-
-// Select reason from dropdown
-function selectReason(reason) {
-  selectedReason = reason;
-  document.getElementById('filterReason').value = reason;
-  document.getElementById('reasonDropdown').style.display = 'none';
-  applyFilters();
-}
-
-// Update reasons list for dropdown
-function updateReasonsList() {
-  const reasonsSet = new Set();
-  
-  transactions.forEach(transaction => {
-    if (consolidateReasons) {
-      reasonsSet.add(transaction.reason);
-    } else {
-      reasonsSet.add(transaction.description);
-    }
-  });
-  
-  reasonsList = Array.from(reasonsSet);
-  
-  // Update dropdown
-  const dropdown = document.getElementById('reasonDropdown');
-  dropdown.innerHTML = '';
-  
-  reasonsList.forEach(reason => {
-    const option = document.createElement('div');
-    option.className = 'reason-option';
-    option.textContent = reason;
-    option.onclick = () => selectReason(reason);
-    dropdown.appendChild(option);
-  });
-  
-  // Update reasons breakdown in dashboard
-  updateReasonsBreakdown();
-}
-
-// Update reasons breakdown in dashboard
-function updateReasonsBreakdown() {
-  const reasonsCount = {};
-  
-  transactions.forEach(transaction => {
-    const reason = consolidateReasons ? transaction.reason : transaction.description;
-    reasonsCount[reason] = (reasonsCount[reason] || 0) + 1;
-  });
-  
-  const reasonsListElement = document.getElementById('reasonsList');
-  reasonsListElement.innerHTML = '';
-  
-  if (Object.keys(reasonsCount).length === 0) {
-    reasonsListElement.innerHTML = '<li>No data available</li>';
-    return;
-  }
-  
-  Object.entries(reasonsCount)
-    .sort((a, b) => b[1] - a[1])
-    .forEach(([reason, count]) => {
-      const li = document.createElement('li');
-      
-      // Check if it's a main dispute reason
-      if (mainDisputeReasons.includes(reason)) {
-        li.innerHTML = `
-          <span class="reason main-dispute">${reason}</span>
-          <span class="count">${count} (${((count / transactions.length) * 100).toFixed(1)}%)</span>
-        `;
-      } else {
-        li.innerHTML = `
-          <span class="reason">${reason}</span>
-          <span class="count">${count} (${((count / transactions.length) * 100).toFixed(1)}%)</span>
-        `;
-      }
-      
-      reasonsListElement.appendChild(li);
-    });
-}
-
-// Apply filters to transactions
+// Apply filters to the table
 function applyFilters() {
   const refIdFilter = document.getElementById('filterRefId').value.toLowerCase();
   const idFilter = document.getElementById('filterId').value.toLowerCase();
@@ -2235,307 +1873,51 @@ function applyFilters() {
   const dateFromFilter = document.getElementById('filterDateFrom').value;
   const dateToFilter = document.getElementById('filterDateTo').value;
   
-  const filteredTransactions = transactions.filter(transaction => {
+  const filteredTransactions = transactions.filter(t => {
     // Reference ID filter
-    if (refIdFilter && !transaction.referenceId.toLowerCase().includes(refIdFilter)) {
+    if (refIdFilter && !t.referenceId.toLowerCase().includes(refIdFilter)) {
       return false;
     }
     
     // Billable ID filter
-    if (idFilter && !transaction.id.toLowerCase().includes(idFilter)) {
+    if (idFilter && !t.id.toLowerCase().includes(idFilter)) {
       return false;
     }
     
     // Area filter
-    if (areaFilter && !transaction.area.toLowerCase().includes(areaFilter)) {
+    if (areaFilter && !t.area.toLowerCase().includes(areaFilter)) {
       return false;
     }
     
     // Status filter
-    if (statusFilter && transaction.status !== statusFilter) {
+    if (statusFilter && t.status !== statusFilter) {
       return false;
     }
     
     // Category filter
-    if (categoryFilter && transaction.category !== categoryFilter) {
+    if (categoryFilter && t.category !== categoryFilter) {
       return false;
     }
     
     // Reason filter
-    if (reasonFilter) {
-      const reason = consolidateReasons ? transaction.reason : transaction.description;
-      if (reason !== reasonFilter) {
-        return false;
-      }
+    if (reasonFilter && t.reason !== reasonFilter) {
+      return false;
     }
     
     // Date from filter
-    if (dateFromFilter && transaction.date < dateFromFilter) {
+    if (dateFromFilter && t.date < new Date(dateFromFilter)) {
       return false;
     }
     
     // Date to filter
-    if (dateToFilter && transaction.date > dateToFilter) {
+    if (dateToFilter && t.date > new Date(dateToFilter)) {
       return false;
     }
     
     return true;
   });
   
-  // Update table
-  updateTransactionTable(filteredTransactions);
-  
-  // Update dashboard with filtered data
-  updateFilteredDashboard(filteredTransactions);
-}
-
-// Update transaction table
-function updateTransactionTable(data) {
-  const tableBody = document.querySelector('#dataTable tbody');
-  tableBody.innerHTML = '';
-  
-  if (data.length === 0) {
-    const row = tableBody.insertRow();
-    const cell = row.insertCell();
-    cell.colSpan = 9;
-    cell.textContent = 'No transactions found';
-    cell.style.textAlign = 'center';
-    return;
-  }
-  
-  data.forEach(transaction => {
-    const row = tableBody.insertRow();
-    
-    // Reference ID
-    row.insertCell(0).textContent = transaction.referenceId;
-    
-    // Billable ID
-    row.insertCell(1).textContent = transaction.id;
-    
-    // Date
-    row.insertCell(2).textContent = formatDate(parseDate(transaction.date));
-    
-    // Amount
-    const amountCell = row.insertCell(3);
-    amountCell.textContent = formatCurrency(transaction.amount);
-    if (transaction.amount < 0) {
-      amountCell.classList.add('negative');
-    }
-    
-    // Description
-    const descCell = row.insertCell(4);
-    descCell.textContent = transaction.description;
-    if (transaction.isMainDispute) {
-      descCell.classList.add('dispute-highlight');
-    }
-    
-    // Area
-    row.insertCell(5).textContent = transaction.area;
-    
-    // Category
-    const categoryCell = row.insertCell(6);
-    const badge = document.createElement('span');
-    badge.className = `category-badge ${transaction.category.toLowerCase()}`;
-    badge.textContent = transaction.category;
-    categoryCell.appendChild(badge);
-    
-    // Status
-    const statusCell = row.insertCell(7);
-    if (transaction.status) {
-      const statusBadge = document.createElement('span');
-      statusBadge.className = `category-badge ${transaction.status === 'Refunded' ? 'compensated' : 'dispute'}`;
-      statusBadge.textContent = transaction.status;
-      statusBadge.id = `status-${transaction.referenceId}-${transaction.id}`;
-      statusCell.appendChild(statusBadge);
-    }
-    
-    // Actions
-    const actionCell = row.insertCell(8);
-    
-    // Only show toggle button for clawback transactions
-    if (transaction.category === 'CLAWBACK' && transaction.isMainDispute) {
-      const toggleButton = document.createElement('button');
-      toggleButton.textContent = 'Toggle Status';
-      toggleButton.className = 'toggle-status-btn';
-      toggleButton.onclick = () => toggleTransactionStatus(transaction);
-      actionCell.appendChild(toggleButton);
-    }
-    
-    // Edit button
-    const editButton = document.createElement('button');
-    editButton.textContent = 'Edit';
-    editButton.style.padding = '5px 10px';
-    editButton.style.fontSize = '0.8em';
-    editButton.onclick = () => editTransaction(transaction);
-    actionCell.appendChild(editButton);
-  });
-}
-
-// Toggle transaction status between Refunded and COMPENSATED
-function toggleTransactionStatus(transaction) {
-  // Find the transaction in the array
-  const index = transactions.findIndex(t => 
-    t.referenceId === transaction.referenceId && t.id === transaction.id
-  );
-  
-  if (index === -1) return;
-  
-  // Toggle the status
-  if (transactions[index].status === 'Refunded') {
-    transactions[index].status = 'COMPENSATED';
-  } else if (transactions[index].status === 'COMPENSATED') {
-    transactions[index].status = 'Refunded';
-  }
-  
-  // Update the status badge in the table
-  const statusBadge = document.getElementById(`status-${transaction.referenceId}-${transaction.id}`);
-  if (statusBadge) {
-    statusBadge.textContent = transactions[index].status;
-    statusBadge.className = `category-badge ${transactions[index].status === 'Refunded' ? 'compensated' : 'dispute'}`;
-  }
-  
-  // Save to localStorage
-  localStorage.setItem('careemTransactions', JSON.stringify(transactions));
-  
-  // Update dashboard and analysis
-  updateDashboard();
-  updateAnalysis();
-  
-  // Show notification
-  showNotification(`Status changed to ${transactions[index].status} for ${transaction.referenceId}`);
-}
-
-// Edit transaction
-function editTransaction(transaction) {
-  // Create a simple modal for editing
-  const modal = document.createElement('div');
-  modal.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  `;
-  
-  const content = document.createElement('div');
-  content.style.cssText = `
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  `;
-  
-  content.innerHTML = `
-    <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--primary-dark);">Edit Transaction</h3>
-    <div style="margin-bottom: 15px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: 600;">Reference ID:</label>
-      <input type="text" id="editRefId" value="${transaction.referenceId}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: 600;">Billable ID:</label>
-      <input type="text" id="editId" value="${transaction.id}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: 600;">Amount:</label>
-      <input type="text" id="editAmount" value="${transaction.amount}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    </div>
-    <div style="margin-bottom: 15px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: 600;">Description:</label>
-      <textarea id="editDescription" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 80px;">${transaction.description}</textarea>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: 600;">Merchant Area:</label>
-      <input type="text" id="editArea" value="${transaction.area}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    </div>
-    ${transaction.category === 'CLAWBACK' && transaction.isMainDispute ? `
-    <div style="margin-bottom: 15px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: 600;">Status:</label>
-      <select id="editStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-        <option value="Refunded" ${transaction.status === 'Refunded' ? 'selected' : ''}>Refunded</option>
-        <option value="COMPENSATED" ${transaction.status === 'COMPENSATED' ? 'selected' : ''}>COMPENSATED</option>
-      </select>
-    </div>
-    ` : ''}
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
-      <button onclick="closeEditModal()" style="padding: 8px 16px; background: #757575; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
-      <button onclick="saveTransactionEdit('${transaction.referenceId}', '${transaction.id}')" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">Save</button>
-    </div>
-  `;
-  
-  modal.appendChild(content);
-  document.body.appendChild(modal);
-  
-  // Store the modal reference globally for closing
-  window.currentEditModal = modal;
-}
-
-// Close edit modal
-function closeEditModal() {
-  if (window.currentEditModal) {
-    document.body.removeChild(window.currentEditModal);
-    window.currentEditModal = null;
-  }
-}
-
-// Save transaction edit
-function saveTransactionEdit(referenceId, id) {
-  // Find the transaction in the array
-  const index = transactions.findIndex(t => t.referenceId === referenceId && t.id === id);
-  
-  if (index === -1) return;
-  
-  // Get the updated values
-  const amount = parseFloat(document.getElementById('editAmount').value);
-  const description = document.getElementById('editDescription').value.trim();
-  const area = document.getElementById('editArea').value.trim();
-  
-  // Validate
-  if (isNaN(amount)) {
-    showNotification('Invalid amount format', true);
-    return;
-  }
-  
-  if (!description) {
-    showNotification('Description cannot be empty', true);
-    return;
-  }
-  
-  // Update the transaction
-  transactions[index].amount = amount;
-  transactions[index].description = description;
-  transactions[index].area = area;
-  
-  // Update status if applicable
-  if (transactions[index].category === 'CLAWBACK' && transactions[index].isMainDispute) {
-    transactions[index].status = document.getElementById('editStatus').value;
-  }
-  
-  // Re-categorize if description changed
-  const categoryInfo = categorizeTransaction(description);
-  transactions[index].category = categoryInfo.category;
-  transactions[index].isMainDispute = categoryInfo.isMainDispute;
-  transactions[index].reason = categoryInfo.reason;
-  
-  // Save to localStorage
-  localStorage.setItem('careemTransactions', JSON.stringify(transactions));
-  
-  // Close modal
-  closeEditModal();
-  
-  // Update UI
-  updateDashboard();
-  updateBranchTable();
-  updateAnalysis();
-  applyFilters();
-  
-  showNotification('Transaction updated successfully');
+  updateTable(filteredTransactions);
 }
 
 // Sort table by column
@@ -2547,31 +1929,17 @@ function sortTable(column) {
     sortAscending = true;
   }
   
-  // Update sort indicators
-  document.querySelectorAll('th').forEach(th => {
-    th.classList.remove('sorted-asc', 'sorted-desc');
-  });
-  
-  const currentTh = Array.from(document.querySelectorAll('th')).find(th => 
-    th.textContent.includes(column.replace(/([A-Z])/g, ' $1').trim())
-  );
-  
-  if (currentTh) {
-    currentTh.classList.add(sortAscending ? 'sorted-asc' : 'sorted-desc');
-  }
-  
-  // Sort transactions
-  transactions.sort((a, b) => {
+  const sortedTransactions = [...transactions].sort((a, b) => {
     let valueA = a[column];
     let valueB = b[column];
     
     // Handle dates
     if (column === 'date') {
-      valueA = new Date(valueA);
-      valueB = new Date(valueB);
+      valueA = valueA.getTime();
+      valueB = valueB.getTime();
     }
     
-    // Handle numbers
+    // Handle amounts
     if (column === 'amount') {
       valueA = parseFloat(valueA);
       valueB = parseFloat(valueB);
@@ -2592,303 +1960,599 @@ function sortTable(column) {
     return 0;
   });
   
-  // Update table
-  applyFilters();
+  // Update sort indicators
+  const headers = document.querySelectorAll('#dataTable th');
+  headers.forEach(header => {
+    header.classList.remove('sorted-asc', 'sorted-desc');
+    if (header.getAttribute('onclick').includes(column)) {
+      header.classList.add(sortAscending ? 'sorted-asc' : 'sorted-desc');
+    }
+  });
+  
+  updateTable(sortedTransactions);
 }
 
-// Update dashboard
-function updateDashboard() {
-  const stats = calculateStatistics();
+// Toggle reason dropdown
+function toggleReasonDropdown() {
+  const dropdown = document.getElementById('reasonDropdown');
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Update reasons dropdown
+function updateReasonsDropdown() {
+  const dropdown = document.getElementById('reasonDropdown');
+  dropdown.innerHTML = '';
+  
+  // Get all unique reasons
+  const uniqueReasons = [...new Set(transactions.map(t => t.reason))];
+  
+  // Add "All" option
+  const allOption = document.createElement('div');
+  allOption.className = 'reason-option';
+  allOption.textContent = 'All Reasons';
+  allOption.onclick = function() {
+    selectedReason = '';
+    document.getElementById('filterReason').value = 'All Reasons';
+    dropdown.style.display = 'none';
+    applyFilters();
+  };
+  dropdown.appendChild(allOption);
+  
+  // Add reason options
+  uniqueReasons.forEach(reason => {
+    const option = document.createElement('div');
+    option.className = 'reason-option';
+    option.textContent = reason;
+    option.onclick = function() {
+      selectedReason = reason;
+      document.getElementById('filterReason').value = reason;
+      dropdown.style.display = 'none';
+      applyFilters();
+    };
+    dropdown.appendChild(option);
+  });
+}
+
+// Update UI with current data
+function updateUI() {
+  // Calculate statistics
+  const stats = calculateStats();
   
   // Update summary cards
   document.getElementById('totalClawbacks').textContent = formatCurrency(stats.totalClawbacks);
   document.getElementById('totalPenalties').textContent = formatCurrency(stats.totalPenalties);
   document.getElementById('totalCompensated').textContent = formatCurrency(stats.totalCompensated);
-  document.getElementById('totalDisputes').textContent = stats.mainDisputeCount;
+  document.getElementById('totalDisputes').textContent = stats.totalDisputes;
   document.getElementById('netAmount').textContent = formatCurrency(stats.netAmount);
   
-  // Update stat cards
-  document.getElementById('totalRecords').textContent = transactions.length;
+  // Update dashboard stats
+  document.getElementById('totalRecords').textContent = stats.totalRecords;
   document.getElementById('totalDeductions').textContent = formatCurrency(stats.totalDeductions);
   document.getElementById('averageRecord').textContent = formatCurrency(stats.averageRecord);
   document.getElementById('refundedAmount').textContent = formatCurrency(stats.refundedAmount);
   document.getElementById('compensatedAmount').textContent = formatCurrency(stats.compensatedAmount);
   
   // Update error stats
-  const errorStats = document.getElementById('errorStats');
-  if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
-    errorStats.style.display = 'flex';
-    document.getElementById('invalidCount').textContent = invalidRecords.length;
-    document.getElementById('duplicateCount').textContent = duplicateRecords.length;
-    document.getElementById('validCount').textContent = transactions.length;
-  } else {
-    errorStats.style.display = 'none';
-  }
+  document.getElementById('invalidCount').textContent = invalidRecords.length;
+  document.getElementById('duplicateCount').textContent = duplicateRecords.length;
+  document.getElementById('validCount').textContent = stats.totalRecords;
   
-  // Update invalid records table
-  updateInvalidRecordsTable();
+  // Show/hide error stats section
+  const errorStatsSection = document.getElementById('errorStats');
+  if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
+    errorStatsSection.style.display = 'flex';
+  } else {
+    errorStatsSection.style.display = 'none';
+  }
   
   // Update reasons breakdown
   updateReasonsBreakdown();
+  
+  // Update tables
+  updateTable(transactions);
+  updateBranchTable();
+  
+  // Update analysis
+  updateAnalysis();
+  
+  // Update reasons dropdown
+  updateReasonsDropdown();
+  
+  // Show/hide invalid records section
+  const invalidRecordsSection = document.getElementById('invalidRecordsSection');
+  if (invalidRecords.length > 0) {
+    invalidRecordsSection.style.display = 'block';
+    updateInvalidRecordsTable();
+  } else {
+    invalidRecordsSection.style.display = 'none';
+  }
 }
 
-// Update dashboard with filtered data
-function updateFilteredDashboard(filteredData) {
-  const stats = calculateStatistics(filteredData);
+// Calculate statistics
+function calculateStats() {
+  const stats = {
+    totalRecords: transactions.length,
+    totalDeductions: 0,
+    totalClawbacks: 0,
+    totalPenalties: 0,
+    totalCompensated: 0,
+    totalDisputes: 0,
+    refundedAmount: 0,
+    compensatedAmount: 0,
+    averageRecord: 0,
+    netAmount: 0
+  };
   
-  // Update stat cards with filtered data
-  document.getElementById('totalRecords').textContent = filteredData.length;
-  document.getElementById('totalDeductions').textContent = formatCurrency(stats.totalDeductions);
-  document.getElementById('averageRecord').textContent = formatCurrency(stats.averageRecord);
-  document.getElementById('refundedAmount').textContent = formatCurrency(stats.refundedAmount);
-  document.getElementById('compensatedAmount').textContent = formatCurrency(stats.compensatedAmount);
+  transactions.forEach(t => {
+    const absAmount = Math.abs(t.amount);
+    stats.totalDeductions += absAmount;
+    
+    if (t.category === 'CLAWBACK') {
+      stats.totalClawbacks += absAmount;
+      if (t.status === 'Refunded') {
+        stats.refundedAmount += absAmount;
+      }
+    } else if (t.category === 'PENALTY') {
+      stats.totalPenalties += absAmount;
+    } else if (t.category === 'COMPENSATED') {
+      stats.totalCompensated += absAmount;
+      stats.compensatedAmount += absAmount;
+    }
+    
+    if (mainDisputeReasons.includes(t.reason)) {
+      stats.totalDisputes++;
+    }
+  });
+  
+  stats.averageRecord = stats.totalRecords > 0 ? stats.totalDeductions / stats.totalRecords : 0;
+  stats.netAmount = stats.totalCompensated - stats.totalDeductions;
+  
+  return stats;
 }
 
-// Update invalid records table
-function updateInvalidRecordsTable() {
-  const tableBody = document.getElementById('invalidRecordsTable');
-  tableBody.innerHTML = '';
+// Update reasons breakdown
+function updateReasonsBreakdown() {
+  const reasonsList = document.getElementById('reasonsList');
+  reasonsList.innerHTML = '';
   
-  if (invalidRecords.length === 0) {
-    document.getElementById('invalidRecordsSection').style.display = 'none';
+  // Count reasons
+  const reasonCounts = {};
+  transactions.forEach(t => {
+    reasonCounts[t.reason] = (reasonCounts[t.reason] || 0) + 1;
+  });
+  
+  // Sort by count
+  const sortedReasons = Object.entries(reasonCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+  
+  if (sortedReasons.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = 'No data available';
+    reasonsList.appendChild(li);
     return;
   }
   
-  document.getElementById('invalidRecordsSection').style.display = 'block';
+  sortedReasons.forEach(([reason, count]) => {
+    const li = document.createElement('li');
+    
+    const reasonSpan = document.createElement('span');
+    reasonSpan.className = 'reason';
+    reasonSpan.textContent = reason;
+    
+    const countSpan = document.createElement('span');
+    countSpan.textContent = ` (${count})`;
+    
+    li.appendChild(reasonSpan);
+    li.appendChild(countSpan);
+    
+    // Add class for main disputes
+    if (mainDisputeReasons.includes(reason)) {
+      li.classList.add('main-dispute');
+    }
+    
+    reasonsList.appendChild(li);
+  });
+}
+
+// Update transactions table
+function updateTable(data) {
+  const tbody = document.querySelector('#dataTable tbody');
+  tbody.innerHTML = '';
   
-  invalidRecords.forEach(record => {
-    const row = tableBody.insertRow();
-    row.insertCell(0).textContent = record.lineNumber;
-    row.insertCell(1).textContent = record.originalData;
-    row.insertCell(2).textContent = record.errorReason;
-    row.insertCell(3).textContent = record.details;
+  if (data.length === 0) {
+    const row = tbody.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 9;
+    cell.textContent = 'No transactions found';
+    return;
+  }
+  
+  data.forEach(t => {
+    const row = tbody.insertRow();
+    
+    // Reference ID
+    const refIdCell = row.insertCell();
+    refIdCell.textContent = t.referenceId;
+    
+    // Billable ID
+    const idCell = row.insertCell();
+    idCell.textContent = t.id;
+    
+    // Date
+    const dateCell = row.insertCell();
+    dateCell.textContent = t.date.toLocaleDateString();
+    
+    // Amount
+    const amountCell = row.insertCell();
+    amountCell.textContent = formatCurrency(t.amount);
+    if (t.amount < 0) {
+      amountCell.classList.add('negative');
+    }
+    
+    // Description
+    const descCell = row.insertCell();
+    descCell.textContent = t.description;
+    
+    // Area
+    const areaCell = row.insertCell();
+    areaCell.textContent = t.area;
+    
+    // Category
+    const categoryCell = row.insertCell();
+    const categoryBadge = document.createElement('span');
+    categoryBadge.className = `category-badge ${t.category.toLowerCase()}`;
+    categoryBadge.textContent = t.category;
+    categoryCell.appendChild(categoryBadge);
+    
+    // Status
+    const statusCell = row.insertCell();
+    statusCell.textContent = t.status;
+    
+    // Action
+    const actionCell = row.insertCell();
+    
+    // Create status dropdown
+    const statusSelect = document.createElement('select');
+    statusSelect.className = 'action-select';
+    statusSelect.dataset.referenceId = t.referenceId;
+    
+    // Add status options
+    const statusOptions = ['Refunded', 'Compensated', 'Charged', 'Pending', 'Resolved'];
+    statusOptions.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option;
+      optionElement.textContent = option;
+      if (option === t.status) {
+        optionElement.selected = true;
+      }
+      statusSelect.appendChild(optionElement);
+    });
+    
+    // Add change event listener
+    statusSelect.addEventListener('change', function() {
+      changeStatus(this.dataset.referenceId, this.value);
+    });
+    
+    actionCell.appendChild(statusSelect);
   });
 }
 
 // Update branch table
 function updateBranchTable() {
-  const tableBody = document.querySelector('#branchTable tbody');
-  tableBody.innerHTML = '';
+  const tbody = document.querySelector('#branchTable tbody');
+  tbody.innerHTML = '';
   
-  if (transactions.length === 0) {
-    const row = tableBody.insertRow();
-    const cell = row.insertCell();
-    cell.colSpan = 4;
-    cell.textContent = 'No data available';
-    cell.style.textAlign = 'center';
-    return;
-  }
-  
-  // Group by branch
-  const branchesData = {};
-  transactions.forEach(transaction => {
-    if (!branchesData[transaction.area]) {
-      branchesData[transaction.area] = {
-        count: 0,
+  // Group by area
+  const branchData = {};
+  transactions.forEach(t => {
+    if (!branchData[t.area]) {
+      branchData[t.area] = {
+        orderCount: 0,
         totalDeductions: 0,
         reasons: {}
       };
     }
     
-    branchesData[transaction.area].count++;
-    branchesData[transaction.area].totalDeductions += Math.abs(transaction.amount);
+    branchData[t.area].orderCount++;
+    branchData[t.area].totalDeductions += Math.abs(t.amount);
     
-    const reason = consolidateReasons ? transaction.reason : transaction.description;
-    branchesData[transaction.area].reasons[reason] = (branchesData[transaction.area].reasons[reason] || 0) + 1;
+    if (!branchData[t.area].reasons[t.reason]) {
+      branchData[t.area].reasons[t.reason] = 0;
+    }
+    branchData[t.area].reasons[t.reason]++;
   });
   
   // Sort by total deductions
-  const sortedBranches = Object.entries(branchesData)
+  const sortedBranches = Object.entries(branchData)
     .sort((a, b) => b[1].totalDeductions - a[1].totalDeductions);
   
-  // Populate table
-  sortedBranches.forEach(([branch, data]) => {
-    const row = tableBody.insertRow();
-    row.insertCell(0).textContent = branch;
-    row.insertCell(1).textContent = data.count;
-    row.insertCell(2).textContent = formatCurrency(data.totalDeductions);
+  sortedBranches.forEach(([area, data]) => {
+    const row = tbody.insertRow();
+    
+    // Branch
+    const areaCell = row.insertCell();
+    areaCell.textContent = area;
+    
+    // Order count
+    const countCell = row.insertCell();
+    countCell.textContent = data.orderCount;
+    
+    // Total deductions
+    const deductionsCell = row.insertCell();
+    deductionsCell.textContent = formatCurrency(data.totalDeductions);
     
     // Reasons
-    const reasonsCell = row.insertCell(3);
-    const topReasons = Object.entries(data.reasons)
+    const reasonsCell = row.insertCell();
+    const reasonsList = Object.entries(data.reasons)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([reason, count]) => `${reason} (${count})`)
       .join(', ');
-    
-    reasonsCell.textContent = topReasons;
+    reasonsCell.textContent = reasonsList;
   });
 }
 
-// Update analysis section
-function updateAnalysis() {
-  if (transactions.length === 0) {
-    document.getElementById('executiveSummary').textContent = 'No data available. Please import data to generate analysis.';
-    document.getElementById('disputeAnalysis').textContent = 'No data available. Please import data to generate analysis.';
-    document.getElementById('financialAnalysis').textContent = 'No data available. Please import data to generate analysis.';
-    document.getElementById('branchAnalysis').textContent = 'No data available. Please import data to generate analysis.';
-    document.getElementById('recommendations').textContent = 'No data available. Please import data to generate analysis.';
-    return;
-  }
+// Update invalid records table
+function updateInvalidRecordsTable() {
+  const tbody = document.getElementById('invalidRecordsTable');
+  tbody.innerHTML = '';
   
-  const stats = calculateStatistics();
+  invalidRecords.forEach(r => {
+    const row = tbody.insertRow();
+    
+    // Line #
+    const lineCell = row.insertCell();
+    lineCell.textContent = r.line;
+    
+    // Original data
+    const dataCell = row.insertCell();
+    dataCell.textContent = r.originalData;
+    
+    // Error reason
+    const errorCell = row.insertCell();
+    errorCell.className = 'error-reason';
+    errorCell.textContent = r.error;
+    
+    // Details
+    const detailsCell = row.insertCell();
+    detailsCell.className = 'error-details';
+    detailsCell.textContent = r.details;
+  });
+}
+
+// Update analysis report
+function updateAnalysis() {
+  const stats = calculateStats();
   
   // Executive Summary
   const executiveSummary = document.getElementById('executiveSummary');
-  executiveSummary.innerHTML = `
-    <p>This comprehensive analysis examines <span class="highlight">${transactions.length}</span> transactions with a total financial impact of <span class="negative-highlight">${formatCurrency(stats.netAmount)}</span>.</p>
-    <p>Key findings show that <span class="highlight">${stats.mainDisputeCount}</span> (${((stats.mainDisputeCount / transactions.length) * 100).toFixed(1)}%) are main dispute reasons that Careem accepts for refunds.</p>
-    <p>The average deduction per transaction is <span class="negative-highlight">${formatCurrency(stats.averageRecord)}</span>, indicating significant financial impact per incident.</p>
-    <p>Data quality is maintained with ${invalidRecords.length} invalid records and ${duplicateRecords.length} duplicate records identified during processing.</p>
-  `;
+  if (stats.totalRecords > 0) {
+    executiveSummary.innerHTML = `
+      <p>This report analyzes <span class="highlight">${stats.totalRecords}</span> clawback transactions 
+      totaling <span class="negative-highlight">${formatCurrency(stats.totalDeductions)}</span> in deductions.</p>
+      <p>Of these, <span class="highlight">${stats.totalDisputes}</span> transactions (${((stats.totalDisputes / stats.totalRecords) * 100).toFixed(1)}%) 
+      were identified as main disputes that Careem accepts for refunds.</p>
+      <p>The average deduction per transaction is <span class="negative-highlight">${formatCurrency(stats.averageRecord)}</span>.</p>
+    `;
+  } else {
+    executiveSummary.innerHTML = '<p>No data available. Please import data to generate analysis.</p>';
+  }
   
   // Main Dispute Reasons Analysis
   const disputeAnalysis = document.getElementById('disputeAnalysis');
-  const mainDisputeReasonsCount = {};
-  transactions
-    .filter(t => t.isMainDispute)
-    .forEach(t => {
-      mainDisputeReasonsCount[t.reason] = (mainDisputeReasonsCount[t.reason] || 0) + 1;
+  if (stats.totalDisputes > 0) {
+    const disputeCounts = {};
+    transactions.forEach(t => {
+      if (mainDisputeReasons.includes(t.reason)) {
+        disputeCounts[t.reason] = (disputeCounts[t.reason] || 0) + 1;
+      }
     });
-  
-  const topDisputeReason = Object.entries(mainDisputeReasonsCount)
-    .sort((a, b) => b[1] - a[1])[0];
-  
-  disputeAnalysis.innerHTML = `
-    <p>The most prevalent main dispute reason is <span class="highlight">${topDisputeReason ? topDisputeReason[0] : 'N/A'}</span> with <span class="highlight">${topDisputeReason ? topDisputeReason[1] : 0}</span> occurrences.</p>
-    <p>Main disputes constitute <span class="highlight">${((stats.mainDisputeCount / transactions.length) * 100).toFixed(1)}%</span> of all transactions but account for <span class="negative-highlight">${((stats.refundedAmount / stats.totalDeductions) * 100).toFixed(1)}%</span> of total deductions.</p>
-    <p>This indicates that while main disputes are less frequent, they have a disproportionately high financial impact.</p>
-    <p>Addressing these specific issues could yield significant improvements in overall financial performance.</p>
-  `;
+    
+    const topDisputes = Object.entries(disputeCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+    
+    let disputeHtml = '<p>The top main dispute reasons are:</p><ul>';
+    topDisputes.forEach(([reason, count]) => {
+      const percent = ((count / stats.totalDisputes) * 100).toFixed(1);
+      disputeHtml += `<li><span class="dispute-highlight">${reason}</span>: ${count} disputes (${percent}%)</li>`;
+    });
+    disputeHtml += '</ul>';
+    
+    disputeAnalysis.innerHTML = disputeHtml;
+  } else {
+    disputeAnalysis.innerHTML = '<p>No main dispute reasons identified. All transactions appear to be penalties or other deductions.</p>';
+  }
   
   // Financial Impact Analysis
   const financialAnalysis = document.getElementById('financialAnalysis');
-  financialAnalysis.innerHTML = `
-    <p>Total deductions amount to <span class="negative-highlight">${formatCurrency(stats.totalDeductions)}</span>, distributed as follows:</p>
-    <ul>
-      <li>Clawbacks: <span class="negative-highlight">${formatCurrency(stats.totalClawbacks)}</span> (${((stats.totalClawbacks / stats.totalDeductions) * 100).toFixed(1)}%)</li>
-      <li>Penalties: <span class="negative-highlight">${formatCurrency(stats.totalPenalties)}</span> (${((stats.totalPenalties / stats.totalDeductions) * 100).toFixed(1)}%)</li>
-    </ul>
-    <p>Compensated amounts total <span class="highlight">${formatCurrency(stats.totalCompensated)}</span>, providing partial offset to the deductions.</p>
-    <p>The net financial impact is <span class="negative-highlight">${formatCurrency(stats.netAmount)}</span>, representing the actual cost to the business.</p>
-    <p>Refunded amounts total <span class="highlight">${formatCurrency(stats.refundedAmount)}</span>, while compensated amounts reach <span class="highlight">${formatCurrency(stats.compensatedAmount)}</span>.</p>
-  `;
+  if (stats.totalRecords > 0) {
+    const clawbackPercent = ((stats.totalClawbacks / stats.totalDeductions) * 100).toFixed(1);
+    const penaltyPercent = ((stats.totalPenalties / stats.totalDeductions) * 100).toFixed(1);
+    const compensatedPercent = ((stats.totalCompensated / stats.totalDeductions) * 100).toFixed(1);
+    
+    financialAnalysis.innerHTML = `
+      <p>Clawbacks account for <span class="negative-highlight">${clawbackPercent}%</span> of total deductions 
+      (<span class="negative-highlight">${formatCurrency(stats.totalClawbacks)}</span>).</p>
+      <p>Penalties make up <span class="negative-highlight">${penaltyPercent}%</span> of total deductions 
+      (<span class="negative-highlight">${formatCurrency(stats.totalPenalties)}</span>).</p>
+      <p>Compensated amounts represent <span class="highlight">${compensatedPercent}%</span> of total deductions 
+      (<span class="highlight">${formatCurrency(stats.totalCompensated)}</span>).</p>
+      <p>The net financial impact is <span class="${stats.netAmount >= 0 ? 'highlight' : 'negative-highlight'}">${formatCurrency(stats.netAmount)}</span>.</p>
+    `;
+  } else {
+    financialAnalysis.innerHTML = '<p>No financial data available. Please import data to generate analysis.</p>';
+  }
   
   // Branch Performance Analysis
   const branchAnalysis = document.getElementById('branchAnalysis');
-  const branchesData = {};
-  transactions.forEach(t => {
-    if (!branchesData[t.area]) {
-      branchesData[t.area] = {
-        count: 0,
-        totalDeductions: 0,
-        mainDisputes: 0
-      };
-    }
-    branchesData[t.area].count++;
-    branchesData[t.area].totalDeductions += Math.abs(t.amount);
-    if (t.isMainDispute) branchesData[t.area].mainDisputes++;
-  });
+  if (stats.totalRecords > 0) {
+    const branchData = {};
+    transactions.forEach(t => {
+      if (!branchData[t.area]) {
+        branchData[t.area] = {
+          orderCount: 0,
+          totalDeductions: 0,
+          disputeCount: 0
+        };
+      }
+      
+      branchData[t.area].orderCount++;
+      branchData[t.area].totalDeductions += Math.abs(t.amount);
+      
+      if (mainDisputeReasons.includes(t.reason)) {
+        branchData[t.area].disputeCount++;
+      }
+    });
+    
+    const topBranches = Object.entries(branchData)
+      .sort((a, b) => b[1].totalDeductions - a[1].totalDeductions)
+      .slice(0, 3);
+    
+    let branchHtml = '<p>The top 3 branches by deduction amount are:</p><ul>';
+    topBranches.forEach(([area, data]) => {
+      const disputePercent = data.orderCount > 0 ? ((data.disputeCount / data.orderCount) * 100).toFixed(1) : 0;
+      branchHtml += `<li><strong>${area}</strong>: ${data.orderCount} orders, ${formatCurrency(data.totalDeductions)} deductions, ${data.disputeCount} disputes (${disputePercent}%)</li>`;
+    });
+    branchHtml += '</ul>';
+    
+    branchAnalysis.innerHTML = branchHtml;
+  } else {
+    branchAnalysis.innerHTML = '<p>No branch data available. Please import data to generate analysis.</p>';
+  }
   
-  const sortedBranches = Object.entries(branchesData)
-    .sort((a, b) => b[1].totalDeductions - a[1].totalDeductions);
-  
-  const worstBranch = sortedBranches[0];
-  const bestBranch = sortedBranches[sortedBranches.length - 1];
-  
-  branchAnalysis.innerHTML = `
-    <p>Branch performance varies significantly across the network:</p>
-    <p>The highest-performing branch in terms of deductions is <span class="negative-highlight">${worstBranch ? worstBranch[0] : 'N/A'}</span> with <span class="negative-highlight">${worstBranch ? formatCurrency(worstBranch[1].totalDeductions) : '0'}</span> in total deductions.</p>
-    <p>This branch accounts for <span class="negative-highlight">${worstBranch ? ((worstBranch[1].totalDeductions / stats.totalDeductions) * 100).toFixed(1) : 0}%</span> of all deductions.</p>
-    <p>Conversely, the best-performing branch is <span class="highlight">${bestBranch ? bestBranch[0] : 'N/A'}</span> with minimal deductions.</p>
-    <p>Branches with high main dispute rates should be prioritized for training and process improvement initiatives.</p>
-  `;
-  
-  // Strategic Recommendations
+  // Recommendations
   const recommendations = document.getElementById('recommendations');
-  recommendations.innerHTML = `
-    <h4>Strategic Action Plan</h4>
-    <ol>
-      <li><strong>Reduce Main Disputes:</strong> Focus on the top main dispute reasons, especially <span class="highlight">${topDisputeReason ? topDisputeReason[0] : 'N/A'}</span>. Implement targeted quality control measures and staff training programs.</li>
-      <li><strong>Branch Performance Optimization:</strong> Provide additional training and support to underperforming branches, particularly <span class="negative-highlight">${worstBranch ? worstBranch[0] : 'N/A'}</span>. Consider implementing performance-based incentives.</li>
-      <li><strong>Process Improvement:</strong> Review and enhance order preparation and packaging processes to reduce spills, damages, and incorrect items. Standardize procedures across all branches.</li>
-      <li><strong>Customer Communication Enhancement:</strong> Improve communication protocols with customers regarding unavailable items to reduce "missing item" disputes. Implement real-time inventory updates.</li>
-      <li><strong>Technology Integration:</strong> Leverage technology solutions for better order tracking, quality control, and customer feedback management.</li>
-      <li><strong>Continuous Monitoring:</strong> Establish regular review cycles for clawback data to identify emerging issues and address them proactively.</li>
-      <li><strong>Staff Training:</strong> Develop comprehensive training programs focused on reducing the most common dispute reasons and improving overall service quality.</li>
-    </ol>
-    <h4>Expected Outcomes</h4>
-    <ul>
-      <li>Reduction in main dispute rates by 30-50% within 6 months</li>
-      <li>Decrease in overall deductions by 20-30% year-over-year</li>
-      <li>Improved customer satisfaction scores</li>
-      <li>Better consistency in service quality across all branches</li>
-    </ul>
-  `;
+  if (stats.totalRecords > 0) {
+    let recHtml = '<ul>';
+    
+    if (stats.totalDisputes / stats.totalRecords > 0.3) {
+      recHtml += '<li>High dispute rate detected. Focus on improving food quality and order accuracy to reduce valid customer complaints.</li>';
+    }
+    
+    if (stats.totalPenalties / stats.totalDeductions > 0.2) {
+      recHtml += '<li>Significant penalties identified. Review operations to ensure compliance with Careem policies.</li>';
+    }
+    
+    if (stats.totalClawbacks / stats.totalDeductions > 0.7) {
+      recHtml += '<li>Majority of deductions are clawbacks. Implement better quality control measures to reduce customer complaints.</li>';
+    }
+    
+    recHtml += '<li>Regularly analyze this data to identify trends and take proactive measures.</li>';
+    recHtml += '<li>Train staff on common dispute reasons to prevent recurring issues.</li>';
+    recHtml += '</ul>';
+    
+    recommendations.innerHTML = recHtml;
+  } else {
+    recommendations.innerHTML = '<p>No recommendations available. Please import data to generate analysis.</p>';
+  }
 }
 
-// Calculate statistics
-function calculateStatistics(data = transactions) {
-  const stats = {
-    totalClawbacks: 0,
-    totalPenalties: 0,
-    totalCompensated: 0,
-    mainDisputeCount: 0,
-    refundedAmount: 0,
-    compensatedAmount: 0,
-    totalDeductions: 0,
-    averageRecord: 0,
-    netAmount: 0
-  };
+// Change transaction status
+function changeStatus(referenceId, newStatus) {
+  // Find the transaction
+  const transaction = transactions.find(t => t.referenceId === referenceId);
+  if (!transaction) {
+    showNotification('Transaction not found', 'error');
+    return;
+  }
   
-  data.forEach(transaction => {
-    const absAmount = Math.abs(transaction.amount);
-    
-    if (transaction.category === 'CLAWBACK') {
-      stats.totalClawbacks += absAmount;
-    } else if (transaction.category === 'PENALTY') {
-      stats.totalPenalties += absAmount;
-    } else if (transaction.category === 'COMPENSATED') {
-      stats.totalCompensated += absAmount;
-    }
-    
-    if (transaction.isMainDispute) {
-      stats.mainDisputeCount++;
-    }
-    
-    if (transaction.status === 'Refunded') {
-      stats.refundedAmount += absAmount;
-    }
-    
-    if (transaction.status === 'COMPENSATED') {
-      stats.compensatedAmount += absAmount;
-    }
-    
-    if (transaction.amount < 0) {
-      stats.totalDeductions += absAmount;
-    }
-  });
+  // Update the status
+  transaction.status = newStatus;
   
-  stats.netAmount = stats.totalClawbacks + stats.totalPenalties - stats.totalCompensated;
-  stats.averageRecord = data.length > 0 ? stats.totalDeductions / data.length : 0;
+  // If status is changed to Compensated, update category
+  if (newStatus === 'Compensated') {
+    transaction.category = 'COMPENSATED';
+  }
   
-  return stats;
+  // Save to localStorage
+  saveToLocalStorage();
+  
+  // Update UI
+  updateUI();
+  
+  // Show notification
+  showNotification(`Status updated to ${newStatus}`, 'success');
+  console.log(`Status updated for transaction ${referenceId} to ${newStatus}`);
 }
 
 // Format currency
 function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-AE', {
     style: 'currency',
     currency: 'AED',
     minimumFractionDigits: 2
   }).format(amount);
 }
 
-// Close dropdown when clicking outside
+// Show notification
+function showNotification(message, type = 'success') {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.className = 'notification show';
+  
+  if (type === 'error') {
+    notification.classList.add('error');
+  } else if (type === 'warning') {
+    notification.style.background = '#f39c12';
+  } else if (type === 'info') {
+    notification.style.background = '#3498db';
+  } else {
+    notification.style.background = '';
+  }
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 3000);
+}
+
+// Show confirmation dialog
+function showConfirmDialog(message, onConfirm) {
+  const dialog = document.getElementById('confirmDialog');
+  const messageElement = document.getElementById('confirmMessage');
+  const yesButton = document.getElementById('confirmYes');
+  const noButton = document.getElementById('confirmNo');
+  
+  messageElement.textContent = message;
+  dialog.style.display = 'flex';
+  
+  // Remove previous event listeners
+  const newYesButton = yesButton.cloneNode(true);
+  yesButton.parentNode.replaceChild(newYesButton, yesButton);
+  
+  const newNoButton = noButton.cloneNode(true);
+  noButton.parentNode.replaceChild(newNoButton, noButton);
+  
+  // Add event listeners
+  document.getElementById('confirmYes').addEventListener('click', function() {
+    dialog.style.display = 'none';
+    onConfirm();
+  });
+  
+  document.getElementById('confirmNo').addEventListener('click', function() {
+    dialog.style.display = 'none';
+  });
+}
+
+// Save data to localStorage
+function saveToLocalStorage() {
+  const data = {
+    transactions,
+    invalidRecords,
+    duplicateRecords
+  };
+  localStorage.setItem('careemClawbackData', JSON.stringify(data));
+  console.log('Data saved to localStorage');
+}
+
+// Close dropdowns when clicking outside
 document.addEventListener('click', function(event) {
   const reasonFilter = document.querySelector('.reason-filter');
+  const reasonDropdown = document.getElementById('reasonDropdown');
+  
   if (!reasonFilter.contains(event.target)) {
-    document.getElementById('reasonDropdown').style.display = 'none';
+    reasonDropdown.style.display = 'none';
   }
 });
 </script>
