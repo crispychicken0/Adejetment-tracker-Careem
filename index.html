@@ -7,42 +7,42 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
-    /* Primary Colors */
-    --primary: #2E7D32;      /* Deep Green */
-    --primary-light: #4CAF50; /* Light Green */
-    --primary-dark: #1B5E20;  /* Dark Green */
+    /* Primary Colors - Modern Palette */
+    --primary: #00695C;      /* Modern Teal */
+    --primary-light: #26A69A; /* Light Teal */
+    --primary-dark: #004D40;  /* Dark Teal */
     
     /* Secondary Colors */
-    --secondary: #1976D2;    /* Blue */
-    --secondary-light: #42A5F5;
-    --secondary-dark: #0D47A1;
+    --secondary: #3949AB;    /* Modern Indigo */
+    --secondary-light: #5C6BC0;
+    --secondary-dark: #283593;
     
     /* Status Colors */
-    --clawback: #D32F2F;     /* Red */
-    --penalty: #F57C00;      /* Orange */
-    --compensated: #388E3C;  /* Green */
-    --dispute: #7B1FA2;      /* Purple */
+    --clawback: #E53935;     /* Modern Red */
+    --penalty: #FB8C00;      /* Modern Orange */
+    --compensated: #43A047;  /* Modern Green */
+    --dispute: #8E24AA;      /* Modern Purple */
     
     /* Background Colors */
-    --bg-light: #F5F7FA;     /* Very Light Gray */
-    --bg-dark: #263238;      /* Dark Blue Gray */
+    --bg-light: #FAFAFA;     /* Very Light Gray */
+    --bg-dark: #212121;      /* Dark Gray */
     --card-bg: #FFFFFF;      /* White */
-    --card-bg-dark: #37474F; /* Dark Card */
+    --card-bg-dark: #424242; /* Dark Card */
     
     /* Text Colors */
     --text-light: #212121;   /* Dark Gray */
-    --text-dark: #ECEFF1;    /* Light Gray */
+    --text-dark: #F5F5F5;    /* Light Gray */
     --text-secondary: #757575; /* Medium Gray */
     
     /* Border and UI Elements */
     --border-color: #E0E0E0;
-    --hover-bg: #F1F8E9;     /* Light Green Hover */
-    --negative-color: #D32F2F;
+    --hover-bg: #E8F5E9;     /* Light Green Hover */
+    --negative-color: #E53935;
     
     /* Shadows */
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 8px rgba(0,0,0,0.12);
-    --shadow-lg: 0 8px 16px rgba(0,0,0,0.16);
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
     
     /* Spacing */
     --spacing-xs: 4px;
@@ -50,11 +50,12 @@
     --spacing-md: 16px;
     --spacing-lg: 24px;
     --spacing-xl: 32px;
+    --spacing-2xl: 48px;
     
     /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
     
     /* Transitions */
     --transition-fast: 0.2s;
@@ -63,12 +64,12 @@
   }
 
   body.dark-mode {
-    --bg-light: #263238;
-    --text-light: #ECEFF1;
-    --card-bg: #37474F;
-    --border-color: #455A64;
-    --hover-bg: #455A64;
-    --text-secondary: #B0BEC5;
+    --bg-light: #212121;
+    --text-light: #F5F5F5;
+    --card-bg: #424242;
+    --border-color: #616161;
+    --hover-bg: #424242;
+    --text-secondary: #BDBDBD;
   }
 
   * {
@@ -78,7 +79,7 @@
   }
 
   body { 
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; 
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; 
     margin: 0;
     padding: var(--spacing-md);
     background: var(--bg-light); 
@@ -94,8 +95,8 @@
   }
 
   h2, h3 { 
-    margin-bottom: var(--spacing-md); 
-    font-weight: 600;
+    margin-bottom: var(--spacing-lg); 
+    font-weight: 700;
     color: var(--primary);
     position: relative;
     padding-bottom: var(--spacing-sm);
@@ -106,41 +107,44 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 60px;
-    height: 3px;
-    background: var(--primary-light);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
     border-radius: var(--radius-sm);
   }
 
+  /* Modern Dashboard Cards */
   .dashboard { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
     gap: var(--spacing-lg); 
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
   }
 
   .dashboard-card { 
     background: var(--card-bg); 
-    border-radius: var(--radius-md); 
-    padding: var(--spacing-lg); 
+    border-radius: var(--radius-lg); 
+    padding: var(--spacing-xl); 
     box-shadow: var(--shadow-md); 
     text-align: center; 
-    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
-    border-top: 4px solid var(--primary-light);
+    transition: all var(--transition-medium);
     position: relative;
     overflow: hidden;
+    border: 1px solid var(--border-color);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .dashboard-card::before {
     content: '';
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
-    width: 80px;
-    height: 80px;
-    background: var(--primary-light);
-    opacity: 0.1;
-    border-radius: 0 0 0 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
   }
 
   .dashboard-card:hover {
@@ -150,22 +154,23 @@
 
   .dashboard-card h4 { 
     margin: 0 0 var(--spacing-md); 
-    font-size: 1.1em; 
+    font-size: 1em; 
     color: var(--primary-dark); 
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   .dashboard-card p { 
     margin: 0; 
-    font-size: 2em; 
-    font-weight: 700;
+    font-size: 2.2em; 
+    font-weight: 800;
     color: var(--text-light);
   }
 
+  /* Category Cards */
   .category-card {
-    border-left: 4px solid;
+    border-left: 5px solid;
   }
 
   .category-card.clawback {
@@ -204,6 +209,7 @@
     color: var(--dispute);
   }
 
+  /* Reasons Card */
   .reasons-card { 
     text-align: left; 
     max-height: 300px; 
@@ -212,7 +218,7 @@
   }
 
   .reasons-card::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
 
   .reasons-card::-webkit-scrollbar-track {
@@ -232,17 +238,19 @@
   }
 
   .reasons-card li { 
-    padding: var(--spacing-sm) var(--spacing-md); 
+    padding: var(--spacing-md) var(--spacing-lg); 
     border-bottom: 1px solid var(--border-color); 
-    transition: background var(--transition-fast), padding-left var(--transition-fast);
+    transition: all var(--transition-fast);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-xs);
   }
 
   .reasons-card li:hover {
     background: var(--hover-bg);
-    padding-left: var(--spacing-md);
+    transform: translateX(5px);
   }
 
   .reasons-card li:last-child { 
@@ -250,30 +258,31 @@
   }
 
   .reasons-card .reason { 
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-light);
   }
 
   .reasons-card .count {
-    background: var(--primary-light);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     color: white;
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-md);
     border-radius: var(--radius-md);
     font-size: 0.85em;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .main-dispute {
     color: var(--dispute);
-    font-weight: 700;
+    font-weight: 800;
   }
 
+  /* Tables */
   table { 
     border-collapse: collapse; 
     width: 100%; 
-    margin-top: var(--spacing-lg); 
+    margin-top: var(--spacing-xl); 
     background: var(--card-bg); 
-    border-radius: var(--radius-md); 
+    border-radius: var(--radius-lg); 
     overflow: hidden; 
     box-shadow: var(--shadow-md);
   }
@@ -285,26 +294,26 @@
   }
 
   th { 
-    background: var(--hover-bg); 
+    background: linear-gradient(135deg, var(--hover-bg), var(--primary-light)); 
     cursor: pointer; 
-    font-weight: 600;
+    font-weight: 700;
     position: relative;
     user-select: none;
-    color: var(--primary-dark);
+    color: white;
     text-transform: uppercase;
     font-size: 0.85em;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   th:hover { 
-    background: var(--hover-bg); 
+    background: linear-gradient(135deg, var(--primary-light), var(--primary)); 
   }
 
   th::after {
     content: '⇅';
     position: absolute;
     right: var(--spacing-md);
-    opacity: 0.5;
+    opacity: 0.7;
   }
 
   th.sorted-asc::after {
@@ -319,50 +328,53 @@
 
   .negative { 
     color: var(--negative-color); 
-    font-weight: 700; 
+    font-weight: 800; 
   }
 
+  /* Category Badges */
   .category-badge {
     display: inline-block;
     padding: var(--spacing-xs) var(--spacing-md);
     border-radius: var(--radius-md);
     font-size: 0.8em;
-    font-weight: 600;
+    font-weight: 700;
     color: white;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   .category-badge.clawback {
-    background-color: var(--clawback);
+    background: linear-gradient(135deg, var(--clawback), #D32F2F);
   }
 
   .category-badge.penalty {
-    background-color: var(--penalty);
+    background: linear-gradient(135deg, var(--penalty), #F57C00);
   }
 
   .category-badge.compensated {
-    background-color: var(--compensated);
+    background: linear-gradient(135deg, var(--compensated), #388E3C);
   }
 
   .category-badge.dispute {
-    background-color: var(--dispute);
+    background: linear-gradient(135deg, var(--dispute), #7B1FA2);
   }
 
   .dispute-reason {
     color: var(--dispute);
-    font-weight: 700;
+    font-weight: 800;
   }
 
+  /* Controls */
   .controls { 
     display: flex; 
     gap: var(--spacing-md); 
     flex-wrap: wrap; 
-    margin-bottom: var(--spacing-lg);
-    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-xl);
     background: var(--card-bg);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
   }
 
   .control-group {
@@ -374,20 +386,20 @@
   }
 
   .control-group label {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.9em;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   input, textarea, select { 
     padding: var(--spacing-md); 
-    border: 1px solid var(--border-color); 
-    border-radius: var(--radius-sm); 
+    border: 2px solid var(--border-color); 
+    border-radius: var(--radius-md); 
     width: 100%; 
     box-sizing: border-box;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition: all var(--transition-fast);
     font-family: inherit;
     font-size: 1em;
   }
@@ -395,7 +407,7 @@
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    box-shadow: 0 0 0 4px rgba(38, 166, 154, 0.2);
   }
 
   textarea { 
@@ -403,68 +415,72 @@
     min-height: 120px;
   }
 
+  /* Buttons */
   button { 
-    background: var(--primary); 
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
     color: white; 
     border: none; 
     padding: var(--spacing-md) var(--spacing-lg); 
     cursor: pointer; 
-    border-radius: var(--radius-sm); 
+    border-radius: var(--radius-md); 
     transition: all var(--transition-fast);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.95em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     box-shadow: var(--shadow-sm);
   }
 
   button:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
   }
 
   button:disabled { 
-    background: #BDBDBD; 
+    background: #9E9E9E; 
     cursor: not-allowed; 
     opacity: 0.7;
   }
 
   button:hover:not(:disabled) { 
-    background: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
   }
 
   .toggle-status-btn {
-    background: var(--secondary) !important;
+    background: linear-gradient(135deg, var(--secondary), var(--secondary-dark)) !important;
     font-size: 0.8em !important;
-    padding: 6px 12px !important;
+    padding: 8px 16px !important;
     margin-right: var(--spacing-sm) !important;
   }
 
   .toggle-status-btn:hover:not(:disabled) { 
-    background: var(--secondary-dark) !important;
+    background: linear-gradient(135deg, var(--secondary-light), var(--secondary)) !important;
   }
 
+  /* Sections */
   .section { 
-    margin-top: var(--spacing-xl); 
-    padding-top: var(--spacing-xl); 
+    margin-top: var(--spacing-2xl); 
+    padding-top: var(--spacing-2xl); 
     border-top: 1px solid var(--border-color);
   }
 
+  /* Notifications */
   .notification { 
     position: fixed; 
-    top: var(--spacing-lg); 
-    right: var(--spacing-lg); 
-    padding: var(--spacing-md) var(--spacing-lg); 
-    background: var(--primary); 
+    top: var(--spacing-xl); 
+    right: var(--spacing-xl); 
+    padding: var(--spacing-md) var(--spacing-xl); 
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
     color: white; 
-    border-radius: var(--radius-md); 
+    border-radius: var(--radius-lg); 
     display: none; 
     z-index: 1000; 
     opacity: 0; 
     transition: opacity var(--transition-slow);
     box-shadow: var(--shadow-lg);
-    max-width: 350px;
-    font-weight: 500;
+    max-width: 400px;
+    font-weight: 600;
   }
 
   .notification.show { 
@@ -473,29 +489,46 @@
   }
 
   .notification.error { 
-    background: var(--negative-color); 
+    background: linear-gradient(135deg, var(--negative-color), #C62828); 
   }
 
+  /* Stats Container */
   .stats-container {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-xl);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
   }
 
   .stat-card {
     background: var(--card-bg);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
     flex: 1;
-    min-width: 180px;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    min-width: 200px;
+    transition: all var(--transition-medium);
     box-shadow: var(--shadow-sm);
-    border-top: 3px solid var(--primary-light);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--primary-light), var(--primary));
   }
 
   .stat-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-5px);
     box-shadow: var(--shadow-md);
   }
 
@@ -504,19 +537,20 @@
     color: var(--text-secondary);
     margin-bottom: var(--spacing-sm);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   body.dark-mode .stat-label {
-    color: #B0BEC5;
+    color: #BDBDBD;
   }
 
   .stat-value {
-    font-size: 1.8em;
-    font-weight: 700;
+    font-size: 2em;
+    font-weight: 800;
     color: var(--primary);
   }
 
+  /* Report Modal */
   .report-modal {
     display: none;
     position: fixed;
@@ -525,18 +559,18 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0,0,0,0.7);
     overflow-y: auto;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
   }
 
   .report-content {
     background-color: var(--card-bg);
-    margin: 3% auto;
-    padding: var(--spacing-xl);
+    margin: 2% auto;
+    padding: var(--spacing-2xl);
     border-radius: var(--radius-lg);
     width: 90%;
-    max-width: 1000px;
+    max-width: 1200px;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
@@ -545,9 +579,9 @@
 
   .close {
     position: absolute;
-    right: var(--spacing-lg);
-    top: var(--spacing-lg);
-    font-size: 32px;
+    right: var(--spacing-xl);
+    top: var(--spacing-xl);
+    font-size: 36px;
     font-weight: bold;
     cursor: pointer;
     transition: color var(--transition-fast);
@@ -560,35 +594,35 @@
 
   .report-header {
     text-align: center;
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-xl);
     border-bottom: 2px solid var(--border-color);
   }
 
   .report-header h2 {
     color: var(--primary-dark);
-    font-size: 2em;
+    font-size: 2.2em;
     margin-bottom: var(--spacing-sm);
   }
 
   .report-section {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
   }
 
   .report-section h3 {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
     color: var(--primary-dark);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--spacing-sm);
-    font-size: 1.4em;
+    font-size: 1.5em;
   }
 
   .report-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
     background: var(--card-bg);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
   }
@@ -600,12 +634,12 @@
   }
 
   .report-table th {
-    background-color: var(--hover-bg);
-    font-weight: 600;
-    color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--hover-bg), var(--primary-light));
+    font-weight: 700;
+    color: white;
     text-transform: uppercase;
     font-size: 0.85em;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   .report-table tr:last-child td {
@@ -618,23 +652,24 @@
 
   .report-footer {
     text-align: center;
-    margin-top: var(--spacing-xl);
-    padding-top: var(--spacing-lg);
+    margin-top: var(--spacing-2xl);
+    padding-top: var(--spacing-xl);
     border-top: 2px solid var(--border-color);
     font-size: 0.9em;
     color: var(--text-secondary);
   }
 
   body.dark-mode .report-footer {
-    color: #B0BEC5;
+    color: #BDBDBD;
   }
 
+  /* Error Table */
   .error-table {
-    margin-top: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
     width: 100%;
     border-collapse: collapse;
     background: var(--card-bg);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-md);
   }
@@ -646,14 +681,14 @@
   }
 
   .error-table th {
-    background-color: var(--hover-bg);
-    font-weight: 600;
-    color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--hover-bg), var(--primary-light));
+    font-weight: 700;
+    color: white;
   }
 
   .error-reason {
     color: var(--negative-color);
-    font-weight: 700;
+    font-weight: 800;
   }
 
   .error-details {
@@ -662,26 +697,26 @@
   }
 
   body.dark-mode .error-details {
-    color: #B0BEC5;
+    color: #BDBDBD;
   }
 
   .error-stats {
     display: flex;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
   }
 
   .error-stat {
-    background: #FFEBEE;
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, #FFEBEE, #FFCDD2);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
     flex: 1;
     text-align: center;
     box-shadow: var(--shadow-sm);
   }
 
   body.dark-mode .error-stat {
-    background: #455A64;
+    background: linear-gradient(135deg, #424242, #616161);
   }
 
   .error-stat-label {
@@ -691,15 +726,16 @@
   }
 
   body.dark-mode .error-stat-label {
-    color: #B0BEC5;
+    color: #BDBDBD;
   }
 
   .error-stat-value {
-    font-size: 1.5em;
-    font-weight: 700;
+    font-size: 1.8em;
+    font-weight: 800;
     color: var(--negative-color);
   }
 
+  /* Reason Filter */
   .reason-filter {
     position: relative;
   }
@@ -710,7 +746,7 @@
     left: 0;
     right: 0;
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     max-height: 250px;
@@ -731,10 +767,11 @@
   }
 
   .reason-option.selected {
-    background: var(--primary-light);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     color: white;
   }
 
+  /* Loading */
   .loading {
     display: inline-block;
     width: 20px;
@@ -749,6 +786,7 @@
     to { transform: rotate(360deg); }
   }
 
+  /* File Upload */
   .file-upload {
     position: relative;
     display: inline-block;
@@ -769,52 +807,59 @@
   .file-upload-label {
     display: block;
     padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--secondary);
+    background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
     color: white;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    transition: background var(--transition-fast);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    transition: all var(--transition-fast);
   }
 
   .file-upload:hover .file-upload-label {
-    background: var(--secondary-dark);
+    background: linear-gradient(135deg, var(--secondary-light), var(--secondary));
+    transform: translateY(-2px);
   }
 
+  /* Summary Section */
   .summary-section {
-    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
     border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
     box-shadow: var(--shadow-lg);
     color: white;
   }
 
   .summary-title {
-    font-size: 1.4em;
-    font-weight: 700;
-    margin-bottom: var(--spacing-lg);
+    font-size: 1.6em;
+    font-weight: 800;
+    margin-bottom: var(--spacing-xl);
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
   }
 
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-xl);
   }
 
   .summary-item {
     text-align: center;
-    padding: var(--spacing-lg);
-    border-radius: var(--radius-md);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
-    transition: transform var(--transition-medium);
+    transition: all var(--transition-medium);
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .summary-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.25);
   }
 
   .summary-label {
@@ -822,12 +867,12 @@
     margin-bottom: var(--spacing-sm);
     opacity: 0.9;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   .summary-value {
-    font-size: 1.8em;
-    font-weight: 700;
+    font-size: 2.2em;
+    font-weight: 800;
   }
 
   .summary-item.clawback .summary-value {
@@ -847,24 +892,25 @@
   }
 
   .dispute-highlight {
-    background-color: rgba(155, 89, 182, 0.1);
+    background-color: rgba(142, 36, 170, 0.1);
     border-left: 4px solid var(--dispute);
     padding-left: var(--spacing-md);
   }
 
+  /* Analysis Cards */
   .analysis-card {
     background: var(--card-bg);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    margin-bottom: var(--spacing-xl);
     box-shadow: var(--shadow-md);
-    border-left: 4px solid var(--primary-light);
+    border-left: 5px solid var(--primary-light);
   }
 
   .analysis-title {
-    font-size: 1.2em;
-    font-weight: 700;
-    margin-bottom: var(--spacing-lg);
+    font-size: 1.3em;
+    font-weight: 800;
+    margin-bottom: var(--spacing-xl);
     color: var(--primary-dark);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--spacing-sm);
@@ -872,7 +918,7 @@
 
   .analysis-content {
     font-size: 1em;
-    line-height: 1.7;
+    line-height: 1.8;
   }
 
   .analysis-content p {
@@ -880,7 +926,7 @@
   }
 
   .analysis-content ol, .analysis-content ul {
-    margin-left: var(--spacing-lg);
+    margin-left: var(--spacing-xl);
     margin-bottom: var(--spacing-md);
   }
 
@@ -896,32 +942,34 @@
   }
 
   .negative-highlight {
-    background-color: rgba(231, 76, 60, 0.1);
+    background-color: rgba(229, 57, 53, 0.1);
     padding: var(--spacing-xs) var(--spacing-sm);
     border-radius: var(--radius-sm);
     font-weight: 700;
     color: var(--negative-color);
   }
 
+  /* Import Options */
   .import-options {
     background: var(--card-bg);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
   }
 
   .import-options h4 {
     margin-top: 0;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
     color: var(--primary-dark);
-    font-size: 1.1em;
+    font-size: 1.2em;
   }
 
   .radio-group {
     display: flex;
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
   }
 
   .radio-option {
@@ -937,7 +985,7 @@
 
   .date-range {
     display: flex;
-    gap: var(--spacing-md);
+    gap: var(--spacing-lg);
     align-items: center;
   }
 
@@ -945,6 +993,34 @@
     flex: 1;
   }
 
+  /* Print Styles */
+  @media print {
+    body {
+      background: white !important;
+      color: black !important;
+    }
+    
+    .container {
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .section {
+      page-break-inside: avoid;
+    }
+    
+    .dashboard-card, .stat-card, .analysis-card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+    }
+    
+    button, .controls, .file-upload {
+      display: none !important;
+    }
+  }
+
+  /* Responsive Design */
   @media (max-width: 768px) {
     body { 
       margin: var(--spacing-sm); 
@@ -1241,7 +1317,7 @@
   </div>
 
   <div class="section">
-    <h3>Analysis Report</h3>
+    <h3>Comprehensive Analysis Report</h3>
     <div class="analysis-card">
       <div class="analysis-title">Executive Summary</div>
       <div class="analysis-content" id="executiveSummary">
@@ -1271,7 +1347,7 @@
     </div>
     
     <div class="analysis-card">
-      <div class="analysis-title">Recommendations</div>
+      <div class="analysis-title">Strategic Recommendations</div>
       <div class="analysis-content" id="recommendations">
         No data available. Please import data to generate analysis.
       </div>
@@ -1771,7 +1847,7 @@ function importData() {
   const invalidCount = newInvalidRecords.length;
   const duplicateCount = newDuplicateRecords.length;
   
-  let message = `Imported ${validCount} valid records`;
+  let message = `Successfully imported ${validCount} valid records`;
   if (invalidCount > 0) message += `, ${invalidCount} invalid records`;
   if (duplicateCount > 0) message += `, ${duplicateCount} duplicate records`;
   
@@ -1831,7 +1907,7 @@ function exportToCSV() {
   link.click();
   document.body.removeChild(link);
   
-  showNotification('Data exported to CSV');
+  showNotification('Data exported to CSV successfully');
 }
 
 // Export invalid records to CSV
@@ -1859,7 +1935,7 @@ function exportInvalidRecords() {
   link.click();
   document.body.removeChild(link);
   
-  showNotification('Invalid records exported to CSV');
+  showNotification('Invalid records exported to CSV successfully');
 }
 
 // Generate report
@@ -2018,7 +2094,7 @@ function exportToPDF() {
   // Save the PDF
   doc.save(`careem_report_${new Date().toISOString().slice(0, 10)}.pdf`);
   
-  showNotification('Report exported to PDF');
+  showNotification('Report exported to PDF successfully');
 }
 
 // Toggle dark mode
@@ -2048,7 +2124,7 @@ function clearFilters() {
   document.getElementById('filterDateTo').value = '';
   
   applyFilters();
-  showNotification('Filters cleared');
+  showNotification('Filters cleared successfully');
 }
 
 // Show notification
@@ -2660,9 +2736,10 @@ function updateAnalysis() {
   // Executive Summary
   const executiveSummary = document.getElementById('executiveSummary');
   executiveSummary.innerHTML = `
-    <p>This report analyzes <span class="highlight">${transactions.length}</span> transactions with a total financial impact of <span class="negative-highlight">${formatCurrency(stats.netAmount)}</span>.</p>
-    <p>Of these, <span class="highlight">${stats.mainDisputeCount}</span> (${((stats.mainDisputeCount / transactions.length) * 100).toFixed(1)}%) are main dispute reasons that Careem accepts for refunds.</p>
-    <p>The average deduction per transaction is <span class="negative-highlight">${formatCurrency(stats.averageRecord)}</span>.</p>
+    <p>This comprehensive analysis examines <span class="highlight">${transactions.length}</span> transactions with a total financial impact of <span class="negative-highlight">${formatCurrency(stats.netAmount)}</span>.</p>
+    <p>Key findings show that <span class="highlight">${stats.mainDisputeCount}</span> (${((stats.mainDisputeCount / transactions.length) * 100).toFixed(1)}%) are main dispute reasons that Careem accepts for refunds.</p>
+    <p>The average deduction per transaction is <span class="negative-highlight">${formatCurrency(stats.averageRecord)}</span>, indicating significant financial impact per incident.</p>
+    <p>Data quality is maintained with ${invalidRecords.length} invalid records and ${duplicateRecords.length} duplicate records identified during processing.</p>
   `;
   
   // Main Dispute Reasons Analysis
@@ -2678,21 +2755,23 @@ function updateAnalysis() {
     .sort((a, b) => b[1] - a[1])[0];
   
   disputeAnalysis.innerHTML = `
-    <p>The most common main dispute reason is <span class="highlight">${topDisputeReason ? topDisputeReason[0] : 'N/A'}</span> with <span class="highlight">${topDisputeReason ? topDisputeReason[1] : 0}</span> occurrences.</p>
-    <p>Main disputes represent <span class="highlight">${((stats.mainDisputeCount / transactions.length) * 100).toFixed(1)}%</span> of all transactions but account for <span class="negative-highlight">${((stats.refundedAmount / stats.totalDeductions) * 100).toFixed(1)}%</span> of total deductions.</p>
-    <p>Focus on reducing these main disputes could significantly improve financial performance.</p>
+    <p>The most prevalent main dispute reason is <span class="highlight">${topDisputeReason ? topDisputeReason[0] : 'N/A'}</span> with <span class="highlight">${topDisputeReason ? topDisputeReason[1] : 0}</span> occurrences.</p>
+    <p>Main disputes constitute <span class="highlight">${((stats.mainDisputeCount / transactions.length) * 100).toFixed(1)}%</span> of all transactions but account for <span class="negative-highlight">${((stats.refundedAmount / stats.totalDeductions) * 100).toFixed(1)}%</span> of total deductions.</p>
+    <p>This indicates that while main disputes are less frequent, they have a disproportionately high financial impact.</p>
+    <p>Addressing these specific issues could yield significant improvements in overall financial performance.</p>
   `;
   
   // Financial Impact Analysis
   const financialAnalysis = document.getElementById('financialAnalysis');
   financialAnalysis.innerHTML = `
-    <p>Total deductions amount to <span class="negative-highlight">${formatCurrency(stats.totalDeductions)}</span>, with:</p>
+    <p>Total deductions amount to <span class="negative-highlight">${formatCurrency(stats.totalDeductions)}</span>, distributed as follows:</p>
     <ul>
       <li>Clawbacks: <span class="negative-highlight">${formatCurrency(stats.totalClawbacks)}</span> (${((stats.totalClawbacks / stats.totalDeductions) * 100).toFixed(1)}%)</li>
       <li>Penalties: <span class="negative-highlight">${formatCurrency(stats.totalPenalties)}</span> (${((stats.totalPenalties / stats.totalDeductions) * 100).toFixed(1)}%)</li>
     </ul>
-    <p>Compensated amounts total <span class="highlight">${formatCurrency(stats.totalCompensated)}</span>, partially offsetting the deductions.</p>
-    <p>The net financial impact is <span class="negative-highlight">${formatCurrency(stats.netAmount)}</span>.</p>
+    <p>Compensated amounts total <span class="highlight">${formatCurrency(stats.totalCompensated)}</span>, providing partial offset to the deductions.</p>
+    <p>The net financial impact is <span class="negative-highlight">${formatCurrency(stats.netAmount)}</span>, representing the actual cost to the business.</p>
+    <p>Refunded amounts total <span class="highlight">${formatCurrency(stats.refundedAmount)}</span>, while compensated amounts reach <span class="highlight">${formatCurrency(stats.compensatedAmount)}</span>.</p>
   `;
   
   // Branch Performance Analysis
@@ -2711,25 +2790,40 @@ function updateAnalysis() {
     if (t.isMainDispute) branchesData[t.area].mainDisputes++;
   });
   
-  const worstBranch = Object.entries(branchesData)
-    .sort((a, b) => b[1].totalDeductions - a[1].totalDeductions)[0];
+  const sortedBranches = Object.entries(branchesData)
+    .sort((a, b) => b[1].totalDeductions - a[1].totalDeductions);
+  
+  const worstBranch = sortedBranches[0];
+  const bestBranch = sortedBranches[sortedBranches.length - 1];
   
   branchAnalysis.innerHTML = `
-    <p>The branch with the highest deductions is <span class="negative-highlight">${worstBranch ? worstBranch[0] : 'N/A'}</span> with <span class="negative-highlight">${worstBranch ? formatCurrency(worstBranch[1].totalDeductions) : '0'}</span> in total deductions.</p>
+    <p>Branch performance varies significantly across the network:</p>
+    <p>The highest-performing branch in terms of deductions is <span class="negative-highlight">${worstBranch ? worstBranch[0] : 'N/A'}</span> with <span class="negative-highlight">${worstBranch ? formatCurrency(worstBranch[1].totalDeductions) : '0'}</span> in total deductions.</p>
     <p>This branch accounts for <span class="negative-highlight">${worstBranch ? ((worstBranch[1].totalDeductions / stats.totalDeductions) * 100).toFixed(1) : 0}%</span> of all deductions.</p>
-    <p>Branches with high main dispute rates should be prioritized for training and process improvement.</p>
+    <p>Conversely, the best-performing branch is <span class="highlight">${bestBranch ? bestBranch[0] : 'N/A'}</span> with minimal deductions.</p>
+    <p>Branches with high main dispute rates should be prioritized for training and process improvement initiatives.</p>
   `;
   
-  // Recommendations
+  // Strategic Recommendations
   const recommendations = document.getElementById('recommendations');
   recommendations.innerHTML = `
+    <h4>Strategic Action Plan</h4>
     <ol>
-      <li><strong>Reduce Main Disputes:</strong> Focus on the top main dispute reasons, especially <span class="highlight">${topDisputeReason ? topDisputeReason[0] : 'N/A'}</span>. Implement quality control measures to prevent these issues.</li>
-      <li><strong>Branch Performance:</strong> Provide additional training and support to underperforming branches, particularly <span class="negative-highlight">${worstBranch ? worstBranch[0] : 'N/A'}</span>.</li>
-      <li><strong>Process Improvement:</strong> Review order preparation and packaging processes to reduce spills, damages, and incorrect items.</li>
-      <li><strong>Customer Communication:</strong> Improve communication with customers regarding unavailable items to reduce "missing item" disputes.</li>
-      <li><strong>Monitor Trends:</strong> Regularly review clawback data to identify emerging issues and address them proactively.</li>
+      <li><strong>Reduce Main Disputes:</strong> Focus on the top main dispute reasons, especially <span class="highlight">${topDisputeReason ? topDisputeReason[0] : 'N/A'}</span>. Implement targeted quality control measures and staff training programs.</li>
+      <li><strong>Branch Performance Optimization:</strong> Provide additional training and support to underperforming branches, particularly <span class="negative-highlight">${worstBranch ? worstBranch[0] : 'N/A'}</span>. Consider implementing performance-based incentives.</li>
+      <li><strong>Process Improvement:</strong> Review and enhance order preparation and packaging processes to reduce spills, damages, and incorrect items. Standardize procedures across all branches.</li>
+      <li><strong>Customer Communication Enhancement:</strong> Improve communication protocols with customers regarding unavailable items to reduce "missing item" disputes. Implement real-time inventory updates.</li>
+      <li><strong>Technology Integration:</strong> Leverage technology solutions for better order tracking, quality control, and customer feedback management.</li>
+      <li><strong>Continuous Monitoring:</strong> Establish regular review cycles for clawback data to identify emerging issues and address them proactively.</li>
+      <li><strong>Staff Training:</strong> Develop comprehensive training programs focused on reducing the most common dispute reasons and improving overall service quality.</li>
     </ol>
+    <h4>Expected Outcomes</h4>
+    <ul>
+      <li>Reduction in main dispute rates by 30-50% within 6 months</li>
+      <li>Decrease in overall deductions by 20-30% year-over-year</li>
+      <li>Improved customer satisfaction scores</li>
+      <li>Better consistency in service quality across all branches</li>
+    </ul>
   `;
 }
 
