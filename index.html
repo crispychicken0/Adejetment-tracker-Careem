@@ -11,222 +11,382 @@
   :root {
     --primary: #4CAF50;
     --secondary: #2196F3;
+    --clawback: #e74c3c;
+    --penalty: #f39c12;
+    --compensated: #27ae60;
+    --dispute: #9b59b6;
     --bg-light: #f9f9f9;
     --bg-dark: #333;
     --text-light: #333;
     --text-dark: #fff;
+    --card-bg: #fff;
+    --border-color: #ddd;
+    --hover-bg: #f0f0f0;
+    --negative-color: #e74c3c;
+    --shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
+
+  body.dark-mode {
+    --bg-light: #333;
+    --text-light: #fff;
+    --card-bg: #444;
+    --border-color: #555;
+    --hover-bg: #555;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
   body { 
     font-family: 'Segoe UI', Arial, sans-serif; 
     margin: 20px; 
     background: var(--bg-light); 
     color: var(--text-light); 
     transition: background 0.3s, color 0.3s;
+    line-height: 1.6;
   }
-  body.dark-mode {
-    background: var(--bg-dark);
-    color: var(--text-dark);
-  }
-  h2, h3 { margin-bottom: 15px; font-weight: 500; }
+
   .container { 
     max-width: 1200px; 
     margin: 0 auto; 
-    display: grid; 
-    gap: 20px; 
   }
+
+  h2, h3 { 
+    margin-bottom: 15px; 
+    font-weight: 500;
+    color: var(--primary);
+  }
+
   .dashboard { 
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
     gap: 15px; 
     margin-bottom: 20px; 
   }
+
   .dashboard-card { 
-    background: #fff; 
+    background: var(--card-bg); 
     border-radius: 8px; 
     padding: 15px; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    box-shadow: var(--shadow); 
     text-align: center; 
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-  body.dark-mode .dashboard-card {
-    background: #444;
+
+  .dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   }
+
   .dashboard-card h4 { 
     margin: 0 0 10px; 
     font-size: 1.1em; 
     color: var(--primary); 
   }
+
   .dashboard-card p { 
     margin: 0; 
     font-size: 1.5em; 
     font-weight: bold; 
   }
+
+  .category-card {
+    border-left: 4px solid;
+  }
+
+  .category-card.clawback {
+    border-left-color: var(--clawback);
+  }
+
+  .category-card.penalty {
+    border-left-color: var(--penalty);
+  }
+
+  .category-card.compensated {
+    border-left-color: var(--compensated);
+  }
+
+  .category-card.dispute {
+    border-left-color: var(--dispute);
+  }
+
+  .category-card h4 {
+    color: var(--primary);
+  }
+
+  .category-card.clawback h4 {
+    color: var(--clawback);
+  }
+
+  .category-card.penalty h4 {
+    color: var(--penalty);
+  }
+
+  .category-card.compensated h4 {
+    color: var(--compensated);
+  }
+
+  .category-card.dispute h4 {
+    color: var(--dispute);
+  }
+
   .reasons-card { 
     text-align: left; 
     max-height: 200px; 
     overflow-y: auto; 
   }
+
   .reasons-card ul { 
     list-style: none; 
     padding: 0; 
     margin: 0; 
   }
+
   .reasons-card li { 
     padding: 5px 0; 
-    border-bottom: 1px solid #eee; 
+    border-bottom: 1px solid var(--border-color); 
+    transition: background 0.2s;
   }
-  body.dark-mode .reasons-card li {
-    border-bottom: 1px solid #555;
+
+  .reasons-card li:hover {
+    background: var(--hover-bg);
+    padding-left: 5px;
   }
+
   .reasons-card li:last-child { 
     border-bottom: none; 
   }
+
   .reasons-card .reason { 
     font-weight: bold; 
   }
+
+  .main-dispute {
+    color: var(--dispute);
+    font-weight: bold;
+  }
+
   table { 
     border-collapse: collapse; 
     width: 100%; 
     margin-top: 20px; 
-    background: #fff; 
+    background: var(--card-bg); 
     border-radius: 8px; 
     overflow: hidden; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    box-shadow: var(--shadow); 
   }
-  body.dark-mode table {
-    background: #444;
-    color: #fff;
-  }
+
   th, td { 
-    border: 1px solid #ddd; 
-    padding: 10px; 
+    border: 1px solid var(--border-color); 
+    padding: 12px; 
     text-align: center; 
   }
-  body.dark-mode th, body.dark-mode td {
-    border-color: #555;
-  }
+
   th { 
-    background: #f4f4f4; 
+    background: var(--hover-bg); 
     cursor: pointer; 
-    font-weight: bold; 
+    font-weight: bold;
+    position: relative;
+    user-select: none;
   }
-  body.dark-mode th {
-    background: #555;
-  }
+
   th:hover { 
-    background: #e0e0e0; 
+    background: var(--hover-bg); 
   }
-  body.dark-mode th:hover {
-    background: #666;
+
+  th::after {
+    content: '⇅';
+    position: absolute;
+    right: 8px;
+    opacity: 0.5;
   }
+
+  th.sorted-asc::after {
+    content: '↑';
+    opacity: 1;
+  }
+
+  th.sorted-desc::after {
+    content: '↓';
+    opacity: 1;
+  }
+
   .negative { 
-    color: #e74c3c; 
+    color: var(--negative-color); 
     font-weight: bold; 
   }
+
+  .category-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: white;
+  }
+
+  .category-badge.clawback {
+    background-color: var(--clawback);
+  }
+
+  .category-badge.penalty {
+    background-color: var(--penalty);
+  }
+
+  .category-badge.compensated {
+    background-color: var(--compensated);
+  }
+
+  .category-badge.dispute {
+    background-color: var(--dispute);
+  }
+
+  .dispute-reason {
+    color: var(--dispute);
+    font-weight: bold;
+  }
+
   .controls { 
     display: flex; 
     gap: 10px; 
     flex-wrap: wrap; 
+    margin-bottom: 15px;
   }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .control-group label {
+    font-weight: 500;
+    font-size: 0.9em;
+  }
+
   input, textarea, select { 
-    padding: 8px; 
-    border: 1px solid #ddd; 
+    padding: 10px; 
+    border: 1px solid var(--border-color); 
     border-radius: 4px; 
     width: 100%; 
-    box-sizing: border-box; 
+    box-sizing: border-box;
+    transition: border-color 0.2s;
   }
-  body.dark-mode input, 
-  body.dark-mode textarea, 
-  body.dark-mode select {
-    background: #555;
-    color: #fff;
-    border-color: #666;
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
   }
+
   textarea { 
     resize: vertical; 
+    min-height: 100px;
   }
+
   button { 
     background: var(--primary); 
     color: white; 
     border: none; 
-    padding: 8px 16px; 
+    padding: 10px 16px; 
     cursor: pointer; 
     border-radius: 4px; 
-    transition: background 0.2s; 
+    transition: background 0.2s, transform 0.1s;
+    font-weight: 500;
   }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
   button:disabled { 
     background: #ccc; 
     cursor: not-allowed; 
+    opacity: 0.7;
   }
+
   button:hover:not(:disabled) { 
     background: #45a049; 
   }
+
   .section { 
     margin-top: 40px; 
     padding-top: 20px; 
-    border-top: 2px solid #ddd; 
+    border-top: 2px solid var(--border-color); 
   }
-  body.dark-mode .section {
-    border-top: 2px solid #555;
-  }
+
   .notification { 
     position: fixed; 
     top: 20px; 
     right: 20px; 
-    padding: 10px 20px; 
-    background: #4CAF50; 
+    padding: 15px 20px; 
+    background: var(--primary); 
     color: white; 
     border-radius: 4px; 
     display: none; 
     z-index: 1000; 
     opacity: 0; 
     transition: opacity 0.5s;
+    box-shadow: var(--shadow);
+    max-width: 300px;
   }
+
   .notification.show { 
     opacity: 1; 
     display: block; 
   }
+
   .notification.error { 
-    background: #e74c3c; 
+    background: var(--negative-color); 
   }
+
   canvas { 
     max-width: 100%; 
     margin-top: 20px; 
-    background: #fff; 
+    background: var(--card-bg); 
     border-radius: 8px; 
     padding: 10px; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    box-shadow: var(--shadow); 
   }
-  body.dark-mode canvas {
-    background: #444;
-  }
+
   .stats-container {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
   }
+
   .stat-card {
-    background: #f0f0f0;
+    background: var(--hover-bg);
     border-radius: 4px;
-    padding: 10px;
+    padding: 15px;
     flex: 1;
     min-width: 150px;
+    transition: transform 0.2s;
   }
-  body.dark-mode .stat-card {
-    background: #555;
+
+  .stat-card:hover {
+    transform: translateY(-3px);
   }
+
   .stat-label {
     font-size: 0.9em;
     color: #666;
   }
+
   body.dark-mode .stat-label {
     color: #ccc;
   }
+
   .stat-value {
     font-size: 1.2em;
     font-weight: bold;
     color: var(--primary);
   }
+
   .report-modal {
     display: none;
     position: fixed;
@@ -236,9 +396,11 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
+    overflow-y: auto;
   }
+
   .report-content {
-    background-color: #fefefe;
+    background-color: var(--card-bg);
     margin: 5% auto;
     padding: 20px;
     border-radius: 8px;
@@ -247,11 +409,9 @@
     max-height: 80vh;
     overflow-y: auto;
     position: relative;
+    box-shadow: var(--shadow);
   }
-  body.dark-mode .report-content {
-    background-color: #444;
-    color: #fff;
-  }
+
   .close {
     position: absolute;
     right: 20px;
@@ -259,110 +419,108 @@
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    transition: color 0.2s;
   }
+
   .close:hover {
-    color: #e74c3c;
+    color: var(--negative-color);
   }
+
   .report-header {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid var(--border-color);
   }
-  body.dark-mode .report-header {
-    border-bottom: 2px solid #555;
-  }
+
   .report-section {
     margin-bottom: 25px;
   }
+
   .report-section h3 {
     margin-bottom: 15px;
     color: var(--primary);
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 5px;
   }
-  body.dark-mode .report-section h3 {
-    border-bottom: 1px solid #555;
-  }
+
   .report-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
   }
+
   .report-table th, .report-table td {
     padding: 10px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border-color);
   }
-  body.dark-mode .report-table th, body.dark-mode .report-table td {
-    border-bottom: 1px solid #555;
-  }
+
   .report-table th {
-    background-color: #f5f5f5;
+    background-color: var(--hover-bg);
     font-weight: bold;
   }
-  body.dark-mode .report-table th {
-    background-color: #555;
-  }
+
   .report-chart {
     margin: 20px 0;
     text-align: center;
+    height: 300px;
   }
+
   .report-footer {
     text-align: center;
     margin-top: 30px;
     padding-top: 15px;
-    border-top: 2px solid #ddd;
+    border-top: 2px solid var(--border-color);
     font-size: 0.9em;
     color: #666;
   }
+
   body.dark-mode .report-footer {
-    border-top: 2px solid #555;
     color: #ccc;
   }
+
   .error-table {
     margin-top: 20px;
     width: 100%;
     border-collapse: collapse;
-    background: #fff;
+    background: var(--card-bg);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
   }
-  body.dark-mode .error-table {
-    background: #444;
-  }
+
   .error-table th, .error-table td {
     padding: 10px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border-color);
   }
-  body.dark-mode .error-table th, body.dark-mode .error-table td {
-    border-color: #555;
-  }
+
   .error-table th {
-    background-color: #f5f5f5;
+    background-color: var(--hover-bg);
     font-weight: bold;
   }
-  body.dark-mode .error-table th {
-    background-color: #555;
-  }
+
   .error-reason {
-    color: #e74c3c;
+    color: var(--negative-color);
     font-weight: bold;
   }
+
   .error-details {
     font-size: 0.9em;
     color: #666;
   }
+
   body.dark-mode .error-details {
     color: #ccc;
   }
+
   .error-stats {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
   }
+
   .error-stat {
     background: #ffebee;
     border-radius: 4px;
@@ -370,73 +528,201 @@
     flex: 1;
     text-align: center;
   }
+
   body.dark-mode .error-stat {
     background: #555;
   }
+
   .error-stat-label {
     font-size: 0.9em;
     color: #666;
   }
+
   body.dark-mode .error-stat-label {
     color: #ccc;
   }
+
   .error-stat-value {
     font-size: 1.2em;
     font-weight: bold;
-    color: #e74c3c;
+    color: var(--negative-color);
   }
+
   .reason-filter {
     position: relative;
   }
+
   .reason-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    background: #fff;
-    border: 1px solid #ddd;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 4px 4px;
     max-height: 200px;
     overflow-y: auto;
     z-index: 100;
     display: none;
+    box-shadow: var(--shadow);
   }
-  body.dark-mode .reason-dropdown {
-    background: #444;
-    border-color: #555;
-  }
+
   .reason-option {
     padding: 8px 12px;
     cursor: pointer;
+    transition: background 0.2s;
   }
+
   .reason-option:hover {
-    background: #f0f0f0;
+    background: var(--hover-bg);
   }
-  body.dark-mode .reason-option:hover {
-    background: #555;
-  }
+
   .reason-option.selected {
     background: var(--primary);
     color: white;
   }
+
+  .loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .file-upload {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .file-upload input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-upload-label {
+    display: block;
+    padding: 10px 16px;
+    background: var(--secondary);
+    color: white;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .file-upload:hover .file-upload-label {
+    background: #0d8bf2;
+  }
+
+  .summary-section {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .summary-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--primary);
+    text-align: center;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .summary-item {
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    background: var(--hover-bg);
+  }
+
+  .summary-label {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  .summary-value {
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+
+  .summary-item.clawback .summary-value {
+    color: var(--clawback);
+  }
+
+  .summary-item.penalty .summary-value {
+    color: var(--penalty);
+  }
+
+  .summary-item.compensated .summary-value {
+    color: var(--compensated);
+  }
+
+  .summary-item.dispute .summary-value {
+    color: var(--dispute);
+  }
+
+  .dispute-highlight {
+    background-color: rgba(155, 89, 182, 0.1);
+    border-left: 4px solid var(--dispute);
+    padding-left: 10px;
+  }
+
   @media (max-width: 600px) {
+    body { 
+      margin: 10px; 
+    }
+    
     table { 
       display: block; 
       overflow-x: auto; 
     }
+    
     .controls { 
       flex-direction: column; 
     }
+    
     .dashboard { 
       grid-template-columns: 1fr; 
     }
+    
     .stats-container {
       flex-direction: column;
     }
+    
     .report-content {
       width: 95%;
       margin: 10% auto;
+    }
+    
+    .stat-card {
+      min-width: 100%;
+    }
+    
+    .summary-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>
@@ -449,16 +735,54 @@
 
   <div class="section">
     <h3>Import Data</h3>
-    <textarea id="rawData" rows="6" placeholder="Paste clawback data here (e.g., REF123&#9;BILL456&#9;9/16/2025&#9;-50.00&#9;Food__Customer__Quality Issues__Food is overcooked/burnt&#9;CLAWBACK&#9;Downtown Dubai)"></textarea>
-    <input type="file" id="csvFile" accept=".csv" onchange="importFromCSV()">
+    <div class="control-group">
+      <label for="rawData">Paste clawback data (tab or comma separated):</label>
+      <textarea id="rawData" placeholder="REF123&#9;BILL456&#9;9/16/2025&#9;-50.00&#9;Food__Customer__Quality Issues__Food is overcooked/burnt&#9;Downtown Dubai"></textarea>
+    </div>
+    
     <div class="controls">
       <button onclick="importData()">Import Data</button>
+      
+      <div class="file-upload">
+        <input type="file" id="csvFile" accept=".csv" onchange="importFromCSV()">
+        <label for="csvFile" class="file-upload-label">Import from CSV</label>
+      </div>
+      
       <button onclick="exportToCSV()">Export to CSV</button>
       <button onclick="exportInvalidRecords()">Export Invalid Records</button>
-      <button onclick="generateReport()">Generate Management Report</button>
+      <button onclick="generateReport()">Generate Report</button>
       <button onclick="clearFilters()">Clear Filters</button>
       <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
       <button onclick="toggleReasonConsolidation()">Toggle Consolidated Reasons</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Overall Summary</h3>
+    <div class="summary-section">
+      <div class="summary-title">Financial Overview</div>
+      <div class="summary-grid">
+        <div class="summary-item clawback">
+          <div class="summary-label">Total Clawbacks</div>
+          <div class="summary-value" id="totalClawbacks">0</div>
+        </div>
+        <div class="summary-item penalty">
+          <div class="summary-label">Total Penalties</div>
+          <div class="summary-value" id="totalPenalties">0</div>
+        </div>
+        <div class="summary-item compensated">
+          <div class="summary-label">Total Compensated</div>
+          <div class="summary-value" id="totalCompensated">0</div>
+        </div>
+        <div class="summary-item dispute">
+          <div class="summary-label">Main Disputes</div>
+          <div class="summary-value" id="totalDisputes">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Net Amount</div>
+          <div class="summary-value" id="netAmount">0</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -513,7 +837,7 @@
   </div>
 
   <div class="section" id="invalidRecordsSection" style="display: none;">
-    <h3>Invalid Records</h3>
+    <h3>Data Quality Issues</h3>
     <table class="error-table">
       <thead>
         <tr>
@@ -530,24 +854,57 @@
   <div class="section">
     <h3>Filters</h3>
     <div class="controls">
-      <label>Reference ID: <input type="text" id="filterRefId" onkeyup="applyFilters()"></label>
-      <label>Billable ID: <input type="text" id="filterId" onkeyup="applyFilters()"></label>
-      <label>Merchant Area: <input type="text" id="filterArea" onkeyup="applyFilters()"></label>
-      <label>Status: 
+      <div class="control-group">
+        <label for="filterRefId">Reference ID:</label>
+        <input type="text" id="filterRefId" onkeyup="applyFilters()" placeholder="Filter by Reference ID">
+      </div>
+      
+      <div class="control-group">
+        <label for="filterId">Billable ID:</label>
+        <input type="text" id="filterId" onkeyup="applyFilters()" placeholder="Filter by Billable ID">
+      </div>
+      
+      <div class="control-group">
+        <label for="filterArea">Merchant Area:</label>
+        <input type="text" id="filterArea" onkeyup="applyFilters()" placeholder="Filter by Area">
+      </div>
+      
+      <div class="control-group">
+        <label for="filterStatus">Status:</label>
         <select id="filterStatus" onchange="applyFilters()">
           <option value="">All</option>
           <option value="Refunded">Refunded</option>
           <option value="Compensated">Compensated</option>
         </select>
-      </label>
-      <label>Reason: 
+      </div>
+      
+      <div class="control-group">
+        <label for="filterCategory">Category:</label>
+        <select id="filterCategory" onchange="applyFilters()">
+          <option value="">All</option>
+          <option value="CLAWBACK">Clawback</option>
+          <option value="PENALTY">Penalty</option>
+          <option value="COMPENSATED">Compensated</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label for="filterReason">Reason:</label>
         <div class="reason-filter">
           <input type="text" id="filterReason" placeholder="Select or type reason" readonly onclick="toggleReasonDropdown()">
           <div class="reason-dropdown" id="reasonDropdown"></div>
         </div>
-      </label>
-      <label>From Date: <input type="date" id="filterDateFrom" onchange="applyFilters()"></label>
-      <label>To Date: <input type="date" id="filterDateTo" onchange="applyFilters()"></label>
+      </div>
+      
+      <div class="control-group">
+        <label for="filterDateFrom">From Date:</label>
+        <input type="date" id="filterDateFrom" onchange="applyFilters()">
+      </div>
+      
+      <div class="control-group">
+        <label for="filterDateTo">To Date:</label>
+        <input type="date" id="filterDateTo" onchange="applyFilters()">
+      </div>
     </div>
   </div>
 
@@ -562,6 +919,7 @@
           <th onclick="sortTable('amount')">Amount</th>
           <th onclick="sortTable('description')">Description</th>
           <th onclick="sortTable('area')">Merchant Area</th>
+          <th onclick="sortTable('category')">Category</th>
           <th onclick="sortTable('status')">Status</th>
           <th>Action</th>
         </tr>
@@ -577,6 +935,7 @@
         <tr>
           <th>Branch</th>
           <th>Order Count</th>
+          <th>Total Deductions</th>
           <th>Reasons</th>
         </tr>
       </thead>
@@ -593,6 +952,11 @@
     <h3>Reasons Distribution</h3>
     <canvas id="reasonsChart"></canvas>
   </div>
+
+  <div class="section">
+    <h3>Category Distribution</h3>
+    <canvas id="categoryChart"></canvas>
+  </div>
 </div>
 
 <div class="notification" id="notification"></div>
@@ -604,6 +968,31 @@
     <div class="report-header">
       <h2>Careem Clawback Management Report</h2>
       <p id="reportDate"></p>
+    </div>
+    <div class="report-section">
+      <h3>Overall Financial Summary</h3>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-label">Total Clawbacks</div>
+          <div class="stat-value" id="reportTotalClawbacks">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Penalties</div>
+          <div class="stat-value" id="reportTotalPenalties">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Compensated</div>
+          <div class="stat-value" id="reportTotalCompensated">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Main Disputes</div>
+          <div class="stat-value" id="reportTotalDisputes">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Net Amount</div>
+          <div class="stat-value" id="reportNetAmount">0</div>
+        </div>
+      </div>
     </div>
     <div class="report-section">
       <h3>Executive Summary</h3>
@@ -629,6 +1018,26 @@
           <div class="stat-value" id="reportCompensatedAmount">0</div>
         </div>
       </div>
+    </div>
+    <div class="report-section">
+      <h3>Main Dispute Reasons (Careem Accepted Refunds)</h3>
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Reason</th>
+            <th>Count</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody id="mainDisputesTable"></tbody>
+      </table>
+      <p style="margin-top: 10px; font-style: italic;">
+        Total main disputes: <span id="totalMainDisputesCount">0</span> (<span id="totalMainDisputesPercent">0</span>% of all transactions)
+      </p>
+    </div>
+    <div class="report-section">
+      <h3>Data Quality Summary</h3>
+      <div id="reportDataQuality" class="stats-container"></div>
     </div>
     <div class="report-section">
       <h3>Top Reasons for Clawbacks</h3>
@@ -668,6 +1077,12 @@
         <canvas id="reportReasonsChart"></canvas>
       </div>
     </div>
+    <div class="report-section">
+      <h3>Category Distribution</h3>
+      <div class="report-chart">
+        <canvas id="reportCategoryChart"></canvas>
+      </div>
+    </div>
     <div class="report-footer">
       <p>Generated by Careem Clawback Tracker on <span id="reportFooterDate"></span></p>
     </div>
@@ -679,6 +1094,7 @@
 </div>
 
 <script>
+// Global variables
 let transactions = [];
 let invalidRecords = [];
 let duplicateRecords = [];
@@ -686,18 +1102,31 @@ let sortColumn = null;
 let sortAscending = true;
 let deductionsChart = null;
 let reasonsChart = null;
+let categoryChart = null;
 let reportDeductionsChart = null;
 let reportReasonsChart = null;
+let reportCategoryChart = null;
 let consolidateReasons = false;
 let reasonsList = [];
 let selectedReason = "";
+let isProcessing = false;
+
+// Main dispute reasons that Careem accepts for refunds
+const mainDisputeReasons = [
+  "Spilled / damaged",
+  "Missing or unavailable items",
+  "Wrong item sent",
+  "Partner Did not Prepare"
+];
 
 // Predefined reasons mapping in order
 const predefinedReasons = [
+  "Spilled / damaged",           // Main dispute reason
+  "Missing or unavailable items", // Main dispute reason
+  "Wrong item sent",             // Main dispute reason
+  "Partner Did not Prepare",      // Main dispute reason
   "Food is overcooked/burnt",
-  "Missing or unavailable items (Main item)",
-  "Wrong item sent",
-  "Spilled / damaged",
+  "Food is undercooked",
   "Hair in the food",
   "Foul Smell",
   "My Food is not edible (SelfServe)",
@@ -705,62 +1134,49 @@ const predefinedReasons = [
   "Penalty for clawback complaint reason",
   "Penalties for Order",
   "Clawback Reversals",
-  "Partner Did not Prepare",
-  "غرامة إضافية"
+  "Additional Penalty"
 ];
 
 // Keywords for each predefined reason
 const reasonKeywords = {
-  "Food is overcooked/burnt": ["overcooked", "burnt", "burnt", "overcooked"],
-  "Missing or unavailable items (Main item)": ["missing", "unavailable", "items", "main"],
-  "Wrong item sent": ["wrong", "item", "sent"],
-  "Spilled / damaged": ["spilled", "damaged"],
+  "Spilled / damaged": ["spilled", "damaged", "spill", "damage", "broken", "leaked"],
+  "Missing or unavailable items": ["missing", "unavailable", "items", "item", "not available", "out of stock"],
+  "Wrong item sent": ["wrong", "item", "sent", "incorrect", "mistake", "different"],
+  "Partner Did not Prepare": ["partner", "prepare", "did not prepare", "not prepared", "failed to prepare"],
+  "Food is overcooked/burnt": ["overcooked", "burnt", "burned"],
+  "Food is undercooked": ["undercooked", "raw", "not cooked"],
   "Hair in the food": ["hair", "food"],
-  "Foul Smell": ["foul", "smell"],
-  "My Food is not edible (SelfServe)": ["edible", "selfserve"],
-  "Instructions not followed": ["instructions", "followed"],
+  "Foul Smell": ["foul", "smell", "odor"],
+  "My Food is not edible (SelfServe)": ["edible", "selfserve", "not edible"],
+  "Instructions not followed": ["instructions", "followed", "not followed"],
   "Penalty for clawback complaint reason": ["penalty", "clawback", "complaint", "reason"],
   "Penalties for Order": ["penalties", "order"],
   "Clawback Reversals": ["clawback", "reversals"],
-  "Partner Did not Prepare": ["partner", "prepare"],
-  "غرامة إضافية": ["غرامة", "إضافية", "penalty", "additional"]
+  "Additional Penalty": ["غرامة", "إضافية", "penalty", "additional"]
 };
 
 // Special reason mapping for specific consolidations
 const specialReasonMapping = {
+  "Missing or unavailable items (Main item)": "Missing or unavailable items",
+  "Missing or unavailable items (Side item)": "Missing or unavailable items",
   "Penalty for clawback complaint reason": "Penalty for clawback complaint reason",
-  "Missing or unavailable items (Main item)": "Missing or unavailable items (Main item)",
   "غرامة إضافية": "Additional Penalty"
 };
 
-function mapReason(rawReason) {
-  // First check if it's a special mapping
-  if (specialReasonMapping[rawReason]) {
-    return specialReasonMapping[rawReason];
-  }
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+  loadData();
   
-  // Normalize the raw reason
-  const normalized = rawReason.toLowerCase().replace(/[^a-z0-9\s]/g, '');
-  
-  // Check against predefined reasons
-  for (const reason of predefinedReasons) {
-    const keywords = reasonKeywords[reason];
-    for (const keyword of keywords) {
-      if (normalized.includes(keyword) || rawReason.includes(keyword)) {
-        return reason;
-      }
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(event) {
+    const reasonFilter = document.querySelector('.reason-filter');
+    if (!reasonFilter.contains(event.target)) {
+      document.getElementById('reasonDropdown').style.display = 'none';
     }
-  }
-  
-  // If no match, return the original reason
-  return rawReason;
-}
+  });
+});
 
-function getReasonOrderIndex(reason) {
-  // Return the index of the reason in the predefined list
-  return predefinedReasons.indexOf(reason);
-}
-
+// Utility functions
 function formatDate(dateStr) {
   // Convert date format from "9/16/2025" to "2025-09-16"
   const parts = dateStr.split('/');
@@ -780,6 +1196,253 @@ function showNotification(message, isError = false) {
   setTimeout(() => notification.classList.remove('show'), 3000);
 }
 
+function showLoadingState(show) {
+  isProcessing = show;
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach(button => {
+    if (show) {
+      button.disabled = true;
+      if (button.textContent.includes('Import')) {
+        button.innerHTML = '<span class="loading"></span> Processing...';
+      }
+    } else {
+      button.disabled = false;
+      if (button.textContent.includes('Processing')) {
+        button.textContent = 'Import Data';
+      }
+    }
+  });
+}
+
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
+// Data processing functions
+function isMainDisputeReason(reason) {
+  return mainDisputeReasons.includes(reason);
+}
+
+function mapReason(rawReason) {
+  // First check if it's a special mapping
+  if (specialReasonMapping[rawReason]) {
+    return specialReasonMapping[rawReason];
+  }
+  
+  // Normalize the raw reason
+  const normalized = rawReason.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+  
+  // Check against main dispute reasons first (priority)
+  for (const reason of mainDisputeReasons) {
+    const keywords = reasonKeywords[reason];
+    for (const keyword of keywords) {
+      if (normalized.includes(keyword) || rawReason.includes(keyword)) {
+        return reason;
+      }
+    }
+  }
+  
+  // Then check against other predefined reasons
+  for (const reason of predefinedReasons) {
+    if (mainDisputeReasons.includes(reason)) {
+      continue; // Skip main reasons as we already checked them
+    }
+    
+    const keywords = reasonKeywords[reason];
+    for (const keyword of keywords) {
+      if (normalized.includes(keyword) || rawReason.includes(keyword)) {
+        return reason;
+      }
+    }
+  }
+  
+  // If no match, return the original reason
+  return rawReason;
+}
+
+function getReasonOrderIndex(reason) {
+  // Return the index of the reason in the predefined list
+  return predefinedReasons.indexOf(reason);
+}
+
+function determineCategory(description, amount) {
+  // Clawback Reversal means Careem reversed the deduction (رجع الخصم)
+  if (description.includes("Clawback Reversal")) {
+    return "COMPENSATED";
+  }
+  // Penalty or Clawback means deduction (خصم)
+  else if (description.includes("Penalty") || description.includes("Clawback")) {
+    return "CLAWBACK";
+  }
+  // All other cases - base on amount
+  else {
+    return amount > 0 ? "COMPENSATED" : "CLAWBACK";
+  }
+}
+
+function parseData(lines) {
+  showLoadingState(true);
+  
+  try {
+    transactions = [];
+    invalidRecords = [];
+    duplicateRecords = [];
+    const seenKeys = new Set();
+    
+    console.log(`Processing ${lines.length} lines of data`);
+
+    for (let i = 0; i < lines.length; i++) {
+      const lineNum = i + 1;
+      // Try both tab and comma as separators
+      let cols = lines[i].trim().split(/\t|,/);
+      
+      // Check for invalid data format - expecting 6 columns
+      if (cols.length < 6) {
+        invalidRecords.push({
+          line: lineNum,
+          data: lines[i],
+          reason: "Invalid Format",
+          details: `Expected 6 columns, got ${cols.length}`
+        });
+        continue;
+      }
+
+      let referenceId = cols[0];
+      let billableId = cols[1];
+      let date = formatDate(cols[2]);
+      let amount = parseFloat(cols[3]);
+      
+      // Check for invalid amount
+      if (isNaN(amount)) {
+        invalidRecords.push({
+          line: lineNum,
+          data: lines[i],
+          reason: "Invalid Amount",
+          details: `Amount '${cols[3]}' is not a valid number`
+        });
+        continue;
+      }
+
+      // Extract the full description
+      let fullDescription = cols[4].replace(/__/g, " ");
+      let descriptionParts = cols[4].split('__');
+      let rawReason = descriptionParts[descriptionParts.length - 1];
+      let description = mapReason(rawReason);
+
+      // Determine category
+      let category = determineCategory(description, amount);
+
+      let merchantArea = cols[5];
+
+      // Create a unique key that includes the reason for penalty records
+      const isPenalty = rawReason.includes("غرامة إضافية") || 
+                       rawReason.includes("Penalty") || 
+                       rawReason.includes("penalty");
+      
+      const key = isPenalty 
+        ? `${referenceId}-${billableId}-${rawReason}` 
+        : `${referenceId}-${billableId}`;
+
+      // Check for duplicates
+      if (seenKeys.has(key)) {
+        duplicateRecords.push({
+          line: lineNum,
+          data: lines[i],
+          reason: "Duplicate Record",
+          details: `Duplicate of line ${Array.from(seenKeys).indexOf(key) + 1}`
+        });
+        continue;
+      }
+      seenKeys.add(key);
+
+      transactions.push({
+        referenceId: referenceId,
+        id: billableId,
+        date: date,
+        amount: amount,
+        description: description,
+        rawDescription: fullDescription,
+        category: category,
+        area: merchantArea,
+        status: amount < 0 ? "Refunded" : "Compensated",
+        isPenalty: isPenalty,
+        isMainDispute: isMainDisputeReason(description)
+      });
+    }
+
+    // Generate unique reasons list
+    reasonsList = [...new Set(transactions.map(tx => tx.description))];
+    reasonsList.sort((a, b) => getReasonOrderIndex(a) - getReasonOrderIndex(b));
+    
+    // Populate reason dropdown
+    populateReasonDropdown();
+    
+    // Display invalid records section if there are any
+    if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
+      document.getElementById("invalidRecordsSection").style.display = "block";
+      document.getElementById("errorStats").style.display = "flex";
+      document.getElementById("invalidCount").textContent = invalidRecords.length;
+      document.getElementById("duplicateCount").textContent = duplicateRecords.length;
+      document.getElementById("validCount").textContent = transactions.length;
+      
+      // Populate invalid records table
+      const invalidTable = document.getElementById("invalidRecordsTable");
+      invalidTable.innerHTML = "";
+      
+      // Add invalid records
+      invalidRecords.forEach(record => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${record.line}</td>
+          <td class="error-details">${record.data}</td>
+          <td class="error-reason">${record.reason}</td>
+          <td class="error-details">${record.details}</td>
+        `;
+        invalidTable.appendChild(row);
+      });
+      
+      // Add duplicate records
+      duplicateRecords.forEach(record => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${record.line}</td>
+          <td class="error-details">${record.data}</td>
+          <td class="error-reason">${record.reason}</td>
+          <td class="error-details">${record.details}</td>
+        `;
+        invalidTable.appendChild(row);
+      });
+    } else {
+      document.getElementById("invalidRecordsSection").style.display = "none";
+      document.getElementById("errorStats").style.display = "none";
+    }
+
+    if (transactions.length === 0) {
+      showNotification(`No valid transactions found. Total rows: ${lines.length}, Invalid: ${invalidRecords.length}, Duplicates: ${duplicateRecords.length}`, true);
+    } else {
+      saveData();
+      updateOverallSummary(transactions);
+      renderTable(transactions);
+      renderBranchSummary(transactions);
+      renderDeductionsChart(transactions);
+      renderReasonsChart(transactions);
+      renderCategoryChart(transactions);
+      updateDashboard(transactions);
+      showNotification(`Data imported successfully. Total rows: ${lines.length}, Valid: ${transactions.length}, Invalid: ${invalidRecords.length}, Duplicates: ${duplicateRecords.length}`);
+    }
+  } catch (error) {
+    console.error('Error processing data:', error);
+    showNotification('An error occurred while processing data. Please check the console for details.', true);
+  } finally {
+    showLoadingState(false);
+  }
+}
+
+// Data import/export functions
 function importData() {
   const raw = document.getElementById("rawData").value.trim();
   if (!raw) {
@@ -796,157 +1459,104 @@ function importFromCSV() {
     showNotification("Please select a CSV file.", true);
     return;
   }
+  
+  showLoadingState(true);
+  
   const reader = new FileReader();
   reader.onload = function(e) {
-    const lines = e.target.result.split("\n").map(line => line.trim()).filter(line => line);
-    parseData(lines);
+    try {
+      const lines = e.target.result.split("\n").map(line => line.trim()).filter(line => line);
+      parseData(lines);
+    } catch (error) {
+      console.error('Error reading CSV file:', error);
+      showNotification('An error occurred while reading the CSV file.', true);
+      showLoadingState(false);
+    }
   };
+  
+  reader.onerror = function() {
+    showNotification('An error occurred while reading the file.', true);
+    showLoadingState(false);
+  };
+  
   reader.readAsText(file);
 }
 
-function parseData(lines) {
-  transactions = [];
-  invalidRecords = [];
-  duplicateRecords = [];
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const seenKeys = new Set();
+function exportToCSV() {
+  // Export with 7 columns to include category
+  let csv = "Reference ID,Billable ID,Date,Amount,Description,Merchant Area,Category\n";
+  transactions.forEach(tx => {
+    csv += `${tx.referenceId},${tx.id},${tx.date},${tx.amount},"${tx.rawDescription}",${tx.area},${tx.category}\n`;
+  });
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "clawback_data.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportInvalidRecords() {
+  let csv = "Line,Original Data,Error Reason,Details\n";
   
-  console.log(`Processing ${lines.length} lines of data`);
-
-  for (let i = 0; i < lines.length; i++) {
-    const lineNum = i + 1;
-    let cols = lines[i].trim().split(/\t/);
-    
-    // Check for invalid data format
-    if (cols.length < 7) {
-      invalidRecords.push({
-        line: lineNum,
-        data: lines[i],
-        reason: "Invalid Format",
-        details: `Expected 7 columns, got ${cols.length}`
-      });
-      continue;
-    }
-
-    let referenceId = cols[0];
-    let billableId = cols[1];
-    let date = formatDate(cols[2]);
-    let amount = parseFloat(cols[3]);
-    
-    // Check for invalid amount
-    if (isNaN(amount)) {
-      invalidRecords.push({
-        line: lineNum,
-        data: lines[i],
-        reason: "Invalid Amount",
-        details: `Amount '${cols[3]}' is not a valid number`
-      });
-      continue;
-    }
-
-    // Extract the full description
-    let fullDescription = cols[4].replace(/__/g, " ");
-    let descriptionParts = cols[4].split('__');
-    let rawReason = descriptionParts[descriptionParts.length - 1];
-    let description = mapReason(rawReason);
-
-    let category = cols[5];
-    let merchantArea = cols[6];
-
-    // Create a unique key that includes the reason for penalty records
-    const isPenalty = rawReason.includes("غرامة إضافية") || 
-                     rawReason.includes("Penalty") || 
-                     rawReason.includes("penalty");
-    
-    const key = isPenalty 
-      ? `${referenceId}-${billableId}-${rawReason}` 
-      : `${referenceId}-${billableId}`;
-
-    // Check for duplicates
-    if (seenKeys.has(key)) {
-      duplicateRecords.push({
-        line: lineNum,
-        data: lines[i],
-        reason: "Duplicate Record",
-        details: `Duplicate of line ${Array.from(seenKeys).indexOf(key) + 1}`
-      });
-      continue;
-    }
-    seenKeys.add(key);
-
-    transactions.push({
-      referenceId: referenceId,
-      id: billableId,
-      date: date,
-      amount: amount,
-      description: description,
-      rawDescription: fullDescription,
-      area: merchantArea,
-      status: "Refunded",
-      isPenalty: isPenalty
-    });
-  }
-
-  // Generate unique reasons list
-  reasonsList = [...new Set(transactions.map(tx => tx.description))];
-  reasonsList.sort((a, b) => getReasonOrderIndex(a) - getReasonOrderIndex(b));
+  // Add invalid records
+  invalidRecords.forEach(record => {
+    csv += `${record.line},"${record.data}",${record.reason},"${record.details}"\n`;
+  });
   
-  // Populate reason dropdown
-  populateReasonDropdown();
+  // Add duplicate records
+  duplicateRecords.forEach(record => {
+    csv += `${record.line},"${record.data}",${record.reason},"${record.details}"\n`;
+  });
+  
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "invalid_records.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showNotification(`Exported ${invalidRecords.length + duplicateRecords.length} invalid/duplicate records`);
+}
 
-  // Display invalid records section if there are any
-  if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
-    document.getElementById("invalidRecordsSection").style.display = "block";
-    document.getElementById("errorStats").style.display = "flex";
-    document.getElementById("invalidCount").textContent = invalidRecords.length;
-    document.getElementById("duplicateCount").textContent = duplicateRecords.length;
-    document.getElementById("validCount").textContent = transactions.length;
-    
-    // Populate invalid records table
-    const invalidTable = document.getElementById("invalidRecordsTable");
-    invalidTable.innerHTML = "";
-    
-    // Add invalid records
-    invalidRecords.forEach(record => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${record.line}</td>
-        <td class="error-details">${record.data}</td>
-        <td class="error-reason">${record.reason}</td>
-        <td class="error-details">${record.details}</td>
-      `;
-      invalidTable.appendChild(row);
-    });
-    
-    // Add duplicate records
-    duplicateRecords.forEach(record => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${record.line}</td>
-        <td class="error-details">${record.data}</td>
-        <td class="error-reason">${record.reason}</td>
-        <td class="error-details">${record.details}</td>
-      `;
-      invalidTable.appendChild(row);
-    });
-  } else {
-    document.getElementById("invalidRecordsSection").style.display = "none";
-    document.getElementById("errorStats").style.display = "none";
-  }
-
-  if (transactions.length === 0) {
-    showNotification(`No valid transactions found. Total rows: ${lines.length}, Invalid: ${invalidRecords.length}, Duplicates: ${duplicateRecords.length}`, true);
-  } else {
-    saveData();
-    renderTable(transactions);
-    renderBranchSummary(transactions);
-    renderDeductionsChart(transactions);
-    renderReasonsChart(transactions);
-    updateDashboard(transactions);
-    showNotification(`Data imported successfully. Total rows: ${lines.length}, Valid: ${transactions.length}, Invalid: ${invalidRecords.length}, Duplicates: ${duplicateRecords.length}`);
+function saveData() {
+  try {
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+  } catch (e) {
+    console.error('Error saving data to localStorage:', e);
+    showNotification('Failed to save data to local storage.', true);
   }
 }
 
+function loadData() {
+  try {
+    const saved = localStorage.getItem("transactions");
+    if (saved) {
+      transactions = JSON.parse(saved);
+      // Generate unique reasons list
+      reasonsList = [...new Set(transactions.map(tx => tx.description))];
+      reasonsList.sort((a, b) => getReasonOrderIndex(a) - getReasonOrderIndex(b));
+      
+      // Populate reason dropdown
+      populateReasonDropdown();
+      
+      updateOverallSummary(transactions);
+      renderTable(transactions);
+      renderBranchSummary(transactions);
+      renderDeductionsChart(transactions);
+      renderReasonsChart(transactions);
+      renderCategoryChart(transactions);
+      updateDashboard(transactions);
+    }
+  } catch (e) {
+    console.error('Error loading saved data:', e);
+    showNotification("Error loading saved data.", true);
+  }
+}
+
+// UI rendering functions
 function populateReasonDropdown() {
   const dropdown = document.getElementById("reasonDropdown");
   dropdown.innerHTML = "";
@@ -980,15 +1590,50 @@ function selectReason(reason) {
   applyFilters();
 }
 
+function updateOverallSummary(data) {
+  let clawbackTotal = 0;
+  let penaltyTotal = 0;
+  let compensatedTotal = 0;
+  let disputeTotal = 0;
+  
+  data.forEach(tx => {
+    if (tx.category === "CLAWBACK") {
+      clawbackTotal += Math.abs(tx.amount);
+    } else if (tx.category === "PENALTY") {
+      penaltyTotal += Math.abs(tx.amount);
+    } else if (tx.category === "COMPENSATED") {
+      compensatedTotal += tx.amount;
+    }
+    
+    if (tx.isMainDispute) {
+      disputeTotal += Math.abs(tx.amount);
+    }
+  });
+  
+  const netAmount = compensatedTotal - clawbackTotal - penaltyTotal;
+  
+  document.getElementById("totalClawbacks").textContent = `(${clawbackTotal.toFixed(2)})`;
+  document.getElementById("totalPenalties").textContent = `(${penaltyTotal.toFixed(2)})`;
+  document.getElementById("totalCompensated").textContent = `(${compensatedTotal.toFixed(2)})`;
+  document.getElementById("totalDisputes").textContent = `(${disputeTotal.toFixed(2)})`;
+  document.getElementById("netAmount").textContent = `(${netAmount.toFixed(2)})`;
+}
+
 function updateDashboard(data) {
   let total = 0;
   let statusSummary = { Refunded: 0, Compensated: 0 };
   let reasonSummary = {};
+  let mainDisputeCount = 0;
 
   data.forEach(tx => {
     total += tx.amount;
     statusSummary[tx.status] = (statusSummary[tx.status] || 0) + tx.amount;
     reasonSummary[tx.description] = (reasonSummary[tx.description] || 0) + 1;
+    
+    // Count main dispute reasons
+    if (tx.isMainDispute) {
+      mainDisputeCount++;
+    }
   });
 
   // Update dashboard stats
@@ -1004,23 +1649,35 @@ function updateDashboard(data) {
   
   const consolidatedReasons = consolidateReasons ? consolidateReasonSummary(reasonSummary) : reasonSummary;
   
-  // Sort reasons by predefined order
-  const sortedReasons = Object.entries(consolidatedReasons)
-    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]))
-    .filter(([reason]) => getReasonOrderIndex(reason) !== -1); // Only include predefined reasons
+  // Sort reasons: main dispute reasons first, then others
+  const mainReasons = Object.entries(consolidatedReasons)
+    .filter(([reason]) => isMainDisputeReason(reason))
+    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]));
   
-  // Add any remaining reasons (not in predefined list)
-  const remainingReasons = Object.entries(consolidatedReasons)
-    .filter(([reason]) => getReasonOrderIndex(reason) === -1);
+  const otherReasons = Object.entries(consolidatedReasons)
+    .filter(([reason]) => !isMainDisputeReason(reason))
+    .sort((a, b) => getReasonOrderIndex(a[0]) - getReasonOrderIndex(b[0]));
   
-  // Combine and sort
-  const allReasons = [...sortedReasons, ...remainingReasons];
+  const allReasons = [...mainReasons, ...otherReasons];
   
+  // Add reasons with special styling for main disputes
   allReasons.forEach(([reason, count]) => {
     const li = document.createElement("li");
-    li.innerHTML = `<span class="reason">${reason}</span>: ${count}`;
+    if (isMainDisputeReason(reason)) {
+      li.innerHTML = `<span class="reason dispute-reason">${reason} ⭐</span>: ${count}`;
+    } else {
+      li.innerHTML = `<span class="reason">${reason}</span>: ${count}`;
+    }
     reasonsListEl.appendChild(li);
   });
+  
+  // Add main dispute summary if there are any
+  if (mainDisputeCount > 0) {
+    const summaryLi = document.createElement("li");
+    summaryLi.className = "dispute-highlight";
+    summaryLi.innerHTML = `<span class="reason dispute-reason">Total Main Dispute Reasons</span>: ${mainDisputeCount} (${(mainDisputeCount/data.length*100).toFixed(1)}%)`;
+    reasonsListEl.appendChild(summaryLi);
+  }
 }
 
 function consolidateReasonSummary(rawSummary) {
@@ -1045,8 +1702,21 @@ function renderTable(data) {
   const tbody = document.querySelector("#dataTable tbody");
   tbody.innerHTML = "";
 
+  if (data.length === 0) {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td colspan="9" style="text-align: center;">No data available</td>`;
+    tbody.appendChild(row);
+    return;
+  }
+
   data.forEach(tx => {
     let row = document.createElement("tr");
+    
+    // Highlight main dispute reasons
+    const descriptionCell = tx.isMainDispute 
+      ? `<td title="Full Description: ${tx.rawDescription}"><span class="dispute-reason">${tx.description} ⭐</span></td>`
+      : `<td title="Full Description: ${tx.rawDescription}">${tx.description}</td>`;
+    
     row.innerHTML = `
       <td>${tx.referenceId}</td>
       <td>${tx.id}</td>
@@ -1054,8 +1724,11 @@ function renderTable(data) {
       <td class="${tx.amount < 0 ? 'negative' : ''}">
         ${tx.amount < 0 ? "(" + Math.abs(tx.amount).toFixed(2) + ")" : tx.amount.toFixed(2)}
       </td>
-      <td title="Full Description: ${tx.rawDescription}">${tx.description}</td>
+      ${descriptionCell}
       <td>${tx.area}</td>
+      <td>
+        <span class="category-badge ${tx.category.toLowerCase()}">${tx.category}</span>
+      </td>
       <td>${tx.status}</td>
       <td>
         <button onclick="updateStatus('${tx.id}')" ${tx.status === "Compensated" ? 'disabled' : ''}>Mark as Compensated</button>
@@ -1069,15 +1742,25 @@ function renderBranchSummary(data) {
   const tbody = document.querySelector("#branchTable tbody");
   tbody.innerHTML = "";
 
+  if (data.length === 0) {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td colspan="4" style="text-align: center;">No data available</td>`;
+    tbody.appendChild(row);
+    return;
+  }
+
   let branchGroups = {};
   data.forEach(tx => {
     const area = tx.area || "Unknown";
     if (!branchGroups[area]) {
-      branchGroups[area] = { count: 0, reasons: new Set(), total: 0 };
+      branchGroups[area] = { count: 0, reasons: new Set(), total: 0, disputes: 0 };
     }
     branchGroups[area].count++;
     branchGroups[area].reasons.add(tx.description);
     branchGroups[area].total += Math.abs(tx.amount);
+    if (tx.isMainDispute) {
+      branchGroups[area].disputes++;
+    }
   });
 
   Object.keys(branchGroups).sort().forEach(area => {
@@ -1085,7 +1768,8 @@ function renderBranchSummary(data) {
     row.innerHTML = `
       <td>${area}</td>
       <td>${branchGroups[area].count}</td>
-      <td>${Array.from(branchGroups[area].reasons).join(", ")}</td>
+      <td>(${branchGroups[area].total.toFixed(2)})</td>
+      <td>${Array.from(branchGroups[area].reasons).join(", ")} ${branchGroups[area].disputes > 0 ? `(${branchGroups[area].disputes} disputes)` : ''}</td>
     `;
     tbody.appendChild(row);
   });
@@ -1116,9 +1800,22 @@ function renderDeductionsChart(data) {
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       scales: {
-        y: { beginAtZero: true, title: { display: true, text: "Amount (AED)" } },
-        x: { title: { display: true, text: "Branch" } }
+        y: { 
+          beginAtZero: true, 
+          title: { 
+            display: true, 
+            text: "Amount (AED)" 
+          } 
+        },
+        x: { 
+          title: { 
+            display: true, 
+            text: "Branch" 
+          } 
+        }
       }
     }
   });
@@ -1155,24 +1852,109 @@ function renderReasonsChart(data) {
       datasets: [{
         label: "Reasons Distribution",
         data: counts,
-        backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        backgroundColor: [
+          "#9b59b6", "#9b59b6", "#9b59b6", "#9b59b6", // Main dispute reasons in purple
+          "#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"
+        ],
         borderColor: ["#fff"],
         borderWidth: 1
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: "right" }
+        legend: { 
+          position: "right",
+          labels: {
+            boxWidth: 15,
+            padding: 15
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: ${value} (${percentage}%)`;
+            }
+          }
+        }
       }
     }
   });
 }
+
+function renderCategoryChart(data) {
+  const ctx = document.getElementById("categoryChart").getContext("2d");
+  let categorySummary = {
+    "CLAWBACK": 0,
+    "PENALTY": 0,
+    "COMPENSATED": 0
+  };
+  
+  data.forEach(tx => {
+    categorySummary[tx.category] += Math.abs(tx.amount);
+  });
+
+  const labels = Object.keys(categorySummary);
+  const amounts = Object.values(categorySummary);
+
+  if (categoryChart) categoryChart.destroy();
+  categoryChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Category Distribution",
+        data: amounts,
+        backgroundColor: [
+          "#e74c3c", // clawback
+          "#f39c12", // penalty
+          "#27ae60"  // compensated
+        ],
+        borderColor: ["#fff"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          position: "right",
+          labels: {
+            boxWidth: 15,
+            padding: 15
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: (${value.toFixed(2)}) (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Filter and sort functions
+const debouncedApplyFilters = debounce(applyFilters, 300);
 
 function applyFilters() {
   const refIdFilter = document.getElementById("filterRefId").value.trim().toLowerCase();
   const idFilter = document.getElementById("filterId").value.trim().toLowerCase();
   const areaFilter = document.getElementById("filterArea").value.trim().toLowerCase();
   const statusFilter = document.getElementById("filterStatus").value;
+  const categoryFilter = document.getElementById("filterCategory").value;
   const reasonFilter = selectedReason;
   const dateFrom = document.getElementById("filterDateFrom").value;
   const dateTo = document.getElementById("filterDateTo").value;
@@ -1183,22 +1965,26 @@ function applyFilters() {
     const toDate = dateTo ? new Date(dateTo) : null;
     
     const matchesReason = reasonFilter === "" || tx.description === reasonFilter;
+    const matchesCategory = categoryFilter === "" || tx.category === categoryFilter;
     
     return (
       (refIdFilter === "" || tx.referenceId.toLowerCase().includes(refIdFilter)) &&
       (idFilter === "" || tx.id.toLowerCase().includes(idFilter)) &&
       (areaFilter === "" || tx.area.toLowerCase().includes(areaFilter)) &&
       (statusFilter === "" || tx.status === statusFilter) &&
+      matchesCategory &&
       matchesReason &&
       (!fromDate || txDate >= fromDate) &&
       (!toDate || txDate <= toDate)
     );
   });
 
+  updateOverallSummary(filtered);
   renderTable(filtered);
   renderBranchSummary(filtered);
   renderDeductionsChart(filtered);
   renderReasonsChart(filtered);
+  renderCategoryChart(filtered);
   updateDashboard(filtered);
 }
 
@@ -1207,6 +1993,7 @@ function clearFilters() {
   document.getElementById("filterId").value = "";
   document.getElementById("filterArea").value = "";
   document.getElementById("filterStatus").value = "";
+  document.getElementById("filterCategory").value = "";
   document.getElementById("filterReason").value = "All Reasons";
   selectedReason = "";
   document.getElementById("filterDateFrom").value = "";
@@ -1217,10 +2004,12 @@ function clearFilters() {
   dropdown.innerHTML = "";
   populateReasonDropdown();
   
+  updateOverallSummary(transactions);
   renderTable(transactions);
   renderBranchSummary(transactions);
   renderDeductionsChart(transactions);
   renderReasonsChart(transactions);
+  renderCategoryChart(transactions);
   updateDashboard(transactions);
 }
 
@@ -1230,6 +2019,16 @@ function sortTable(column) {
   } else {
     sortColumn = column;
     sortAscending = true;
+  }
+
+  // Update sort indicators
+  document.querySelectorAll('th').forEach(th => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+  });
+  
+  const currentTh = document.querySelector(`th[onclick="sortTable('${column}')"]`);
+  if (currentTh) {
+    currentTh.classList.add(sortAscending ? 'sorted-asc' : 'sorted-desc');
   }
 
   transactions.sort((a, b) => {
@@ -1250,6 +2049,7 @@ function sortTable(column) {
   renderBranchSummary(transactions);
   renderDeductionsChart(transactions);
   renderReasonsChart(transactions);
+  renderCategoryChart(transactions);
   updateDashboard(transactions);
 }
 
@@ -1262,6 +2062,7 @@ function updateStatus(id) {
     renderBranchSummary(transactions);
     renderDeductionsChart(transactions);
     renderReasonsChart(transactions);
+    renderCategoryChart(transactions);
     updateDashboard(transactions);
     showNotification(`Status updated to Compensated for ID ${id}`);
   }
@@ -1275,78 +2076,11 @@ function toggleReasonConsolidation() {
   showNotification(`Reasons display set to ${consolidateReasons ? 'consolidated' : 'raw'}.`);
 }
 
-function exportToCSV() {
-  let csv = "Reference ID,Billable ID,Date,Amount,Description,Merchant Area,Status\n";
-  transactions.forEach(tx => {
-    csv += `${tx.referenceId},${tx.id},${tx.date},${tx.amount},"${tx.description}",${tx.area},${tx.status}\n`;
-  });
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "clawback_data.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function exportInvalidRecords() {
-  let csv = "Line,Original Data,Error Reason,Details\n";
-  
-  // Add invalid records
-  invalidRecords.forEach(record => {
-    csv += `${record.line},"${record.data}",${record.reason},"${record.details}"\n`;
-  });
-  
-  // Add duplicate records
-  duplicateRecords.forEach(record => {
-    csv += `${record.line},"${record.data}",${record.reason},"${record.details}"\n`;
-  });
-  
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "invalid_records.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-  
-  showNotification(`Exported ${invalidRecords.length + duplicateRecords.length} invalid/duplicate records`);
-}
-
-function saveData() {
-  localStorage.setItem("transactions", JSON.stringify(transactions));
-}
-
-function loadData() {
-  const saved = localStorage.getItem("transactions");
-  if (saved) {
-    try {
-      transactions = JSON.parse(saved);
-      // Generate unique reasons list
-      reasonsList = [...new Set(transactions.map(tx => tx.description))];
-      reasonsList.sort((a, b) => getReasonOrderIndex(a) - getReasonOrderIndex(b));
-      
-      // Populate reason dropdown
-      populateReasonDropdown();
-      
-      renderTable(transactions);
-      renderBranchSummary(transactions);
-      renderDeductionsChart(transactions);
-      renderReasonsChart(transactions);
-      updateDashboard(transactions);
-    } catch (e) {
-      showNotification("Error loading saved data.", true);
-    }
-  }
-}
-
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
-  document.querySelectorAll(".dashboard-card, table, canvas").forEach(el => {
-    el.style.background = document.body.classList.contains("dark-mode") ? "#444" : "#fff";
-  });
   if (deductionsChart) deductionsChart.update();
   if (reasonsChart) reasonsChart.update();
+  if (categoryChart) categoryChart.update();
 }
 
 // Report functions
@@ -1356,6 +2090,13 @@ function generateReport() {
   let statusSummary = { Refunded: 0, Compensated: 0 };
   let reasonSummary = {};
   let branchSummary = {};
+  let categorySummary = {
+    "CLAWBACK": 0,
+    "PENALTY": 0,
+    "COMPENSATED": 0
+  };
+  let mainDisputeSummary = {};
+  let totalMainDisputes = 0;
 
   transactions.forEach(tx => {
     total += tx.amount;
@@ -1367,6 +2108,13 @@ function generateReport() {
     }
     branchSummary[tx.area].total += Math.abs(tx.amount);
     branchSummary[tx.area].count += 1;
+    
+    categorySummary[tx.category] += Math.abs(tx.amount);
+    
+    if (tx.isMainDispute) {
+      mainDisputeSummary[tx.description] = (mainDisputeSummary[tx.description] || 0) + 1;
+      totalMainDisputes++;
+    }
   });
 
   // Update report header date
@@ -1379,12 +2127,59 @@ function generateReport() {
   document.getElementById("reportDate").textContent = `Report Date: ${formattedDate}`;
   document.getElementById("reportFooterDate").textContent = formattedDate;
 
+  // Update overall financial summary
+  document.getElementById("reportTotalClawbacks").textContent = `(${categorySummary.CLAWBACK.toFixed(2)})`;
+  document.getElementById("reportTotalPenalties").textContent = `(${categorySummary.PENALTY.toFixed(2)})`;
+  document.getElementById("reportTotalCompensated").textContent = `(${categorySummary.COMPENSATED.toFixed(2)})`;
+  document.getElementById("reportTotalDisputes").textContent = `(${Object.values(mainDisputeSummary).reduce((a, b) => a + b, 0).toFixed(2)})`;
+  document.getElementById("reportNetAmount").textContent = `(${(categorySummary.COMPENSATED - categorySummary.CLAWBACK - categorySummary.PENALTY).toFixed(2)})`;
+
   // Update executive summary
   document.getElementById("reportTotalRecords").textContent = transactions.length;
   document.getElementById("reportTotalDeductions").textContent = `(${Math.abs(total).toFixed(2)})`;
   document.getElementById("reportAverageRecord").textContent = `(${transactions.length ? Math.abs(total / transactions.length).toFixed(2) : 0})`;
   document.getElementById("reportRefundedAmount").textContent = `(${Math.abs(statusSummary['Refunded'] || 0).toFixed(2)})`;
   document.getElementById("reportCompensatedAmount").textContent = `(${Math.abs(statusSummary['Compensated'] || 0).toFixed(2)})`;
+
+  // Update main dispute reasons table
+  const mainDisputesTable = document.getElementById("mainDisputesTable");
+  mainDisputesTable.innerHTML = "";
+  
+  mainDisputeReasons.forEach(reason => {
+    const count = mainDisputeSummary[reason] || 0;
+    const percentage = totalMainDisputes > 0 ? ((count / totalMainDisputes) * 100).toFixed(1) : 0;
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${reason}</td>
+      <td>${count}</td>
+      <td>${percentage}%</td>
+    `;
+    mainDisputesTable.appendChild(row);
+  });
+  
+  document.getElementById("totalMainDisputesCount").textContent = totalMainDisputes;
+  document.getElementById("totalMainDisputesPercent").textContent = (totalMainDisputes/transactions.length*100).toFixed(1);
+
+  // Update data quality summary
+  const dataQualityDiv = document.getElementById("reportDataQuality");
+  dataQualityDiv.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Valid Records</div>
+      <div class="stat-value">${transactions.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Invalid Records</div>
+      <div class="stat-value">${invalidRecords.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Duplicate Records</div>
+      <div class="stat-value">${duplicateRecords.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Data Quality Score</div>
+      <div class="stat-value">${calculateDataQualityScore()}%</div>
+    </div>
+  `;
 
   // Generate top reasons table with special consolidation
   const reasonsList = document.getElementById("topReasonsTable");
@@ -1452,6 +2247,12 @@ function generateReport() {
   document.getElementById("reportModal").style.display = "block";
 }
 
+function calculateDataQualityScore() {
+  const totalRecords = transactions.length + invalidRecords.length + duplicateRecords.length;
+  const validRecords = transactions.length;
+  return totalRecords > 0 ? Math.round((validRecords / totalRecords) * 100) : 0;
+}
+
 function renderReportCharts() {
   // Deductions chart
   const deductionsCtx = document.getElementById("reportDeductionsChart").getContext("2d");
@@ -1478,12 +2279,23 @@ function renderReportCharts() {
       }]
     },
     options: {
-      scales: {
-        y: { beginAtZero: true, title: { display: true, text: "Amount (AED)" } },
-        x: { title: { display: true, text: "Branch" } }
-      },
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      scales: {
+        y: { 
+          beginAtZero: true, 
+          title: { 
+            display: true, 
+            text: "Amount (AED)" 
+          } 
+        },
+        x: { 
+          title: { 
+            display: true, 
+            text: "Branch" 
+          } 
+        }
+      }
     }
   });
 
@@ -1522,17 +2334,95 @@ function renderReportCharts() {
       datasets: [{
         label: "Reasons Distribution",
         data: reasonCounts,
-        backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        backgroundColor: [
+          "#9b59b6", "#9b59b6", "#9b59b6", "#9b59b6", // Main dispute reasons in purple
+          "#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"
+        ],
         borderColor: ["#fff"],
         borderWidth: 1
       }]
     },
     options: {
-      plugins: {
-        legend: { position: "right" }
-      },
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          position: "right",
+          labels: {
+            boxWidth: 15,
+            padding: 15
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: ${value} (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Category chart
+  const categoryCtx = document.getElementById("reportCategoryChart").getContext("2d");
+  let reportCategorySummary = {
+    "CLAWBACK": 0,
+    "PENALTY": 0,
+    "COMPENSATED": 0
+  };
+  
+  transactions.forEach(tx => {
+    reportCategorySummary[tx.category] += Math.abs(tx.amount);
+  });
+
+  const categoryLabels = Object.keys(reportCategorySummary);
+  const categoryAmounts = Object.values(reportCategorySummary);
+
+  if (reportCategoryChart) reportCategoryChart.destroy();
+  reportCategoryChart = new Chart(categoryCtx, {
+    type: "doughnut",
+    data: {
+      labels: categoryLabels,
+      datasets: [{
+        label: "Category Distribution",
+        data: categoryAmounts,
+        backgroundColor: [
+          "#e74c3c", // clawback
+          "#f39c12", // penalty
+          "#27ae60"  // compensated
+        ],
+        borderColor: ["#fff"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          position: "right",
+          labels: {
+            boxWidth: 15,
+            padding: 15
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = Math.round((value / total) * 100);
+              return `${label}: (${value.toFixed(2)}) (${percentage}%)`;
+            }
+          }
+        }
+      }
     }
   });
 }
@@ -1562,11 +2452,44 @@ function exportToPDF() {
   });
   pdf.text(`Report Date: ${today}`, 105, 30, { align: 'center' });
   
-  // Add executive summary
+  // Add overall financial summary
   pdf.setFontSize(16);
-  pdf.text('Executive Summary', 20, 50);
+  pdf.text('Overall Financial Summary', 20, 50);
   
   pdf.setFontSize(12);
+  let categorySummary = {
+    "CLAWBACK": 0,
+    "PENALTY": 0,
+    "COMPENSATED": 0
+  };
+  
+  transactions.forEach(tx => {
+    categorySummary[tx.category] += Math.abs(tx.amount);
+  });
+  
+  const netAmount = categorySummary.COMPENSATED - categorySummary.CLAWBACK - categorySummary.PENALTY;
+  
+  const financialSummary = [
+    `Total Clawbacks: (${categorySummary.CLAWBACK.toFixed(2)})`,
+    `Total Penalties: (${categorySummary.PENALTY.toFixed(2)})`,
+    `Total Compensated: (${categorySummary.COMPENSATED.toFixed(2)})`,
+    `Total Main Disputes: (${Object.values(categorySummary).reduce((a, b) => a + b, 0).toFixed(2)})`,
+    `Net Amount: (${netAmount.toFixed(2)})`
+  ];
+  
+  let yPosition = 60;
+  financialSummary.forEach(line => {
+    pdf.text(line, 20, yPosition);
+    yPosition += 10;
+  });
+  
+  // Add executive summary
+  pdf.setFontSize(16);
+  pdf.text('Executive Summary', 20, yPosition + 10);
+  
+  pdf.setFontSize(12);
+  yPosition += 20;
+  
   const executiveSummary = [
     `Total Transactions: ${transactions.length}`,
     `Total Deductions: (${Math.abs(transactions.reduce((sum, tx) => sum + tx.amount, 0)).toFixed(2)})`,
@@ -1575,26 +2498,53 @@ function exportToPDF() {
     `Compensated Amount: (${Math.abs(transactions.filter(tx => tx.status === 'Compensated').reduce((sum, tx) => sum + tx.amount, 0)).toFixed(2)})`
   ];
   
-  let yPosition = 60;
   executiveSummary.forEach(line => {
     pdf.text(line, 20, yPosition);
     yPosition += 10;
   });
   
-  // Add error summary if there are invalid records
+  // Add main dispute reasons
+  pdf.setFontSize(16);
+  pdf.text('Main Dispute Reasons (Careem Accepted Refunds)', 20, yPosition + 10);
+  
+  pdf.setFontSize(12);
+  yPosition += 20;
+  
+  let mainDisputeSummary = {};
+  let totalMainDisputes = 0;
+  
+  transactions.forEach(tx => {
+    if (tx.isMainDispute) {
+      mainDisputeSummary[tx.description] = (mainDisputeSummary[tx.description] || 0) + 1;
+      totalMainDisputes++;
+    }
+  });
+  
+  mainDisputeReasons.forEach(reason => {
+    const count = mainDisputeSummary[reason] || 0;
+    const percentage = totalMainDisputes > 0 ? ((count / totalMainDisputes) * 100).toFixed(1) : 0;
+    pdf.text(`${reason}: ${count} (${percentage}%)`, 30, yPosition);
+    yPosition += 10;
+  });
+  
+  pdf.text(`Total main disputes: ${totalMainDisputes} (${(totalMainDisputes/transactions.length*100).toFixed(1)}% of all transactions)`, 30, yPosition);
+  yPosition += 15;
+  
+  // Add data quality summary if there are issues
   if (invalidRecords.length > 0 || duplicateRecords.length > 0) {
     pdf.setFontSize(16);
-    pdf.text('Data Quality Issues', 20, yPosition + 10);
+    pdf.text('Data Quality Summary', 20, yPosition + 10);
     pdf.setFontSize(12);
     yPosition += 20;
     
-    const errorSummary = [
+    const dataQualitySummary = [
+      `Valid Records: ${transactions.length}`,
       `Invalid Records: ${invalidRecords.length}`,
       `Duplicate Records: ${duplicateRecords.length}`,
-      `Total Issues: ${invalidRecords.length + duplicateRecords.length}`
+      `Data Quality Score: ${calculateDataQualityScore()}%`
     ];
     
-    errorSummary.forEach(line => {
+    dataQualitySummary.forEach(line => {
       pdf.text(line, 30, yPosition);
       yPosition += 10;
     });
@@ -1673,8 +2623,6 @@ function exportToPDF() {
   // Save the PDF
   pdf.save('clawback_management_report.pdf');
 }
-
-window.onload = loadData;
 </script>
 
 </body>
