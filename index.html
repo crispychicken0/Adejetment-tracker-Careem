@@ -1,281 +1,1754 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from datetime import datetime, timedelta
-import numpy as np
-import os
-from tabulate import tabulate
-import csv
-
-class SalesDashboard:
-    def __init__(self):
-        self.data = pd.DataFrame(columns=['Date', 'Location', 'Online_Sales', 'Delivery_Sales', 
-                                       'Online_Transactions', 'Delivery_Transactions'])
-        self.locations = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 
-                         'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose']
-        self.colors = plt.cm.Set3(np.linspace(0, 1, len(self.locations)))
-        
-    def run(self):
-        while True:
-            self.display_menu()
-            choice = input("\nEnter your choice (1-5): ")
-            
-            if choice == '1':
-                self.load_sample_data()
-            elif choice == '2':
-                self.add_data()
-            elif choice == '3':
-                self.show_comprehensive_report()
-            elif choice == '4':
-                self.export_to_csv()
-            elif choice == '5':
-                print("\nThank you for using the Sales Dashboard!")
-                break
-            else:
-                print("\nInvalid choice. Please try again.")
-    
-    def display_menu(self):
-        print("\n" + "="*50)
-        print("          SALES DASHBOARD".center(50))
-        print("="*50)
-        print("\n1. Load Sample Data")
-        print("2. Add Your Own Data")
-        print("3. View Comprehensive Report with Visualizations")
-        print("4. Export Data to CSV")
-        print("5. Exit")
-        print("="*50)
-    
-    def load_sample_data(self):
-        print("\nLoading sample data...")
-        sample_data = [
-            ['01/01/2024', 'New York', 12000, 8000, 240, 160],
-            ['01/01/2024', 'Los Angeles', 15000, 10000, 300, 200],
-            ['02/01/2024', 'New York', 13500, 8500, 270, 170],
-            ['02/01/2024', 'Chicago', 11000, 9000, 220, 180],
-            ['03/01/2024', 'Los Angeles', 16000, 11000, 320, 220],
-            ['03/01/2024', 'Chicago', 12000, 9500, 240, 190],
-            ['01/01/2024', 'Chicago', 10000, 8500, 200, 170],
-            ['01/01/2024', 'Houston', 9000, 7500, 180, 150],
-            ['02/01/2024', 'Houston', 9500, 8000, 190, 160],
-            ['03/01/2024', 'Houston', 10500, 8500, 210, 170],
-            ['01/01/2024', 'Phoenix', 8000, 7000, 160, 140],
-            ['02/01/2024', 'Phoenix', 8500, 7500, 170, 150],
-            ['03/01/2024', 'Phoenix', 9000, 8000, 180, 160]
-        ]
-        
-        self.data = pd.DataFrame(sample_data, columns=self.data.columns)
-        self.data['Date'] = pd.to_datetime(self.data['Date'], format='%d/%m/%Y')
-        print(f"Sample data loaded successfully! {len(self.data)} records added.")
-    
-    def add_data(self):
-        print("\n--- Add New Data ---")
-        
-        # Date input with validation
-        while True:
-            date_str = input("Enter date (DD/MM/YYYY): ")
-            try:
-                date = datetime.strptime(date_str, '%d/%m/%Y')
-                break
-            except ValueError:
-                print("Invalid date format. Please use DD/MM/YYYY.")
-        
-        # Location selection
-        print("\nAvailable locations:")
-        for i, loc in enumerate(self.locations, 1):
-            print(f"{i}. {loc}")
-        
-        while True:
-            loc_choice = input(f"\nSelect location (1-{len(self.locations)}): ")
-            try:
-                loc_idx = int(loc_choice) - 1
-                if 0 <= loc_idx < len(self.locations):
-                    location = self.locations[loc_idx]
-                    break
-                else:
-                    print("Invalid choice. Please try again.")
-            except ValueError:
-                print("Please enter a number.")
-        
-        # Sales data input with validation
-        def get_positive_input(prompt, field_name):
-            while True:
-                try:
-                    value = float(input(prompt))
-                    if value >= 0:
-                        return value
-                    else:
-                        print(f"Please enter a positive value for {field_name}.")
-                except ValueError:
-                    print("Invalid input. Please enter a number.")
-        
-        online_sales = get_positive_input("Enter online sales amount: ", "Online Sales")
-        delivery_sales = get_positive_input("Enter delivery sales amount: ", "Delivery Sales")
-        online_trans = get_positive_input("Enter online transaction count: ", "Online Transactions")
-        delivery_trans = get_positive_input("Enter delivery transaction count: ", "Delivery Transactions")
-        
-        # Add data to DataFrame
-        new_row = {
-            'Date': date,
-            'Location': location,
-            'Online_Sales': online_sales,
-            'Delivery_Sales': delivery_sales,
-            'Online_Transactions': online_trans,
-            'Delivery_Transactions': delivery_trans
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crispy Chicken Branch Performance Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #f39c12;
+            --success-color: #27ae60;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --danger-color: #c0392b;
+            --warning-color: #d68910;
+            --online-color: #3498db;
+            --auh-color: #e74c3c;
+            --dxb-color: #3498db;
         }
-        
-        self.data = pd.concat([self.data, pd.DataFrame([new_row])], ignore_index=True)
-        self.data['Date'] = pd.to_datetime(self.data['Date'])
-        
-        print(f"\nData added successfully for {location} on {date_str}!")
-        print(f"Online Sales: ${online_sales:,.2f}, Delivery Sales: ${delivery_sales:,.2f}")
-        print(f"Online Transactions: {int(online_trans)}, Delivery Transactions: {int(delivery_trans)}")
-    
-    def show_comprehensive_report(self):
-        if self.data.empty:
-            print("\nNo data available. Please load sample data or add your own data first.")
-            return
-        
-        print("\n" + "="*60)
-        print("          COMPREHENSIVE SALES REPORT".center(60))
-        print("="*60)
-        
-        # Overall Sales Summary
-        total_online = self.data['Online_Sales'].sum()
-        total_delivery = self.data['Delivery_Sales'].sum()
-        total_sales = total_online + total_delivery
-        total_online_trans = self.data['Online_Transactions'].sum()
-        total_delivery_trans = self.data['Delivery_Transactions'].sum()
-        
-        print("\n--- Overall Sales Summary ---")
-        print(f"Total Online Sales: ${total_online:,.2f}")
-        print(f"Total Delivery Sales: ${total_delivery:,.2f}")
-        print(f"Total Sales: ${total_sales:,.2f}")
-        print(f"Online Sales Percentage: {(total_online/total_sales)*100:.1f}%")
-        print(f"Delivery Sales Percentage: {(total_delivery/total_sales)*100:.1f}%")
-        print(f"Average Online Transaction Value: ${total_online/total_online_trans:,.2f}")
-        print(f"Average Delivery Transaction Value: ${total_delivery/total_delivery_trans:,.2f}")
-        
-        # Location-wise Analysis
-        print("\n--- Location-wise Analysis ---")
-        location_sales = self.data.groupby('Location').agg({
-            'Online_Sales': 'sum',
-            'Delivery_Sales': 'sum',
-            'Online_Transactions': 'sum',
-            'Delivery_Transactions': 'sum'
-        }).reset_index()
-        
-        location_sales['Total_Sales'] = location_sales['Online_Sales'] + location_sales['Delivery_Sales']
-        location_sales = location_sales.sort_values('Total_Sales', ascending=False)
-        
-        print(tabulate(location_sales, headers='keys', tablefmt='grid', 
-                      showindex=False, floatfmt=',.2f'))
-        
-        # Daily Breakdown
-        print("\n--- Daily Breakdown ---")
-        daily_sales = self.data.groupby('Date').agg({
-            'Online_Sales': 'sum',
-            'Delivery_Sales': 'sum'
-        }).reset_index()
-        daily_sales['Total_Sales'] = daily_sales['Online_Sales'] + daily_sales['Delivery_Sales']
-        
-        print(tabulate(daily_sales, headers='keys', tablefmt='grid', 
-                      showindex=False, floatfmt=',.2f'))
-        
-        # Generate Visualizations
-        self.generate_visualizations()
-    
-    def generate_visualizations(self):
-        print("\nGenerating visualizations...")
-        
-        # Create figure with subplots
-        fig = plt.figure(figsize=(20, 15))
-        
-        # 1. Sales by Location (Bar Chart)
-        ax1 = plt.subplot(3, 2, 1)
-        location_sales = self.data.groupby('Location')['Online_Sales', 'Delivery_Sales'].sum()
-        location_sales.plot(kind='bar', ax=ax1, width=0.8)
-        ax1.set_title('Sales by Location', fontsize=14, fontweight='bold')
-        ax1.set_xlabel('Location')
-        ax1.set_ylabel('Sales ($)')
-        ax1.tick_params(axis='x', rotation=45)
-        ax1.grid(True, alpha=0.3)
-        
-        # 2. Online vs Delivery Sales Comparison
-        ax2 = plt.subplot(3, 2, 2)
-        total_online = self.data['Online_Sales'].sum()
-        total_delivery = self.data['Delivery_Sales'].sum()
-        ax2.pie([total_online, total_delivery], labels=['Online', 'Delivery'], 
-                autopct='%1.1f%%', startangle=90, colors=['#4CAF50', '#2196F3'])
-        ax2.set_title('Online vs Delivery Sales Comparison', fontsize=14, fontweight='bold')
-        
-        # 3. Transaction Distribution (Pie Chart)
-        ax3 = plt.subplot(3, 2, 3)
-        total_online_trans = self.data['Online_Transactions'].sum()
-        total_delivery_trans = self.data['Delivery_Transactions'].sum()
-        ax3.pie([total_online_trans, total_delivery_trans], 
-                labels=['Online Transactions', 'Delivery Transactions'],
-                autopct='%1.1f%%', startangle=90, colors=['#FF9800', '#9C27B0'])
-        ax3.set_title('Transaction Distribution', fontsize=14, fontweight='bold')
-        
-        # 4. Average Sale Value Analysis
-        ax4 = plt.subplot(3, 2, 4)
-        avg_online = self.data['Online_Sales'] / self.data['Online_Transactions']
-        avg_delivery = self.data['Delivery_Sales'] / self.data['Delivery_Transactions']
-        ax4.bar(['Online', 'Delivery'], [avg_online.mean(), avg_delivery.mean()], 
-                color=['#4CAF50', '#2196F3'])
-        ax4.set_title('Average Transaction Value', fontsize=14, fontweight='bold')
-        ax4.set_ylabel('Average Value ($)')
-        ax2.grid(True, alpha=0.3)
-        
-        # 5. Sales Trend Over Time
-        ax5 = plt.subplot(3, 2, 5)
-        daily_trend = self.data.groupby('Date').agg({
-            'Online_Sales': 'sum',
-            'Delivery_Sales': 'sum'
-        }).reset_index()
-        ax5.plot(daily_trend['Date'], daily_trend['Online_Sales'], 
-                marker='o', label='Online Sales', linewidth=2, markersize=6)
-        ax5.plot(daily_trend['Date'], daily_trend['Delivery_Sales'], 
-                marker='s', label='Delivery Sales', linewidth=2, markersize=6)
-        ax5.set_title('Sales Trend Over Time', fontsize=14, fontweight='bold')
-        ax5.set_xlabel('Date')
-        ax5.set_ylabel('Sales ($)')
-        ax5.legend()
-        ax5.grid(True, alpha=0.3)
-        ax5.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
-        
-        # 6. Channel Comparison by Location
-        ax6 = plt.subplot(3, 2, 6)
-        channel_comparison = self.data.groupby('Location').agg({
-            'Online_Sales': 'sum',
-            'Delivery_Sales': 'sum'
-        })
-        channel_comparison.plot(kind='bar', ax=ax6, width=0.7)
-        ax6.set_title('Channel Comparison by Location', fontsize=14, fontweight='bold')
-        ax6.set_xlabel('Location')
-        ax6.set_ylabel('Sales ($)')
-        ax6.tick_params(axis='x', rotation=45)
-        ax6.grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        plt.show()
-        
-        print("\nVisualizations generated successfully!")
-    
-    def export_to_csv(self):
-        if self.data.empty:
-            print("\nNo data to export.")
-            return
-        
-        filename = f"sales_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        self.data.to_csv(filename, index=False, date_format='%d/%m/%Y')
-        print(f"\nData exported successfully to {filename}")
-        
-        # Show a preview of the exported data
-        print("\nExported data preview:")
-        print(tabulate(self.data.head(), headers='keys', tablefmt='grid', showindex=False))
 
-# Run the dashboard
-if __name__ == "__main__":
-    dashboard = SalesDashboard()
-    dashboard.run()
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--danger-color));
+            color: white;
+            padding: 30px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        header h1 {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .year-selector {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .year-selector select {
+            background: white;
+            color: var(--dark-color);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 25px;
+            color: var(--dark-color);
+            font-size: 1.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 12px;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--primary-color);
+            transform: translateX(8px);
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .menu-item i {
+            font-size: 1.3rem;
+            width: 24px;
+        }
+
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: var(--dark-color);
+            margin-bottom: 30px;
+            font-size: 2rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border-left: 5px solid;
+        }
+
+        .stat-card.auh {
+            border-color: var(--auh-color);
+        }
+
+        .stat-card.dxb {
+            border-color: var(--dxb-color);
+        }
+
+        .stat-card.delivery {
+            border-color: var(--primary-color);
+        }
+
+        .stat-card.online {
+            border-color: var(--online-color);
+        }
+
+        .stat-card.total {
+            border-color: var(--success-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-card.auh .stat-value {
+            color: var(--auh-color);
+        }
+
+        .stat-card.dxb .stat-value {
+            color: var(--dxb-color);
+        }
+
+        .stat-card.delivery .stat-value {
+            color: var(--primary-color);
+        }
+
+        .stat-card.online .stat-value {
+            color: var(--online-color);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--success-color);
+        }
+
+        .stat-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-amount {
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 30px;
+        }
+
+        .chart-container h3 {
+            margin-bottom: 20px;
+            color: var(--dark-color);
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 10px;
+        }
+
+        .outlet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .outlet-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border-top: 5px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .outlet-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .outlet-card.auh {
+            border-color: var(--auh-color);
+        }
+
+        .outlet-card.dxb {
+            border-color: var(--dxb-color);
+        }
+
+        .outlet-card h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .outlet-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .outlet-stat {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .outlet-stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .outlet-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .outlet-card.auh .outlet-stat-value {
+            color: var(--auh-color);
+        }
+
+        .outlet-card.dxb .outlet-stat-value {
+            color: var(--dxb-color);
+        }
+
+        .strengths-weaknesses {
+            margin-top: 20px;
+        }
+
+        .strengths-weaknesses h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .strengths-weaknesses ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .strengths-weaknesses li {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .strengths-weaknesses .strengths h4 {
+            color: var(--success-color);
+        }
+
+        .strengths-weaknesses .weaknesses h4 {
+            color: var(--danger-color);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, var(--primary-color), var(--danger-color));
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .data-table tr:hover {
+            background-color: #fff5f5;
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid;
+        }
+
+        .alert-success {
+            background-color: rgba(39, 174, 96, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .alert-warning {
+            background-color: rgba(243, 156, 18, 0.1);
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            border-left: 5px solid var(--success-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .insight-box h4 {
+            color: var(--success-color);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #27ae60;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                font-size: 0.9rem;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-line"></i> Crispy Chicken Branch Performance Dashboard</h1>
+            <div class="subtitle">Detailed Analysis of Delivery Performance, Strengths & Weaknesses</div>
+        </header>
+
+        <div class="year-selector">
+            <label for="year-select" style="margin-right: 10px;"><i class="fas fa-calendar"></i> Select Year:</label>
+            <select id="year-select">
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+            </select>
+        </div>
+
+        <div class="dashboard">
+            <aside class="sidebar">
+                <h2><i class="fas fa-bars"></i> Navigation</h2>
+                <div class="menu-item active" data-section="overview">
+                    <i class="fas fa-tachometer-alt"></i> Overview
+                </div>
+                <div class="menu-item" data-section="branch-analysis">
+                    <i class="fas fa-store"></i> Branch Analysis
+                </div>
+                <div class="menu-item" data-section="delivery-trends">
+                    <i class="fas fa-truck"></i> Delivery Trends
+                </div>
+                <div class="menu-item" data-section="monthly-comparison">
+                    <i class="fas fa-calendar-alt"></i> Monthly Comparison
+                </div>
+                <div class="menu-item" data-section="data-entry">
+                    <i class="fas fa-plus-circle"></i> Data Entry
+                </div>
+                <div class="menu-item" data-section="insights">
+                    <i class="fas fa-lightbulb"></i> Key Insights
+                </div>
+            </aside>
+
+            <main class="content">
+                <!-- Overview Section -->
+                <section id="overview" class="section active">
+                    <h2><i class="fas fa-chart-pie"></i> Branch Performance Overview</h2>
+                    
+                    <div class="alert alert-success">
+                        <h3><i class="fas fa-check-circle"></i> Network Performance Summary</h3>
+                        <p>Total sales across all branches reached $5.65M with 125,436 transactions in 2024. Delivery channel accounts for 81.4% of total sales.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card total">
+                            <h3><i class="fas fa-globe"></i> TOTAL NETWORK</h3>
+                            <div class="stat-value">$5.65M</div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Total Transactions:</span>
+                                <span class="stat-amount">125,436</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Delivery Sales:</span>
+                                <span class="stat-amount">$4.60M (81.4%)</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Average Value:</span>
+                                <span class="stat-amount">$45.08</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card delivery">
+                            <h3><i class="fas fa-truck"></i> DELIVERY CHANNEL</h3>
+                            <div class="stat-value">$4.60M</div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Transactions:</span>
+                                <span class="stat-amount">104,233</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Avg Value:</span>
+                                <span class="stat-amount">$44.12</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Market Share:</span>
+                                <span class="stat-amount">81.4%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card online">
+                            <h3><i class="fas fa-laptop"></i> ONLINE CHANNEL</h3>
+                            <div class="stat-value">$1.05M</div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Transactions:</span>
+                                <span class="stat-amount">21,203</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Avg Value:</span>
+                                <span class="stat-amount">$49.68</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Market Share:</span>
+                                <span class="stat-amount">18.6%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-pie"></i> Sales Distribution by Channel</h3>
+                        <canvas id="channel-distribution-chart"></canvas>
+                    </div>
+
+                    <div class="insight-box">
+                        <h4><i class="fas fa-lightbulb"></i> Key Insight</h4>
+                        <p>Delivery channel dominates with 81.4% of transactions, while online orders have higher average values ($49.68 vs $44.12), indicating premium customers prefer digital channels.</p>
+                    </div>
+                </section>
+
+                <!-- Branch Analysis Section -->
+                <section id="branch-analysis" class="section">
+                    <h2><i class="fas fa-store"></i> Branch Performance Analysis</h2>
+                    
+                    <div class="outlet-grid">
+                        <div class="outlet-card auh">
+                            <h3>
+                                Crispy Chicken - Hamdan
+                                <span class="performance-indicator performance-good">Top Performer</span>
+                            </h3>
+                            <div class="outlet-stats">
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Total Sales</div>
+                                    <div class="outlet-stat-value">$1.96M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Transactions</div>
+                                    <div class="outlet-stat-value">42,654</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Delivery Sales</div>
+                                    <div class="outlet-stat-value">$1.58M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Avg Value</div>
+                                    <div class="outlet-stat-value">$46.04</div>
+                                </div>
+                            </div>
+                            <div class="strengths-weaknesses">
+                                <div class="strengths">
+                                    <h4><i class="fas fa-star"></i> Strengths</h4>
+                                    <ul>
+                                        <li>Highest total sales across all branches</li>
+                                        <li>Largest transaction volume (42,654)</li>
+                                        <li>Strong delivery sales performance ($1.58M)</li>
+                                        <li>Consistent average transaction value</li>
+                                    </ul>
+                                </div>
+                                <div class="weaknesses">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Weaknesses</h4>
+                                    <ul>
+                                        <li>Online channel underutilized</li>
+                                        <li>Potential for higher average transaction value</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="outlet-card auh">
+                            <h3>
+                                Crispy Chicken - Al Khalidiyah
+                                <span class="performance-indicator performance-good">Premium Value</span>
+                            </h3>
+                            <div class="outlet-stats">
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Total Sales</div>
+                                    <div class="outlet-stat-value">$1.04M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Transactions</div>
+                                    <div class="outlet-stat-value">20,223</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Delivery Sales</div>
+                                    <div class="outlet-stat-value">$0.82M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Avg Value</div>
+                                    <div class="outlet-stat-value">$51.22</div>
+                                </div>
+                            </div>
+                            <div class="strengths-weaknesses">
+                                <div class="strengths">
+                                    <h4><i class="fas fa-star"></i> Strengths</h4>
+                                    <ul>
+                                        <li>Highest average transaction value ($51.22)</li>
+                                        <li>Strong delivery sales ratio</li>
+                                        <li>Premium customer base</li>
+                                        <li>High-value transactions</li>
+                                    </ul>
+                                </div>
+                                <div class="weaknesses">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Weaknesses</h4>
+                                    <ul>
+                                        <li>Lower transaction volume compared to Hamdan</li>
+                                        <li>Limited market reach</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="outlet-card auh">
+                            <h3>
+                                Crispy Chicken - Shabiya-11
+                                <span class="performance-indicator performance-average">Stable</span>
+                            </h3>
+                            <div class="outlet-stats">
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Total Sales</div>
+                                    <div class="outlet-stat-value">$0.81M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Transactions</div>
+                                    <div class="outlet-stat-value">17,974</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Delivery Sales</div>
+                                    <div class="outlet-stat-value">$0.69M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Avg Value</div>
+                                    <div class="outlet-stat-value">$45.18</div>
+                                </div>
+                            </div>
+                            <div class="strengths-weaknesses">
+                                <div class="strengths">
+                                    <h4><i class="fas fa-star"></i> Strengths</h4>
+                                    <ul>
+                                        <li>Consistent performance</li>
+                                        <li>Good delivery sales coverage</li>
+                                        <li>Stable average transaction value</li>
+                                    </ul>
+                                </div>
+                                <div class="weaknesses">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Weaknesses</h4>
+                                    <ul>
+                                        <li>Below-average average transaction value</li>
+                                        <li>Limited growth potential</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="outlet-card auh">
+                            <h3>
+                                Crispy Chicken - Muroor
+                                <span class="performance-indicator performance-average">Stable</span>
+                            </h3>
+                            <div class="outlet-stats">
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Total Sales</div>
+                                    <div class="outlet-stat-value">$0.83M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Transactions</div>
+                                    <div class="outlet-stat-value">16,858</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Delivery Sales</div>
+                                    <div class="outlet-stat-value">$0.73M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Avg Value</div>
+                                    <div class="outlet-stat-value">$49.29</div>
+                                </div>
+                            </div>
+                            <div class="strengths-weaknesses">
+                                <div class="strengths">
+                                    <h4><i class="fas fa-star"></i> Strengths</h4>
+                                    <ul>
+                                        <li>Good average transaction value</li>
+                                        <li>Strong delivery sales performance</li>
+                                        <li>Consistent revenue stream</li>
+                                    </ul>
+                                </div>
+                                <div class="weaknesses">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Weaknesses</h4>
+                                    <ul>
+                                        <li>Lower transaction volume</li>
+                                        <li>Online channel needs development</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="outlet-card dxb">
+                            <h3>
+                                Crispy Chicken - Al Barsha
+                                <span class="performance-indicator performance-average">Volume Leader</span>
+                            </h3>
+                            <div class="outlet-stats">
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Total Sales</div>
+                                    <div class="outlet-stat-value">$0.72M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Transactions</div>
+                                    <div class="outlet-stat-value">20,035</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Delivery Sales</div>
+                                    <div class="outlet-stat-value">$0.55M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Avg Value</div>
+                                    <div class="outlet-stat-value">$35.82</div>
+                                </div>
+                            </div>
+                            <div class="strengths-weaknesses">
+                                <div class="strengths">
+                                    <h4><i class="fas fa-star"></i> Strengths</h4>
+                                    <ul>
+                                        <li>High transaction volume</li>
+                                        <li>Good customer traffic</li>
+                                        <li>Strong online presence</li>
+                                    </ul>
+                                </div>
+                                <div class="weaknesses">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Weaknesses</h4>
+                                    <ul>
+                                        <li>Lowest average transaction value</li>
+                                        <li>Low delivery sales ratio</li>
+                                        <li>Needs value improvement strategies</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="outlet-card dxb">
+                            <h3>
+                                Crispy Chicken - Al Satwa
+                                <span class="performance-indicator performance-poor">Needs Attention</span>
+                            </h3>
+                            <div class="outlet-stats">
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Total Sales</div>
+                                    <div class="outlet-stat-value">$0.29M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Transactions</div>
+                                    <div class="outlet-stat-value">7,692</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Delivery Sales</div>
+                                    <div class="outlet-stat-value">$0.22M</div>
+                                </div>
+                                <div class="outlet-stat">
+                                    <div class="outlet-stat-label">Avg Value</div>
+                                    <div class="outlet-stat-value">$37.36</div>
+                                </div>
+                            </div>
+                            <div class="strengths-weaknesses">
+                                <div class="strengths">
+                                    <h4><i class="fas fa-star"></i> Strengths</h4>
+                                    <ul>
+                                        <li>Niche market presence</li>
+                                        <li>Local customer base</li>
+                                    </ul>
+                                </div>
+                                <div class="weaknesses">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Weaknesses</h4>
+                                    <ul>
+                                        <li>Lowest total sales and transaction volume</li>
+                                        <li>Low delivery sales performance</li>
+                                        <li>Below-average average transaction value</li>
+                                        <li>Location challenges or market saturation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-bar"></i> Branch Sales Comparison</h3>
+                        <canvas id="branch-sales-chart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Delivery Trends Section -->
+                <section id="delivery-trends" class="section">
+                    <h2><i class="fas fa-truck"></i> Delivery Performance Trends</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card delivery">
+                            <h3><i class="fas fa-chart-line"></i> Delivery Channel Analysis</h3>
+                            <div class="stat-value">81.4%</div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Market Share:</span>
+                                <span class="stat-amount">104,233 transactions</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Revenue:</span>
+                                <span class="stat-amount">$4.60M</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Avg Value:</span>
+                                <span class="stat-amount">$44.12</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card auh">
+                            <h3><i class="fas fa-building"></i> AUH Delivery</h3>
+                            <div class="stat-value">$3.83M</div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Transactions:</span>
+                                <span class="stat-amount">81,050</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Avg Value:</span>
+                                <span class="stat-amount">$47.20</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Network Share:</span>
+                                <span class="stat-amount">83.2%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card dxb">
+                            <h3><i class="fas fa-building"></i> DXB Delivery</h3>
+                            <div class="stat-value">$0.77M</div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Transactions:</span>
+                                <span class="stat-amount">23,183</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Avg Value:</span>
+                                <span class="stat-amount">$33.28</span>
+                            </div>
+                            <div class="stat-detail">
+                                <span class="stat-label">Network Share:</span>
+                                <span class="stat-amount">16.8%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-bar"></i> Delivery Performance by Branch</h3>
+                        <canvas id="delivery-branch-chart"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-line"></i> Delivery Trends Over Time</h3>
+                        <canvas id="delivery-trends-chart"></canvas>
+                    </div>
+
+                    <div class="insight-box">
+                        <h4><i class="fas fa-lightbulb"></i> Delivery Insights</h4>
+                        <p>Abu Dhabi dominates delivery performance with 83.2% of delivery sales, while Dubai shows lower average values ($33.28) indicating potential for delivery optimization.</p>
+                    </div>
+                </section>
+
+                <!-- Monthly Comparison Section -->
+                <section id="monthly-comparison" class="section">
+                    <h2><i class="fas fa-calendar-alt"></i> Monthly Performance Comparison</h2>
+                    
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-line"></i> Monthly Sales Trends</h3>
+                        <canvas id="monthly-sales-chart"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-bar"></i> Monthly Transaction Volume</h3>
+                        <canvas id="monthly-transactions-chart"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-area"></i> Monthly Delivery vs Online</h3>
+                        <canvas id="monthly-channel-chart"></canvas>
+                    </div>
+
+                    <div class="insight-box">
+                        <h4><i class="fas fa-chart-line"></i> Seasonal Patterns</h4>
+                        <p>Peak sales observed in June ($552,828) and July ($525,980), with delivery maintaining consistent dominance across all months.</p>
+                    </div>
+                </section>
+
+                <!-- Data Entry Section -->
+                <section id="data-entry" class="section">
+                    <h2><i class="fas fa-plus-circle"></i> Data Entry for 2025</h2>
+                    
+                    <div class="alert alert-info">
+                        <h3><i class="fas fa-info-circle"></i> Add 2025 Data</h3>
+                        <p>Enter monthly sales data for 2025 to compare with 2024 performance. All charts will update automatically.</p>
+                    </div>
+
+                    <form id="data-entry-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="branch">Branch</label>
+                                <select id="branch" required>
+                                    <option value="">Select Branch</option>
+                                    <option value="Hamdan">Crispy Chicken - Hamdan</option>
+                                    <option value="Al_Khalidiyah">Crispy Chicken - Al Khalidiyah</option>
+                                    <option value="Shabiya_11">Crispy Chicken - Shabiya-11</option>
+                                    <option value="Muroor">Crispy Chicken - Muroor</option>
+                                    <option value="Al_Barsha">Crispy Chicken - Al Barsha</option>
+                                    <option value="Al_Satwa">Crispy Chicken - Al Satwa</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="month">Month</label>
+                                <select id="month" required>
+                                    <option value="">Select Month</option>
+                                    <option value="Jan">January</option>
+                                    <option value="Feb">February</option>
+                                    <option value="Mar">March</option>
+                                    <option value="Apr">April</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">June</option>
+                                    <option value="Jul">July</option>
+                                    <option value="Aug">August</option>
+                                    <option value="Sep">September</option>
+                                    <option value="Oct">October</option>
+                                    <option value="Nov">November</option>
+                                    <option value="Dec">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="total-sales">Total Sales ($)</label>
+                                <input type="number" id="total-sales" min="0" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="transactions">Transactions</label>
+                                <input type="number" id="transactions" min="0" step="1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="delivery-sales">Delivery Sales ($)</label>
+                                <input type="number" id="delivery-sales" min="0" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="online-sales">Online Sales ($)</label>
+                                <input type="number" id="online-sales" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px;">
+                            <button type="submit" class="btn">
+                                <i class="fas fa-save"></i> Add Data
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="fas fa-redo"></i> Reset Form
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="chart-container" style="margin-top: 40px;">
+                        <h3><i class="fas fa-chart-line"></i> 2025 vs 2024 Comparison</h3>
+                        <canvas id="year-comparison-chart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Insights Section -->
+                <section id="insights" class="section">
+                    <h2><i class="fas fa-lightbulb"></i> Key Insights & Recommendations</h2>
+                    
+                    <div class="insight-box">
+                        <h4><i class="fas fa-star"></i> Top Performers</h4>
+                        <ul>
+                            <li><strong>Hamdan Outlet:</strong> Leading with $1.96M sales and highest delivery performance</li>
+                            <li><strong>Al Khalidiyah:</strong> Highest average transaction value ($51.22)</li>
+                            <li><strong>DXB Online:</strong> Strong online performance with higher average values</li>
+                        </ul>
+                    </div>
+
+                    <div class="insight-box">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Areas for Improvement</h4>
+                        <ul>
+                            <li><strong>Al Satwa Outlet:</strong> Lowest performance with only $0.29M sales</li>
+                            <li><strong>DXB Delivery:</strong> Low average value ($33.28) needs optimization</li>
+                            <li><strong>Online Channel:</strong> Underutilized despite higher average values</li>
+                        </ul>
+                    </div>
+
+                    <div class="insight-box">
+                        <h4><i class="fas fa-chart-line"></i> Growth Opportunities</h4>
+                        <ul>
+                            <li><strong>Expand Online Presence:</strong> Online shows higher average values across all locations</li>
+                            <li><strong>Optimize DXB Delivery:</strong> Improve delivery efficiency in Dubai</li>
+                            <li><strong>Leverage AUH Strength:</strong> Scale successful Abu Dhabi strategies to Dubai</li>
+                            <li><strong>Seasonal Planning:</strong> Prepare for June-July peak periods</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <h3><i class="fas fa-exclamation-circle"></i> Strategic Focus Areas</h3>
+                        <p>Focus on improving delivery average values in Dubai and expanding online channels across all branches to increase overall average transaction value.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // 2024 Sales Data
+        const salesData2024 = {
+            total: { transactions: 125436, revenue: 5649481, avgValue: 45.08 },
+            branches: {
+                Hamdan: { transactions: 34662, revenue: 1583067, delivery: 1583067, avgValue: 46.04 },
+                Al_Khalidiyah: { transactions: 15933, revenue: 818635, delivery: 818635, avgValue: 51.22 },
+                Shabiya_11: { transactions: 15458, revenue: 693784, delivery: 693784, avgValue: 45.18 },
+                Muroor: { transactions: 14997, revenue: 729992, delivery: 729992, avgValue: 49.29 },
+                Al_Barsha: { transactions: 17021, revenue: 547814, delivery: 547814, avgValue: 35.82 },
+                Al_Satwa: { transactions: 6162, revenue: 223638, delivery: 223638, avgValue: 37.36 }
+            },
+            cities: {
+                AUH: { transactions: 97709, revenue: 4644830, delivery: 4644830 },
+                DXB: { transactions: 27727, revenue: 1004650, delivery: 1004650 }
+            },
+            channels: {
+                delivery: { transactions: 104233, revenue: 4596930, avgValue: 44.12 },
+                online: { transactions: 21203, revenue: 1052551, avgValue: 49.68 }
+            },
+            monthly: {
+                months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                total: [442923, 422537, 371187, 444998, 503498, 552828, 525980, 525853, 459180, 469588, 442765, 488144],
+                AUH: [393455, 372384, 326422, 391715, 413211, 453731, 417691, 411455, 356780, 364066, 352025, 391895],
+                DXB: [49468, 50153, 44765, 53283, 90287, 99129, 108289, 114398, 102400, 105522, 90740, 96249]
+            }
+        };
+
+        // 2025 Data (empty for now)
+        const salesData2025 = {
+            branches: {},
+            monthly: {
+                months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                total: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                AUH: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                DXB: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+        };
+
+        let charts = {};
+        let currentYear = '2024';
+
+        // Navigation functionality
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        });
+
+        document.getElementById('year-select').addEventListener('change', function() {
+            currentYear = this.value;
+            updateDashboard();
+        });
+
+        // Data entry form functionality
+        document.getElementById('data-entry-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const branch = document.getElementById('branch').value;
+            const month = document.getElementById('month').value;
+            const totalSales = parseFloat(document.getElementById('total-sales').value);
+            const transactions = parseInt(document.getElementById('transactions').value);
+            const deliverySales = parseFloat(document.getElementById('delivery-sales').value);
+            const onlineSales = parseFloat(document.getElementById('online-sales').value);
+            
+            // Add to 2025 data
+            if (!salesData2025.branches[branch]) {
+                salesData2025.branches[branch] = {
+                    transactions: 0,
+                    revenue: 0,
+                    delivery: 0,
+                    avgValue: 0
+                };
+            }
+            
+            salesData2025.branches[branch].transactions += transactions;
+            salesData2025.branches[branch].revenue += totalSales;
+            salesData2025.branches[branch].delivery += deliverySales;
+            salesData2025.branches[branch].avgValue = totalSales / transactions;
+            
+            // Update monthly data
+            const monthIndex = salesData2025.monthly.months.indexOf(month);
+            if (monthIndex !== -1) {
+                salesData2025.monthly.total[monthIndex] += totalSales;
+                
+                // Determine city
+                const isAUH = ['Hamdan', 'Al_Khalidiyah', 'Shabiya_11', 'Muroor'].includes(branch);
+                if (isAUH) {
+                    salesData2025.monthly.AUH[monthIndex] += totalSales;
+                } else {
+                    salesData2025.monthly.DXB[monthIndex] += totalSales;
+                }
+            }
+            
+            // Show success notification
+            showNotification('2025 data added successfully!');
+            
+            // Reset form
+            this.reset();
+            
+            // Update charts
+            updateYearComparisonChart();
+        });
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification show';
+            if (type === 'error') {
+                notification.classList.add('error');
+            }
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelector(`.menu-item[data-section="${sectionId}"]`).classList.add('active');
+            
+            // Update charts when switching sections
+            if (sectionId === 'overview') {
+                updateChannelDistributionChart();
+            } else if (sectionId === 'branch-analysis') {
+                updateBranchSalesChart();
+            } else if (sectionId === 'delivery-trends') {
+                updateDeliveryBranchChart();
+                updateDeliveryTrendsChart();
+            } else if (sectionId === 'monthly-comparison') {
+                updateMonthlyCharts();
+            } else if (sectionId === 'data-entry') {
+                updateYearComparisonChart();
+            }
+        }
+
+        // Update channel distribution chart
+        function updateChannelDistributionChart() {
+            const ctx = document.getElementById('channel-distribution-chart').getContext('2d');
+            
+            if (charts.channelDistributionChart) {
+                charts.channelDistributionChart.destroy();
+            }
+            
+            charts.channelDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Delivery ($4.60M)', 'Online ($1.05M)'],
+                    datasets: [{
+                        data: [salesData2024.channels.delivery.revenue, salesData2024.channels.online.revenue],
+                        backgroundColor: ['#e74c3c', '#3498db'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update branch sales chart
+        function updateBranchSalesChart() {
+            const ctx = document.getElementById('branch-sales-chart').getContext('2d');
+            
+            if (charts.branchSalesChart) {
+                charts.branchSalesChart.destroy();
+            }
+            
+            const branchNames = Object.keys(salesData2024.branches);
+            const branchSales = branchNames.map(branch => salesData2024.branches[branch].revenue);
+            
+            charts.branchSalesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: branchNames.map(name => name.replace(/_/g, ' ')),
+                    datasets: [{
+                        label: 'Sales Revenue ($)',
+                        data: branchSales,
+                        backgroundColor: [
+                            '#e74c3c', '#f39c12', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update delivery branch chart
+        function updateDeliveryBranchChart() {
+            const ctx = document.getElementById('delivery-branch-chart').getContext('2d');
+            
+            if (charts.deliveryBranchChart) {
+                charts.deliveryBranchChart.destroy();
+            }
+            
+            const branchNames = Object.keys(salesData2024.branches);
+            const deliverySales = branchNames.map(branch => salesData2024.branches[branch].delivery);
+            
+            charts.deliveryBranchChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: branchNames.map(name => name.replace(/_/g, ' ')),
+                    datasets: [{
+                        label: 'Delivery Sales ($)',
+                        data: deliverySales,
+                        backgroundColor: '#e74c3c',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update delivery trends chart
+        function updateDeliveryTrendsChart() {
+            const ctx = document.getElementById('delivery-trends-chart').getContext('2d');
+            
+            if (charts.deliveryTrendsChart) {
+                charts.deliveryTrendsChart.destroy();
+            }
+            
+            // Calculate monthly delivery sales (simplified)
+            const monthlyDelivery = salesData2024.monthly.total.map((sales, index) => {
+                return sales * 0.814; // 81.4% delivery share
+            });
+            
+            charts.deliveryTrendsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: salesData2024.monthly.months,
+                    datasets: [
+                        {
+                            label: 'Delivery Sales',
+                            data: monthlyDelivery,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Online Sales',
+                            data: salesData2024.monthly.total.map((sales, index) => sales * 0.186),
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update monthly charts
+        function updateMonthlyCharts() {
+            // Monthly sales chart
+            const salesCtx = document.getElementById('monthly-sales-chart').getContext('2d');
+            
+            if (charts.monthlySalesChart) {
+                charts.monthlySalesChart.destroy();
+            }
+            
+            charts.monthlySalesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: salesData2024.monthly.months,
+                    datasets: [
+                        {
+                            label: '2024 Total Sales',
+                            data: salesData2024.monthly.total,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: '2025 Total Sales',
+                            data: salesData2025.monthly.total,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Monthly transactions chart
+            const transactionsCtx = document.getElementById('monthly-transactions-chart').getContext('2d');
+            
+            if (charts.monthlyTransactionsChart) {
+                charts.monthlyTransactionsChart.destroy();
+            }
+            
+            const monthly2024Transactions = salesData2024.monthly.total.map((sales, index) => {
+                return Math.round(sales / salesData2024.total.avgValue);
+            });
+            
+            const monthly2025Transactions = salesData2025.monthly.total.map((sales, index) => {
+                return sales > 0 ? Math.round(sales / salesData2024.total.avgValue) : 0;
+            });
+            
+            charts.monthlyTransactionsChart = new Chart(transactionsCtx, {
+                type: 'bar',
+                data: {
+                    labels: salesData2024.monthly.months,
+                    datasets: [
+                        {
+                            label: '2024 Transactions',
+                            data: monthly2024Transactions,
+                            backgroundColor: '#e74c3c',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '2025 Transactions',
+                            data: monthly2025Transactions,
+                            backgroundColor: '#3498db',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Monthly channel chart
+            const channelCtx = document.getElementById('monthly-channel-chart').getContext('2d');
+            
+            if (charts.monthlyChannelChart) {
+                charts.monthlyChannelChart.destroy();
+            }
+            
+            const monthly2024Delivery = salesData2024.monthly.total.map((sales, index) => {
+                return sales * 0.814;
+            });
+            
+            const monthly2024Online = salesData2024.monthly.total.map((sales, index) => {
+                return sales * 0.186;
+            });
+            
+            const monthly2025Delivery = salesData2025.monthly.total.map((sales, index) => {
+                return sales > 0 ? sales * 0.814 : 0;
+            });
+            
+            const monthly2025Online = salesData2025.monthly.total.map((sales, index) => {
+                return sales > 0 ? sales * 0.186 : 0;
+            });
+            
+            charts.monthlyChannelChart = new Chart(channelCtx, {
+                type: 'bar',
+                data: {
+                    labels: salesData2024.monthly.months,
+                    datasets: [
+                        {
+                            label: '2024 Delivery',
+                            data: monthly2024Delivery,
+                            backgroundColor: '#e74c3c',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '2024 Online',
+                            data: monthly2024Online,
+                            backgroundColor: '#3498db',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '2025 Delivery',
+                            data: monthly2025Delivery,
+                            backgroundColor: '#e67e22',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '2025 Online',
+                            data: monthly2025Online,
+                            backgroundColor: '#9b59b6',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update year comparison chart
+        function updateYearComparisonChart() {
+            const ctx = document.getElementById('year-comparison-chart').getContext('2d');
+            
+            if (charts.yearComparisonChart) {
+                charts.yearComparisonChart.destroy();
+            }
+            
+            const branchNames = Object.keys(salesData2024.branches);
+            const sales2024 = branchNames.map(branch => salesData2024.branches[branch].revenue);
+            const sales2025 = branchNames.map(branch => {
+                return salesData2025.branches[branch] ? salesData2025.branches[branch].revenue : 0;
+            });
+            
+            charts.yearComparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: branchNames.map(name => name.replace(/_/g, ' ')),
+                    datasets: [
+                        {
+                            label: '2024 Sales',
+                            data: sales2024,
+                            backgroundColor: '#e74c3c',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '2025 Sales',
+                            data: sales2025,
+                            backgroundColor: '#3498db',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+        });
+
+        function updateDashboard() {
+            updateChannelDistributionChart();
+            updateBranchSalesChart();
+            updateDeliveryBranchChart();
+            updateDeliveryTrendsChart();
+            updateMonthlyCharts();
+            updateYearComparisonChart();
+        }
+    </script>
+</body>
+</html>
