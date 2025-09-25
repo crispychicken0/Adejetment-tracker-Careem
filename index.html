@@ -252,6 +252,49 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .report-table th, .report-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+        .report-table th {
+            background-color: #f4f6f9;
+            font-weight: bold;
+        }
+        .report-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .report-table .summary-row {
+            background-color: #e8f4f8 !important;
+            font-weight: bold;
+        }
+        .period-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .period-selector select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .branch-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .branch-selector select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -278,6 +321,9 @@
         </div>
         <div class="menu-item" data-section="insights">
             <i class="fas fa-lightbulb"></i> Insights
+        </div>
+        <div class="menu-item" data-section="last-3-months-report">
+            <i class="fas fa-file-alt"></i> 3-Month Report
         </div>
         <div class="menu-item" data-section="data-entry">
             <i class="fas fa-database"></i> Data Entry
@@ -443,6 +489,89 @@
             </div>
         </section>
 
+        <section id="last-3-months-report" class="section">
+            <h2><i class="fas fa-file-alt"></i> Delivery Trends Comparison: Last 3 Months</h2>
+            <p class="mb-4">Compare delivery trends (orders, amounts, and average order value) for the selected period between 2024 and 2025.</p>
+            
+            <div class="period-selector">
+                <div>
+                    <label for="start-month" class="block text-sm font-medium text-gray-700">Start Month</label>
+                    <select id="start-month" class="mt-1 block w-full p-2 border rounded">
+                        <option value="6">July</option>
+                        <option value="5">June</option>
+                        <option value="4">May</option>
+                        <option value="3">April</option>
+                        <option value="2">March</option>
+                        <option value="1">February</option>
+                        <option value="0">January</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="end-month" class="block text-sm font-medium text-gray-700">End Month</label>
+                    <select id="end-month" class="mt-1 block w-full p-2 border rounded">
+                        <option value="8">September</option>
+                        <option value="7">August</option>
+                        <option value="6">July</option>
+                        <option value="5">June</option>
+                        <option value="4">May</option>
+                        <option value="3">April</option>
+                        <option value="2">March</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="report-branch" class="block text-sm font-medium text-gray-700">Branch</label>
+                    <select id="report-branch" class="mt-1 block w-full p-2 border rounded">
+                        <option value="all">All Branches</option>
+                        <option value="0">Hamdan St</option>
+                        <option value="1">Al Khalidiyah</option>
+                        <option value="2">Shabiya 11</option>
+                        <option value="3">Muroor</option>
+                        <option value="4">Al Barsha</option>
+                        <option value="5">Al Satwa</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="generateLast3MonthsReport()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                        <i class="fas fa-sync-alt mr-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>Delivery Trends Comparison</h3>
+                <canvas id="last-3-months-chart"></canvas>
+            </div>
+            
+            <div class="form-container">
+                <h3>Comparative Report</h3>
+                <div class="overflow-x-auto">
+                    <table class="report-table" id="last-3-months-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>Orders</th>
+                                <th>Amount ($)</th>
+                                <th>Avg Order Value ($)</th>
+                                <th>Orders Change</th>
+                                <th>Amount Change</th>
+                                <th>Avg Value Change</th>
+                            </tr>
+                        </thead>
+                        <tbody id="last-3-months-tbody">
+                            <!-- Report data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                    <p class="text-sm text-yellow-700">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Note: September 2025 data is currently not available (showing as zero). You can update it via the Data Entry section.
+                    </p>
+                </div>
+            </div>
+        </section>
+
         <section id="data-entry" class="section">
             <h2><i class="fas fa-database"></i> Data Entry</h2>
             <div class="form-container">
@@ -491,6 +620,10 @@
                             <label for="delivery-sales" class="block text-sm font-medium text-gray-700">Delivery Sales ($)</label>
                             <input type="number" id="delivery-sales" class="mt-1 block w-full p-2 border rounded" step="0.01" required>
                         </div>
+                        <div>
+                            <label for="delivery-orders" class="block text-sm font-medium text-gray-700">Delivery Orders</label>
+                            <input type="number" id="delivery-orders" class="mt-1 block w-full p-2 border rounded" required>
+                        </div>
                     </div>
                     <div class="flex gap-2 mt-4">
                         <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
@@ -510,15 +643,17 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Branch</th>
+                                <th>Month</th>
                                 <th>Total Sales</th>
                                 <th>Transactions</th>
                                 <th>Delivery Sales</th>
+                                <th>Delivery Orders</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="data-log-body">
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-gray-500">No data entries yet</td>
+                                <td colspan="8" class="text-center py-4 text-gray-500">No data entries yet</td>
                             </tr>
                         </tbody>
                     </table>
@@ -642,6 +777,8 @@
                     initializeChannelCharts();
                 } else if (sectionId === 'insights') {
                     initializeInsightsChart();
+                } else if (sectionId === 'last-3-months-report') {
+                    generateLast3MonthsReport();
                 }
             }, 100);
         }
@@ -1608,6 +1745,275 @@
             });
         }
 
+        // Generate Last 3 Months Report
+        function generateLast3MonthsReport() {
+            const startMonth = parseInt(document.getElementById('start-month').value);
+            const endMonth = parseInt(document.getElementById('end-month').value);
+            const branchIndex = document.getElementById('report-branch').value;
+            
+            // Get selected branch or all branches
+            let selectedBranches = [];
+            if (branchIndex === 'all') {
+                selectedBranches = branches;
+            } else {
+                selectedBranches = [branches[parseInt(branchIndex)]];
+            }
+            
+            // Initialize data structures
+            const reportData = {
+                2024: {
+                    orders: 0,
+                    amount: 0,
+                    monthly: []
+                },
+                2025: {
+                    orders: 0,
+                    amount: 0,
+                    monthly: []
+                }
+            };
+            
+            // Calculate data for each month in the selected range
+            for (let month = startMonth; month <= endMonth; month++) {
+                const monthName = months[month];
+                
+                // Calculate 2024 data
+                let orders2024 = 0;
+                let amount2024 = 0;
+                selectedBranches.forEach(branch => {
+                    orders2024 += deliveryCounts2024[branch][month];
+                    amount2024 += deliveryAmounts2024[branch][month];
+                });
+                const avgValue2024 = orders2024 > 0 ? (amount2024 / orders2024).toFixed(2) : 0;
+                
+                // Calculate 2025 data
+                let orders2025 = 0;
+                let amount2025 = 0;
+                selectedBranches.forEach(branch => {
+                    orders2025 += deliveryCounts2025[branch][month];
+                    amount2025 += deliveryAmounts2025[branch][month];
+                });
+                const avgValue2025 = orders2025 > 0 ? (amount2025 / orders2025).toFixed(2) : 0;
+                
+                // Calculate changes
+                const ordersChange = orders2024 > 0 ? ((orders2025 - orders2024) / orders2024 * 100).toFixed(1) : 'N/A';
+                const amountChange = amount2024 > 0 ? ((amount2025 - amount2024) / amount2024 * 100).toFixed(1) : 'N/A';
+                const avgValueChange = avgValue2024 > 0 ? ((avgValue2025 - avgValue2024) / avgValue2024 * 100).toFixed(1) : 'N/A';
+                
+                // Add to report data
+                reportData[2024].monthly.push({
+                    month: monthName,
+                    orders: orders2024,
+                    amount: amount2024,
+                    avgValue: avgValue2024
+                });
+                
+                reportData[2025].monthly.push({
+                    month: monthName,
+                    orders: orders2025,
+                    amount: amount2025,
+                    avgValue: avgValue2025,
+                    ordersChange: ordersChange,
+                    amountChange: amountChange,
+                    avgValueChange: avgValueChange
+                });
+                
+                // Add to totals
+                reportData[2024].orders += orders2024;
+                reportData[2024].amount += amount2024;
+                reportData[2025].orders += orders2025;
+                reportData[2025].amount += amount2025;
+            }
+            
+            // Calculate average values for the period
+            reportData[2024].avgValue = reportData[2024].orders > 0 ? 
+                (reportData[2024].amount / reportData[2024].orders).toFixed(2) : 0;
+            reportData[2025].avgValue = reportData[2025].orders > 0 ? 
+                (reportData[2025].amount / reportData[2025].orders).toFixed(2) : 0;
+            
+            // Calculate period changes
+            const periodOrdersChange = reportData[2024].orders > 0 ? 
+                ((reportData[2025].orders - reportData[2024].orders) / reportData[2024].orders * 100).toFixed(1) : 'N/A';
+            const periodAmountChange = reportData[2024].amount > 0 ? 
+                ((reportData[2025].amount - reportData[2024].amount) / reportData[2024].amount * 100).toFixed(1) : 'N/A';
+            const periodAvgValueChange = reportData[2024].avgValue > 0 ? 
+                ((reportData[2025].avgValue - reportData[2024].avgValue) / reportData[2024].avgValue * 100).toFixed(1) : 'N/A';
+            
+            // Populate the table
+            const tbody = document.getElementById('last-3-months-tbody');
+            tbody.innerHTML = '';
+            
+            // Add monthly data
+            for (let i = 0; i < reportData[2024].monthly.length; i++) {
+                const month2024 = reportData[2024].monthly[i];
+                const month2025 = reportData[2025].monthly[i];
+                
+                // Add 2024 row
+                const row2024 = document.createElement('tr');
+                row2024.innerHTML = `
+                    <td>${month2024.month}</td>
+                    <td>2024</td>
+                    <td>${month2024.orders.toLocaleString()}</td>
+                    <td>$${month2024.amount.toLocaleString()}</td>
+                    <td>$${month2024.avgValue}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                `;
+                tbody.appendChild(row2024);
+                
+                // Add 2025 row
+                const row2025 = document.createElement('tr');
+                row2025.innerHTML = `
+                    <td>${month2025.month}</td>
+                    <td>2025</td>
+                    <td>${month2025.orders.toLocaleString()}</td>
+                    <td>$${month2025.amount.toLocaleString()}</td>
+                    <td>$${month2025.avgValue}</td>
+                    <td class="${month2025.ordersChange > 0 ? 'positive' : month2025.ordersChange < 0 ? 'negative' : ''}">${month2025.ordersChange !== 'N/A' ? (month2025.ordersChange > 0 ? '+' : '') + month2025.ordersChange + '%' : 'N/A'}</td>
+                    <td class="${month2025.amountChange > 0 ? 'positive' : month2025.amountChange < 0 ? 'negative' : ''}">${month2025.amountChange !== 'N/A' ? (month2025.amountChange > 0 ? '+' : '') + month2025.amountChange + '%' : 'N/A'}</td>
+                    <td class="${month2025.avgValueChange > 0 ? 'positive' : month2025.avgValueChange < 0 ? 'negative' : ''}">${month2025.avgValueChange !== 'N/A' ? (month2025.avgValueChange > 0 ? '+' : '') + month2025.avgValueChange + '%' : 'N/A'}</td>
+                `;
+                tbody.appendChild(row2025);
+            }
+            
+            // Add summary row
+            const summaryRow = document.createElement('tr');
+            summaryRow.className = 'summary-row';
+            summaryRow.innerHTML = `
+                <td colspan="2"><strong>Total Period</strong></td>
+                <td><strong>${reportData[2024].orders.toLocaleString()} / ${reportData[2025].orders.toLocaleString()}</strong></td>
+                <td><strong>$${reportData[2024].amount.toLocaleString()} / $${reportData[2025].amount.toLocaleString()}</strong></td>
+                <td><strong>$${reportData[2024].avgValue} / $${reportData[2025].avgValue}</strong></td>
+                <td class="${periodOrdersChange > 0 ? 'positive' : periodOrdersChange < 0 ? 'negative' : ''}"><strong>${periodOrdersChange !== 'N/A' ? (periodOrdersChange > 0 ? '+' : '') + periodOrdersChange + '%' : 'N/A'}</strong></td>
+                <td class="${periodAmountChange > 0 ? 'positive' : periodAmountChange < 0 ? 'negative' : ''}"><strong>${periodAmountChange !== 'N/A' ? (periodAmountChange > 0 ? '+' : '') + periodAmountChange + '%' : 'N/A'}</strong></td>
+                <td class="${periodAvgValueChange > 0 ? 'positive' : periodAvgValueChange < 0 ? 'negative' : ''}"><strong>${periodAvgValueChange !== 'N/A' ? (periodAvgValueChange > 0 ? '+' : '') + periodAvgValueChange + '%' : 'N/A'}</strong></td>
+            `;
+            tbody.appendChild(summaryRow);
+            
+            // Initialize chart
+            initializeLast3MonthsChart(startMonth, endMonth, branchIndex);
+        }
+
+        // Initialize Last 3 Months Chart
+        function initializeLast3MonthsChart(startMonth, endMonth, branchIndex) {
+            const ctx = document.getElementById('last-3-months-chart').getContext('2d');
+            
+            if (window.last3MonthsChart) {
+                window.last3MonthsChart.destroy();
+            }
+            
+            // Get selected branch or all branches
+            let selectedBranches = [];
+            if (branchIndex === 'all') {
+                selectedBranches = branches;
+            } else {
+                selectedBranches = [branches[parseInt(branchIndex)]];
+            }
+            
+            // Prepare chart data
+            const labels = [];
+            const orders2024Data = [];
+            const orders2025Data = [];
+            const amount2024Data = [];
+            const amount2025Data = [];
+            
+            for (let month = startMonth; month <= endMonth; month++) {
+                labels.push(months[month].substring(0, 3));
+                
+                // Calculate 2024 data
+                let orders2024 = 0;
+                let amount2024 = 0;
+                selectedBranches.forEach(branch => {
+                    orders2024 += deliveryCounts2024[branch][month];
+                    amount2024 += deliveryAmounts2024[branch][month];
+                });
+                
+                // Calculate 2025 data
+                let orders2025 = 0;
+                let amount2025 = 0;
+                selectedBranches.forEach(branch => {
+                    orders2025 += deliveryCounts2025[branch][month];
+                    amount2025 += deliveryAmounts2025[branch][month];
+                });
+                
+                orders2024Data.push(orders2024);
+                orders2025Data.push(orders2025);
+                amount2024Data.push(amount2024 / 1000); // Convert to thousands
+                amount2025Data.push(amount2025 / 1000); // Convert to thousands
+            }
+            
+            window.last3MonthsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '2024 Orders',
+                            data: orders2024Data,
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                            borderColor: 'rgba(231, 76, 60, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '2025 Orders',
+                            data: orders2025Data,
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '2024 Amount ($K)',
+                            data: amount2024Data,
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: '2025 Amount ($K)',
+                            data: amount2025Data,
+                            backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                            borderColor: 'rgba(155, 89, 182, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Orders'
+                            },
+                            position: 'left'
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount ($ Thousands)'
+                            },
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         // Form submission
         document.getElementById('data-entry-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1617,9 +2023,10 @@
             const totalSales = parseFloat(document.getElementById('total-sales').value);
             const transactions = parseInt(document.getElementById('transactions').value);
             const deliverySales = parseFloat(document.getElementById('delivery-sales').value);
+            const deliveryOrders = parseInt(document.getElementById('delivery-orders').value);
             
             // Validate input
-            if (!branch || !month || isNaN(totalSales) || isNaN(transactions) || isNaN(deliverySales)) {
+            if (!branch || !month || isNaN(totalSales) || isNaN(transactions) || isNaN(deliverySales) || isNaN(deliveryOrders)) {
                 showNotification('Please fill in all fields with valid values', 'error');
                 return;
             }
@@ -1629,13 +2036,47 @@
                 return;
             }
             
+            if (deliveryOrders > transactions) {
+                showNotification('Delivery orders cannot exceed total transactions', 'error');
+                return;
+            }
+            
+            // Map branch name to data key
+            const branchMapping = {
+                'Hamdan': 'Crispy Chicken-Hamdan St',
+                'Al_Khalidiyah': 'Crispy Chicken Khaldia',
+                'Shabiya_11': 'Crispy Chicken Shabiya 11',
+                'Muroor': 'Crispy Chicken Muroor',
+                'Al_Barsha': 'Crispy Chicken Al Barsha',
+                'Al_Satwa': 'Crispy Chicken Al Satwa'
+            };
+            
+            const branchKey = branchMapping[branch];
+            const monthIndex = months.indexOf(month);
+            
+            // Update data arrays
+            deliveryAmounts2025[branchKey][monthIndex] = deliverySales;
+            deliveryCounts2025[branchKey][monthIndex] = deliveryOrders;
+            
+            // Recalculate sum
+            let newSumAmount = 0;
+            let newSumCount = 0;
+            branches.forEach(b => {
+                newSumAmount += deliveryAmounts2025[b][monthIndex];
+                newSumCount += deliveryCounts2025[b][monthIndex];
+            });
+            deliveryAmounts2025['Sum'][monthIndex] = newSumAmount;
+            deliveryCounts2025['Sum'][monthIndex] = newSumCount;
+            
             // Add to data log
             const entry = {
                 date: new Date().toLocaleDateString(),
                 branch: branch,
+                month: month,
                 totalSales: totalSales,
                 transactions: transactions,
                 deliverySales: deliverySales,
+                deliveryOrders: deliveryOrders,
                 status: 'Pending'
             };
             
@@ -1647,6 +2088,14 @@
             
             // Reset form
             resetForm();
+            
+            // Update dashboard
+            updateAllData();
+            
+            // If last 3 months report is active, regenerate it
+            if (document.getElementById('last-3-months-report').classList.contains('active')) {
+                generateLast3MonthsReport();
+            }
         });
 
         // Reset form function
@@ -1659,7 +2108,7 @@
             const logBody = document.getElementById('data-log-body');
             
             if (dataEntries.length === 0) {
-                logBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No data entries yet</td></tr>';
+                logBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500">No data entries yet</td></tr>';
                 return;
             }
             
@@ -1670,9 +2119,11 @@
                 row.innerHTML = `
                     <td>${entry.date}</td>
                     <td>${entry.branch}</td>
+                    <td>${entry.month}</td>
                     <td>$${entry.totalSales.toFixed(2)}</td>
                     <td>${entry.transactions}</td>
                     <td>$${entry.deliverySales.toFixed(2)}</td>
+                    <td>${entry.deliveryOrders}</td>
                     <td><span class="comparison-badge ${entry.status === 'Approved' ? 'positive' : 'neutral'}">${entry.status}</span></td>
                 `;
                 logBody.appendChild(row);
