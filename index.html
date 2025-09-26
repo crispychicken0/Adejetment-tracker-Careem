@@ -449,6 +449,22 @@
 
         <section id="overview" class="section active">
             <h2><i class="fas fa-tachometer-alt"></i> Performance Overview</h2>
+            
+            <!-- Available Months Indicator -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-info-circle text-blue-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            <strong>ملاحظة:</strong> تتم المقارنة بين 2024 و2025 للأشهر التالية فقط: 
+                            <span id="available-months-display">يناير - أغسطس</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="stat-card year2024">
                     <h3>2024 Performance</h3>
@@ -854,6 +870,9 @@
         const branches = ['Crispy Chicken-Hamdan St', 'Crispy Chicken Khaldia', 'Crispy Chicken Shabiya 11', 'Crispy Chicken Muroor', 'Crispy Chicken Al Barsha', 'Crispy Chicken Al Satwa'];
         const branchNames = ['Hamdan St', 'Al Khalidiyah', 'Shabiya 11', 'Muroor', 'Al Barsha', 'Al Satwa'];
 
+        // Track available months in 2025
+        let availableMonths2025 = [0, 1, 2, 3, 4, 5, 6, 7]; // January to August
+
         // Data entry log
         let dataEntries = [];
         let currentReportData = null;
@@ -928,20 +947,40 @@
             updateBranchCards();
             updateChannelCards();
             updateInsightsCards();
+            updateAvailableMonthsDisplay();
+        }
+
+        // Update available months display
+        function updateAvailableMonthsDisplay() {
+            const monthNames = availableMonths2025.map(index => months[index]);
+            const displayText = monthNames.join(' - ');
+            document.getElementById('available-months-display').textContent = displayText;
         }
 
         // Update overview cards
         function updateOverviewCards() {
-            // Calculate 2024 totals
-            const totalSales2024 = deliveryAmounts2024['Sum'].reduce((sum, amount) => sum + amount, 0);
-            const totalTransactions2024 = deliveryCounts2024['Sum'].reduce((sum, count) => sum + count, 0);
-            const avgValue2024 = totalTransactions2024 > 0 ? (totalSales2024 / totalTransactions2024).toFixed(2) : 0;
-            const deliveryShare2024 = 81.4; // As per original dashboard
+            // Calculate 2024 totals for available months only
+            const availableSales2024 = availableMonths2025.map(monthIndex => 
+                deliveryAmounts2024['Sum'][monthIndex]
+            );
+            const availableSales2025 = availableMonths2025.map(monthIndex => 
+                deliveryAmounts2025['Sum'][monthIndex]
+            );
+            const availableTransactions2024 = availableMonths2025.map(monthIndex => 
+                deliveryCounts2024['Sum'][monthIndex]
+            );
+            const availableTransactions2025 = availableMonths2025.map(monthIndex => 
+                deliveryCounts2025['Sum'][monthIndex]
+            );
 
-            // Calculate 2025 totals
-            const totalSales2025 = deliveryAmounts2025['Sum'].reduce((sum, amount) => sum + amount, 0);
-            const totalTransactions2025 = deliveryCounts2025['Sum'].reduce((sum, count) => sum + count, 0);
+            // Calculate totals for available months only
+            const totalSales2024 = availableSales2024.reduce((sum, amount) => sum + amount, 0);
+            const totalSales2025 = availableSales2025.reduce((sum, amount) => sum + amount, 0);
+            const totalTransactions2024 = availableTransactions2024.reduce((sum, count) => sum + count, 0);
+            const totalTransactions2025 = availableTransactions2025.reduce((sum, count) => sum + count, 0);
+            const avgValue2024 = totalTransactions2024 > 0 ? (totalSales2024 / totalTransactions2024).toFixed(2) : 0;
             const avgValue2025 = totalTransactions2025 > 0 ? (totalSales2025 / totalTransactions2025).toFixed(2) : 0;
+            const deliveryShare2024 = 81.4; // As per original dashboard
             const deliveryShare2025 = totalSales2025 > 0 ? (totalSales2025 / (totalSales2025 / 0.8) * 100).toFixed(1) : 80;
 
             // Update Overview stat cards
@@ -971,14 +1010,26 @@
             branchCardsContainer.innerHTML = '';
 
             branches.forEach((branch, index) => {
-                // Calculate 2024 metrics
-                const totalSales2024 = deliveryAmounts2024[branch].reduce((sum, amount) => sum + amount, 0);
-                const totalTransactions2024 = deliveryCounts2024[branch].reduce((sum, count) => sum + count, 0);
-                const avgValue2024 = totalTransactions2024 > 0 ? (totalSales2024 / totalTransactions2024).toFixed(2) : 0;
+                // Calculate 2024 metrics for available months only
+                const availableSales2024 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2024[branch][monthIndex]
+                );
+                const availableSales2025 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2025[branch][monthIndex]
+                );
+                const availableTransactions2024 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2024[branch][monthIndex]
+                );
+                const availableTransactions2025 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2025[branch][monthIndex]
+                );
 
-                // Calculate 2025 metrics
-                const totalSales2025 = deliveryAmounts2025[branch].reduce((sum, amount) => sum + amount, 0);
-                const totalTransactions2025 = deliveryCounts2025[branch].reduce((sum, count) => sum + count, 0);
+                // Calculate totals for available months only
+                const totalSales2024 = availableSales2024.reduce((sum, amount) => sum + amount, 0);
+                const totalSales2025 = availableSales2025.reduce((sum, amount) => sum + amount, 0);
+                const totalTransactions2024 = availableTransactions2024.reduce((sum, count) => sum + count, 0);
+                const totalTransactions2025 = availableTransactions2025.reduce((sum, count) => sum + count, 0);
+                const avgValue2024 = totalTransactions2024 > 0 ? (totalSales2024 / totalTransactions2024).toFixed(2) : 0;
                 const avgValue2025 = totalTransactions2025 > 0 ? (totalSales2025 / totalTransactions2025).toFixed(2) : 0;
 
                 // Calculate growth
@@ -1043,16 +1094,28 @@
 
         // Update channel cards
         function updateChannelCards() {
-            // Calculate 2024 totals
-            const totalSales2024 = deliveryAmounts2024['Sum'].reduce((sum, amount) => sum + amount, 0);
-            const totalTransactions2024 = deliveryCounts2024['Sum'].reduce((sum, count) => sum + count, 0);
-            const avgValue2024 = totalTransactions2024 > 0 ? (totalSales2024 / totalTransactions2024).toFixed(2) : 0;
-            const deliveryShare2024 = 81.4;
+            // Calculate 2024 totals for available months only
+            const availableSales2024 = availableMonths2025.map(monthIndex => 
+                deliveryAmounts2024['Sum'][monthIndex]
+            );
+            const availableSales2025 = availableMonths2025.map(monthIndex => 
+                deliveryAmounts2025['Sum'][monthIndex]
+            );
+            const availableTransactions2024 = availableMonths2025.map(monthIndex => 
+                deliveryCounts2024['Sum'][monthIndex]
+            );
+            const availableTransactions2025 = availableMonths2025.map(monthIndex => 
+                deliveryCounts2025['Sum'][monthIndex]
+            );
 
-            // Calculate 2025 totals
-            const totalSales2025 = deliveryAmounts2025['Sum'].reduce((sum, amount) => sum + amount, 0);
-            const totalTransactions2025 = deliveryCounts2025['Sum'].reduce((sum, count) => sum + count, 0);
+            // Calculate totals for available months only
+            const totalSales2024 = availableSales2024.reduce((sum, amount) => sum + amount, 0);
+            const totalSales2025 = availableSales2025.reduce((sum, amount) => sum + amount, 0);
+            const totalTransactions2024 = availableTransactions2024.reduce((sum, count) => sum + count, 0);
+            const totalTransactions2025 = availableTransactions2025.reduce((sum, count) => sum + count, 0);
+            const avgValue2024 = totalTransactions2024 > 0 ? (totalSales2024 / totalTransactions2024).toFixed(2) : 0;
             const avgValue2025 = totalTransactions2025 > 0 ? (totalSales2025 / totalTransactions2025).toFixed(2) : 0;
+            const deliveryShare2024 = 81.4;
             const deliveryShare2025 = totalSales2025 > 0 ? (totalSales2025 / (totalSales2025 / 0.8) * 100).toFixed(1) : 80;
 
             // Update Channel Analysis stat cards
@@ -1072,12 +1135,25 @@
             const insightsContainer = document.getElementById('insights-cards');
             insightsContainer.innerHTML = '';
 
-            // Calculate branch performance
+            // Calculate branch performance for available months only
             const branchPerformance = branches.map((branch, index) => {
-                const totalCount2024 = deliveryCounts2024[branch].reduce((sum, count) => sum + count, 0);
-                const totalCount2025 = deliveryCounts2025[branch].reduce((sum, count) => sum + count, 0);
-                const totalAmount2024 = deliveryAmounts2024[branch].reduce((sum, amount) => sum + amount, 0);
-                const totalAmount2025 = deliveryAmounts2025[branch].reduce((sum, amount) => sum + amount, 0);
+                const availableSales2024 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2024[branch][monthIndex]
+                );
+                const availableSales2025 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2025[branch][monthIndex]
+                );
+                const availableTransactions2024 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2024[branch][monthIndex]
+                );
+                const availableTransactions2025 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2025[branch][monthIndex]
+                );
+
+                const totalCount2024 = availableTransactions2024.reduce((sum, count) => sum + count, 0);
+                const totalCount2025 = availableTransactions2025.reduce((sum, count) => sum + count, 0);
+                const totalAmount2024 = availableSales2024.reduce((sum, amount) => sum + amount, 0);
+                const totalAmount2025 = availableSales2025.reduce((sum, amount) => sum + amount, 0);
                 
                 const countGrowth = totalCount2024 > 0 ? ((totalCount2025 - totalCount2024) / totalCount2024 * 100) : 0;
                 const amountGrowth = totalAmount2024 > 0 ? ((totalAmount2025 - totalAmount2024) / totalAmount2024 * 100) : 0;
@@ -1164,13 +1240,15 @@
                 window.yearOverviewChart.destroy();
             }
             
-            const sales2024 = months.map((_, index) => deliveryAmounts2024['Sum'][index] / 1000000);
-            const sales2025 = months.map((_, index) => deliveryAmounts2025['Sum'][index] / 1000000);
+            // Get data for available months only
+            const availableLabels = availableMonths2025.map(index => months[index].substring(0, 3));
+            const sales2024 = availableMonths2025.map(index => deliveryAmounts2024['Sum'][index] / 1000000);
+            const sales2025 = availableMonths2025.map(index => deliveryAmounts2025['Sum'][index] / 1000000);
 
             window.yearOverviewChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    labels: availableLabels,
                     datasets: [{
                         label: '2024 Sales ($M)',
                         data: sales2024,
@@ -1190,6 +1268,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Sales Comparison for Available Months Only'
                         }
                     },
                     scales: {
@@ -1213,8 +1295,20 @@
                 window.branchComparisonChart.destroy();
             }
             
-            const sales2024 = branches.map(branch => deliveryAmounts2024[branch].reduce((sum, amount) => sum + amount, 0) / 1000000);
-            const sales2025 = branches.map(branch => deliveryAmounts2025[branch].reduce((sum, amount) => sum + amount, 0) / 1000000);
+            // Calculate totals for available months only
+            const sales2024 = branches.map(branch => {
+                const availableSales = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2024[branch][monthIndex]
+                );
+                return availableSales.reduce((sum, amount) => sum + amount, 0) / 1000000;
+            });
+            
+            const sales2025 = branches.map(branch => {
+                const availableSales = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2025[branch][monthIndex]
+                );
+                return availableSales.reduce((sum, amount) => sum + amount, 0) / 1000000;
+            });
 
             window.branchComparisonChart = new Chart(ctx, {
                 type: 'bar',
@@ -1239,6 +1333,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Branch Sales Comparison for Available Months Only'
                         }
                     },
                     scales: {
@@ -1260,18 +1358,24 @@
             summaryContainer.innerHTML = '';
             
             branches.forEach((branch, index) => {
-                let totalCount2024 = 0;
-                let totalCount2025 = 0;
-                let totalAmount2024 = 0;
-                let totalAmount2025 = 0;
+                // Calculate for available months only
+                const availableCounts2024 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2024[branch][monthIndex]
+                );
+                const availableCounts2025 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2025[branch][monthIndex]
+                );
+                const availableAmounts2024 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2024[branch][monthIndex]
+                );
+                const availableAmounts2025 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2025[branch][monthIndex]
+                );
                 
-                months.forEach(month => {
-                    const monthIndex = months.indexOf(month);
-                    totalCount2024 += deliveryCounts2024[branch][monthIndex];
-                    totalCount2025 += deliveryCounts2025[branch][monthIndex];
-                    totalAmount2024 += deliveryAmounts2024[branch][monthIndex];
-                    totalAmount2025 += deliveryAmounts2025[branch][monthIndex];
-                });
+                const totalCount2024 = availableCounts2024.reduce((sum, count) => sum + count, 0);
+                const totalCount2025 = availableCounts2025.reduce((sum, count) => sum + count, 0);
+                const totalAmount2024 = availableAmounts2024.reduce((sum, amount) => sum + amount, 0);
+                const totalAmount2025 = availableAmounts2025.reduce((sum, amount) => sum + amount, 0);
                 
                 const countChange = totalCount2024 === 0 ? 0 : ((totalCount2025 - totalCount2024) / totalCount2024 * 100).toFixed(1);
                 const amountChange = totalAmount2024 === 0 ? 0 : ((totalAmount2025 - totalAmount2024) / totalAmount2024 * 100).toFixed(1);
@@ -1311,10 +1415,24 @@
             container.innerHTML = '';
             
             branches.forEach((branch, index) => {
-                let totalCount2024 = 0;
-                let totalCount2025 = 0;
-                let totalAmount2024 = 0;
-                let totalAmount2025 = 0;
+                // Calculate for available months only
+                const availableCounts2024 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2024[branch][monthIndex]
+                );
+                const availableCounts2025 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2025[branch][monthIndex]
+                );
+                const availableAmounts2024 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2024[branch][monthIndex]
+                );
+                const availableAmounts2025 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2025[branch][monthIndex]
+                );
+                
+                let totalCount2024 = availableCounts2024.reduce((sum, count) => sum + count, 0);
+                let totalCount2025 = availableCounts2025.reduce((sum, count) => sum + count, 0);
+                let totalAmount2024 = availableAmounts2024.reduce((sum, amount) => sum + amount, 0);
+                let totalAmount2025 = availableAmounts2025.reduce((sum, amount) => sum + amount, 0);
                 let avgValue2024 = 0;
                 let avgValue2025 = 0;
                 let peakMonth2024 = '';
@@ -1322,24 +1440,19 @@
                 let peakValue2024 = 0;
                 let peakValue2025 = 0;
                 
-                months.forEach((month, monthIndex) => {
+                availableMonths2025.forEach(monthIndex => {
                     const count2024 = deliveryCounts2024[branch][monthIndex];
                     const count2025 = deliveryCounts2025[branch][monthIndex];
                     const amount2024 = deliveryAmounts2024[branch][monthIndex];
                     const amount2025 = deliveryAmounts2025[branch][monthIndex];
                     
-                    totalCount2024 += count2024;
-                    totalCount2025 += count2025;
-                    totalAmount2024 += amount2024;
-                    totalAmount2025 += amount2025;
-                    
                     if (count2024 > peakValue2024) {
                         peakValue2024 = count2024;
-                        peakMonth2024 = month;
+                        peakMonth2024 = months[monthIndex];
                     }
                     if (count2025 > peakValue2025) {
                         peakValue2025 = count2025;
-                        peakMonth2025 = month;
+                        peakMonth2025 = months[monthIndex];
                     }
                 });
                 
@@ -1434,16 +1547,16 @@
             new Chart(countsCtx, {
                 type: 'line',
                 data: {
-                    labels: months,
+                    labels: availableMonths2025.map(index => months[index]),
                     datasets: [{
                         label: '2024',
-                        data: months.map((month, i) => deliveryCounts2024[branchKey][i]),
+                        data: availableMonths2025.map(index => deliveryCounts2024[branchKey][index]),
                         borderColor: 'rgba(231, 76, 60, 1)',
                         backgroundColor: 'rgba(231, 76, 60, 0.1)',
                         tension: 0.4
                     }, {
                         label: '2025',
-                        data: months.map((month, i) => deliveryCounts2025[branchKey][i]),
+                        data: availableMonths2025.map(index => deliveryCounts2025[branchKey][index]),
                         borderColor: 'rgba(52, 152, 219, 1)',
                         backgroundColor: 'rgba(52, 152, 219, 0.1)',
                         borderDash: [5, 5],
@@ -1455,6 +1568,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Available Months Only'
                         }
                     },
                     scales: {
@@ -1473,15 +1590,15 @@
             new Chart(amountsCtx, {
                 type: 'bar',
                 data: {
-                    labels: months,
+                    labels: availableMonths2025.map(index => months[index]),
                     datasets: [{
                         label: '2024',
-                        data: months.map((month, i) => deliveryAmounts2024[branchKey][i] / 1000),
+                        data: availableMonths2025.map(index => deliveryAmounts2024[branchKey][index] / 1000),
                         backgroundColor: 'rgba(231, 76, 60, 0.7)',
                         borderColor: 'rgba(231, 76, 60, 1)',
                     }, {
                         label: '2025',
-                        data: months.map((month, i) => deliveryAmounts2025[branchKey][i] / 1000),
+                        data: availableMonths2025.map(index => deliveryAmounts2025[branchKey][index] / 1000),
                         backgroundColor: 'rgba(52, 152, 219, 0.7)',
                         borderColor: 'rgba(52, 152, 219, 1)',
                     }]
@@ -1491,6 +1608,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Available Months Only'
                         }
                     },
                     scales: {
@@ -1514,13 +1635,17 @@
                 window.monthlySalesChart.destroy();
             }
             
+            const availableLabels = availableMonths2025.map(index => months[index].substring(0, 3));
+            const sales2024 = availableMonths2025.map(index => deliveryAmounts2024['Sum'][index] / 1000000);
+            const sales2025 = availableMonths2025.map(index => deliveryAmounts2025['Sum'][index] / 1000000);
+
             window.monthlySalesChart = new Chart(salesCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    labels: availableLabels,
                     datasets: [{
                         label: '2024 Sales ($M)',
-                        data: months.map((_, i) => deliveryAmounts2024['Sum'][i] / 1000000),
+                        data: sales2024,
                         backgroundColor: 'rgba(231, 76, 60, 0.2)',
                         borderColor: 'rgba(231, 76, 60, 1)',
                         borderWidth: 2,
@@ -1528,7 +1653,7 @@
                         tension: 0.4
                     }, {
                         label: '2025 Sales ($M)',
-                        data: months.map((_, i) => deliveryAmounts2025['Sum'][i] / 1000000),
+                        data: sales2025,
                         backgroundColor: 'rgba(52, 152, 219, 0.2)',
                         borderColor: 'rgba(52, 152, 219, 1)',
                         borderWidth: 2,
@@ -1541,6 +1666,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Available Months Only'
                         }
                     },
                     scales: {
@@ -1561,19 +1690,22 @@
                 window.monthlyTransactionsChart.destroy();
             }
             
+            const transactions2024 = availableMonths2025.map(index => deliveryCounts2024['Sum'][index]);
+            const transactions2025 = availableMonths2025.map(index => deliveryCounts2025['Sum'][index]);
+
             window.monthlyTransactionsChart = new Chart(transactionsCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    labels: availableLabels,
                     datasets: [{
                         label: '2024 Transactions',
-                        data: months.map((_, i) => deliveryCounts2024['Sum'][i]),
+                        data: transactions2024,
                         backgroundColor: 'rgba(46, 204, 113, 0.7)',
                         borderColor: 'rgba(46, 204, 113, 1)',
                         borderWidth: 1
                     }, {
                         label: '2025 Transactions',
-                        data: months.map((_, i) => deliveryCounts2025['Sum'][i]),
+                        data: transactions2025,
                         backgroundColor: 'rgba(52, 152, 219, 0.7)',
                         borderColor: 'rgba(52, 152, 219, 1)',
                         borderWidth: 1
@@ -1584,6 +1716,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Available Months Only'
                         }
                     },
                     scales: {
@@ -1608,18 +1744,18 @@
             const deliveryShare2024 = 0.814; // 81.4%
             const deliveryShare2025 = 0.8; // 80%
             
-            const inStoreSales2024 = months.map((_, i) => 
-                (deliveryAmounts2024['Sum'][i] / deliveryShare2024) - deliveryAmounts2024['Sum'][i]
+            const inStoreSales2024 = availableMonths2025.map(index => 
+                (deliveryAmounts2024['Sum'][index] / deliveryShare2024) - deliveryAmounts2024['Sum'][index]
             );
             
-            const inStoreSales2025 = months.map((_, i) => 
-                (deliveryAmounts2025['Sum'][i] / deliveryShare2025) - deliveryAmounts2025['Sum'][i]
+            const inStoreSales2025 = availableMonths2025.map(index => 
+                (deliveryAmounts2025['Sum'][index] / deliveryShare2025) - deliveryAmounts2025['Sum'][index]
             );
 
             window.monthlyChannelChart = new Chart(channelCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    labels: availableLabels,
                     datasets: [
                         {
                             label: '2024 In-Store Sales ($M)',
@@ -1630,7 +1766,7 @@
                         },
                         {
                             label: '2024 Delivery Sales ($M)',
-                            data: months.map((_, i) => deliveryAmounts2024['Sum'][i] / 1000000),
+                            data: availableMonths2025.map(index => deliveryAmounts2024['Sum'][index] / 1000000),
                             backgroundColor: 'rgba(231, 76, 60, 0.7)',
                             borderColor: 'rgba(231, 76, 60, 1)',
                             borderWidth: 1
@@ -1644,7 +1780,7 @@
                         },
                         {
                             label: '2025 Delivery Sales ($M)',
-                            data: months.map((_, i) => deliveryAmounts2025['Sum'][i] / 1000000),
+                            data: availableMonths2025.map(index => deliveryAmounts2025['Sum'][index] / 1000000),
                             backgroundColor: 'rgba(155, 89, 182, 0.7)',
                             borderColor: 'rgba(155, 89, 182, 1)',
                             borderWidth: 1
@@ -1656,6 +1792,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Available Months Only'
                         }
                     },
                     scales: {
@@ -1679,15 +1819,21 @@
                 window.channelComparisonChart.destroy();
             }
             
-            // Calculate totals for 2024
-            const totalSales2024 = deliveryAmounts2024['Sum'].reduce((sum, amount) => sum + amount, 0);
+            // Calculate totals for available months only
+            const availableSales2024 = availableMonths2025.map(index => 
+                deliveryAmounts2024['Sum'][index]
+            );
+            const availableSales2025 = availableMonths2025.map(index => 
+                deliveryAmounts2025['Sum'][index]
+            );
+
+            const totalSales2024 = availableSales2024.reduce((sum, amount) => sum + amount, 0);
+            const totalSales2025 = availableSales2025.reduce((sum, amount) => sum + amount, 0);
+            
             const deliveryShare2024 = 0.814; // 81.4%
+            const deliveryShare2025 = 0.8; // 80%
             const deliverySales2024 = totalSales2024;
             const inStoreSales2024 = (totalSales2024 / deliveryShare2024) - totalSales2024;
-            
-            // Calculate totals for 2025
-            const totalSales2025 = deliveryAmounts2025['Sum'].reduce((sum, amount) => sum + amount, 0);
-            const deliveryShare2025 = 0.8; // 80%
             const deliverySales2025 = totalSales2025;
             const inStoreSales2025 = (totalSales2025 / deliveryShare2025) - totalSales2025;
             
@@ -1729,6 +1875,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Channel Distribution for Available Months Only'
                         }
                     }
                 }
@@ -1740,19 +1890,19 @@
                 window.channelMonthlyChart.destroy();
             }
             
-            // Calculate monthly in-store sales
-            const monthlyInStoreSales2024 = months.map((_, i) => 
-                (deliveryAmounts2024['Sum'][i] / deliveryShare2024) - deliveryAmounts2024['Sum'][i]
+            // Calculate monthly in-store sales for available months only
+            const monthlyInStoreSales2024 = availableMonths2025.map(index => 
+                (deliveryAmounts2024['Sum'][index] / deliveryShare2024) - deliveryAmounts2024['Sum'][index]
             );
             
-            const monthlyInStoreSales2025 = months.map((_, i) => 
-                (deliveryAmounts2025['Sum'][i] / deliveryShare2025) - deliveryAmounts2025['Sum'][i]
+            const monthlyInStoreSales2025 = availableMonths2025.map(index => 
+                (deliveryAmounts2025['Sum'][index] / deliveryShare2025) - deliveryAmounts2025['Sum'][index]
             );
             
             window.channelMonthlyChart = new Chart(channelMonthlyCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    labels: availableMonths2025.map(index => months[index].substring(0, 3)),
                     datasets: [
                         {
                             label: '2024 In-Store Sales ($M)',
@@ -1765,7 +1915,7 @@
                         },
                         {
                             label: '2024 Delivery Sales ($M)',
-                            data: months.map((_, i) => deliveryAmounts2024['Sum'][i] / 1000000),
+                            data: availableMonths2025.map(index => deliveryAmounts2024['Sum'][index] / 1000000),
                             backgroundColor: 'rgba(231, 76, 60, 0.2)',
                             borderColor: 'rgba(231, 76, 60, 1)',
                             borderWidth: 2,
@@ -1783,7 +1933,7 @@
                         },
                         {
                             label: '2025 Delivery Sales ($M)',
-                            data: months.map((_, i) => deliveryAmounts2025['Sum'][i] / 1000000),
+                            data: availableMonths2025.map(index => deliveryAmounts2025['Sum'][index] / 1000000),
                             backgroundColor: 'rgba(155, 89, 182, 0.2)',
                             borderColor: 'rgba(155, 89, 182, 1)',
                             borderWidth: 2,
@@ -1797,6 +1947,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Monthly Channel Performance for Available Months Only'
                         }
                     },
                     scales: {
@@ -1820,12 +1974,25 @@
                 window.insightsSummaryChart.destroy();
             }
             
-            // Calculate branch performance data
+            // Calculate branch performance data for available months only
             const branchPerformance = branches.map((branch, index) => {
-                const totalCount2024 = deliveryCounts2024[branch].reduce((sum, count) => sum + count, 0);
-                const totalCount2025 = deliveryCounts2025[branch].reduce((sum, count) => sum + count, 0);
-                const totalAmount2024 = deliveryAmounts2024[branch].reduce((sum, amount) => sum + amount, 0);
-                const totalAmount2025 = deliveryAmounts2025[branch].reduce((sum, amount) => sum + amount, 0);
+                const availableSales2024 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2024[branch][monthIndex]
+                );
+                const availableSales2025 = availableMonths2025.map(monthIndex => 
+                    deliveryAmounts2025[branch][monthIndex]
+                );
+                const availableTransactions2024 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2024[branch][monthIndex]
+                );
+                const availableTransactions2025 = availableMonths2025.map(monthIndex => 
+                    deliveryCounts2025[branch][monthIndex]
+                );
+
+                const totalCount2024 = availableTransactions2024.reduce((sum, count) => sum + count, 0);
+                const totalCount2025 = availableTransactions2025.reduce((sum, count) => sum + count, 0);
+                const totalAmount2024 = availableSales2024.reduce((sum, amount) => sum + amount, 0);
+                const totalAmount2025 = availableSales2025.reduce((sum, amount) => sum + amount, 0);
                 
                 const countGrowth = totalCount2024 > 0 ? ((totalCount2025 - totalCount2024) / totalCount2024 * 100) : 0;
                 const amountGrowth = totalAmount2024 > 0 ? ((totalAmount2025 - totalAmount2024) / totalAmount2024 * 100) : 0;
@@ -1869,6 +2036,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Branch Performance for Available Months Only'
                         }
                     },
                     scales: {
@@ -1898,6 +2069,35 @@
                 selectedBranches = [branches[parseInt(branchIndex)]];
             }
             
+            // Get available months within the selected range
+            const monthsInRange = [];
+            for (let month = startMonth; month <= endMonth; month++) {
+                if (availableMonths2025.includes(month)) {
+                    monthsInRange.push(month);
+                }
+            }
+            
+            // If no months available, show error
+            if (monthsInRange.length === 0) {
+                showNotification('لا توجد بيانات متاحة للفترة المحددة في 2025. الرجاء إدخال البيانات أولاً.', 'error');
+                document.getElementById('export-buttons').style.display = 'none';
+                return;
+            }
+            
+            // If some months are missing, show info
+            if (monthsInRange.length < (endMonth - startMonth + 1)) {
+                const missingMonths = [];
+                for (let month = startMonth; month <= endMonth; month++) {
+                    if (!availableMonths2025.includes(month)) {
+                        missingMonths.push(months[month]);
+                    }
+                }
+                showNotification(
+                    `بيانات 2025 غير متوفرة للأشهر التالية: ${missingMonths.join(', ')}. سيتم إنشاء التقرير للأشهر المتوفرة فقط.`, 
+                    'info'
+                );
+            }
+            
             // Initialize data structures
             const reportData = {
                 2024: {
@@ -1912,8 +2112,8 @@
                 }
             };
             
-            // Calculate data for each month in the selected range
-            for (let month = startMonth; month <= endMonth; month++) {
+            // Calculate data for each month in the available range
+            monthsInRange.forEach(month => {
                 const monthName = months[month];
                 
                 // Calculate 2024 data
@@ -1962,7 +2162,7 @@
                 reportData[2024].amount += amount2024;
                 reportData[2025].orders += orders2025;
                 reportData[2025].amount += amount2025;
-            }
+            });
             
             // Calculate average values for the period
             reportData[2024].avgValue = reportData[2024].orders > 0 ? 
@@ -1983,6 +2183,8 @@
                 startMonth: startMonth,
                 endMonth: endMonth,
                 branchIndex: branchIndex,
+                actualStartMonth: monthsInRange[0],
+                actualEndMonth: monthsInRange[monthsInRange.length - 1],
                 data: reportData,
                 periodOrdersChange: periodOrdersChange,
                 periodAmountChange: periodAmountChange,
@@ -2060,7 +2262,7 @@
             
             // Set period text
             const branchText = branchIndex === 'all' ? 'All Branches' : branchNames[parseInt(branchIndex)];
-            summaryPeriod.textContent = `Delivery trends comparison for ${branchText} from ${months[startMonth]} to ${months[endMonth]} (2024 vs 2025)`;
+            summaryPeriod.textContent = `Delivery trends comparison for ${branchText} from ${months[currentReportData.actualStartMonth]} to ${months[currentReportData.actualEndMonth]} (2024 vs 2025)`;
             
             // Generate summary stats
             summaryStats.innerHTML = `
@@ -2164,6 +2366,14 @@
                 selectedBranches = [branches[parseInt(branchIndex)]];
             }
             
+            // Get available months within the selected range
+            const monthsInRange = [];
+            for (let month = startMonth; month <= endMonth; month++) {
+                if (availableMonths2025.includes(month)) {
+                    monthsInRange.push(month);
+                }
+            }
+            
             // Prepare chart data
             const labels = [];
             const orders2024Data = [];
@@ -2171,7 +2381,7 @@
             const amount2024Data = [];
             const amount2025Data = [];
             
-            for (let month = startMonth; month <= endMonth; month++) {
+            monthsInRange.forEach(month => {
                 labels.push(months[month].substring(0, 3));
                 
                 // Calculate 2024 data
@@ -2194,7 +2404,7 @@
                 orders2025Data.push(orders2025);
                 amount2024Data.push(amount2024 / 1000); // Convert to thousands
                 amount2025Data.push(amount2025 / 1000); // Convert to thousands
-            }
+            });
             
             window.last3MonthsChart = new Chart(ctx, {
                 type: 'bar',
@@ -2240,6 +2450,10 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Available Months Only'
                         }
                     },
                     scales: {
@@ -2284,7 +2498,7 @@
             // Add period info
             doc.setFontSize(12);
             const branchText = currentReportData.branchIndex === 'all' ? 'All Branches' : branchNames[parseInt(currentReportData.branchIndex)];
-            const periodText = `Period: ${months[currentReportData.startMonth]} - ${months[currentReportData.endMonth]} (${branchText})`;
+            const periodText = `Period: ${months[currentReportData.actualStartMonth]} - ${months[currentReportData.actualEndMonth]} (${branchText})`;
             doc.text(periodText, 105, 30, { align: 'center' });
             
             // Add summary
@@ -2357,7 +2571,7 @@
             });
             
             // Save the PDF
-            doc.save(`Crispy_Chicken_Report_${months[currentReportData.startMonth]}_${months[currentReportData.endMonth]}.pdf`);
+            doc.save(`Crispy_Chicken_Report_${months[currentReportData.actualStartMonth]}_${months[currentReportData.actualEndMonth]}.pdf`);
             
             showNotification('PDF exported successfully', 'success');
         }
@@ -2376,7 +2590,7 @@
             const excelData = [
                 ['Crispy Chicken Delivery Report'],
                 [''],
-                ['Period:', `${months[currentReportData.startMonth]} - ${months[currentReportData.endMonth]}`],
+                ['Period:', `${months[currentReportData.actualStartMonth]} - ${months[currentReportData.actualEndMonth]}`],
                 ['Branch:', currentReportData.branchIndex === 'all' ? 'All Branches' : branchNames[parseInt(currentReportData.branchIndex)]],
                 [''],
                 ['Summary'],
@@ -2448,7 +2662,7 @@
             XLSX.utils.book_append_sheet(wb, ws, 'Delivery Report');
             
             // Save the Excel file
-            XLSX.writeFile(wb, `Crispy_Chicken_Report_${months[currentReportData.startMonth]}_${months[currentReportData.endMonth]}.xlsx`);
+            XLSX.writeFile(wb, `Crispy_Chicken_Report_${months[currentReportData.actualStartMonth]}_${months[currentReportData.actualEndMonth]}.xlsx`);
             
             showNotification('Excel file exported successfully', 'success');
         }
@@ -2462,7 +2676,7 @@
             
             // Prepare CSV data
             let csvData = 'Crispy Chicken Delivery Report\n\n';
-            csvData += `Period: ${months[currentReportData.startMonth]} - ${months[currentReportData.endMonth]}\n`;
+            csvData += `Period: ${months[currentReportData.actualStartMonth]} - ${months[currentReportData.actualEndMonth]}\n`;
             csvData += `Branch: ${currentReportData.branchIndex === 'all' ? 'All Branches' : branchNames[parseInt(currentReportData.branchIndex)]}\n\n`;
             csvData += 'Summary\n';
             csvData += 'Metric,2024,2025,Change\n';
@@ -2489,7 +2703,7 @@
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `Crispy_Chicken_Report_${months[currentReportData.startMonth]}_${months[currentReportData.endMonth]}.csv`);
+            link.setAttribute('download', `Crispy_Chicken_Report_${months[currentReportData.actualStartMonth]}_${months[currentReportData.actualEndMonth]}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
@@ -2551,6 +2765,13 @@
             });
             deliveryAmounts2025['Sum'][monthIndex] = newSumAmount;
             deliveryCounts2025['Sum'][monthIndex] = newSumCount;
+            
+            // Add to available months if not already there
+            if (!availableMonths2025.includes(monthIndex)) {
+                availableMonths2025.push(monthIndex);
+                availableMonths2025.sort((a, b) => a - b);
+                updateAvailableMonthsDisplay();
+            }
             
             // Add to data log
             const entry = {
